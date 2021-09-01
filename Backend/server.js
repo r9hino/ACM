@@ -6,6 +6,8 @@
 
 // To-do
 // Run server on booting and check if influx docker can be reached at startup
+// Change path string to env in routes.js
+// server.js change influxURL to a local one, not DNS
 
 const http = require('http');
 const socketio = require('socket.io');

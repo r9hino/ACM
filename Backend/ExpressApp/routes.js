@@ -7,7 +7,7 @@ const router = require('express').Router();
 const jwt = require("jsonwebtoken");
 const readLastLines = require('read-last-lines');
 
-const logger = require('../Logs/logger');
+//const logger = require('../Logs/logger');
 
 const ipReqMonitor = {};        // Store IPs and number of attempts.
 const maxNumberOfAttempts = 5;
@@ -85,7 +85,7 @@ router.post('/login', (req, res) => {
 router.get('/logs/info', (req, res) => {
     res.status(200);
     res.contentType('application/text');
-    readLastLines.read('/home/pi/Code/RPi4Node/ACM/Backend/Logs/info.log', 100)
+    readLastLines.read('/home/pi/Code/ACM/Backend/Logs/info.log', 100)
 	    .then((lines) => {
             res.send(lines)
     });
@@ -94,7 +94,7 @@ router.get('/logs/info', (req, res) => {
 router.get('/logs/errors', (req, res) => {
     res.status(200);
     res.contentType('application/text');
-    readLastLines.read('/home/pi/Code/RPi4Node/ACM/Backend/Logs/error.log', 100)
+    readLastLines.read('/home/pi/Code/ACM/Backend/Logs/error.log', 100)
 	    .then((lines) => {
             res.send(lines)
     });

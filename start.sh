@@ -10,11 +10,12 @@
 # 4. nvm install v16.8.0
 # 5. nvm use v16.8.0 & nvm current
 # 6. npm i -g pm2
+# 7. Add new path for pm2 in this script
 
-cd Backend
-pm2 start server.js --output ./Logs/info.log --error ./Logs/error.log --time --restart-delay 3000
+cd /home/pi/Code/ACM/Backend
+/home/pi/.nvm/versions/node/v16.8.0/bin/pm2 start server.js --output ./Logs/info.log --error ./Logs/error.log --time --restart-delay 3000
 
-cd ../Frontend
-pm2 start "npm run serve" --name vue-client --output ../Backend/Logs/vue-client-out.log --error ../Backend/Logs/vue-client-error.log --time --restart-delay 3000
+cd /home/pi/Code/ACM/Frontend
+/home/pi/.nvm/versions/node/v16.8.0/bin/pm2 start "npm run serve" --name vue-client --output ../Backend/Logs/vue-client-out.log --error ../Backend/Logs/vue-client-error.log --time --restart-delay 3000
 
-cd ..
+cd ~
