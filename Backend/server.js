@@ -8,6 +8,7 @@
 // Run server on booting and check if influx docker can be reached at startup
 // Change path string to env in routes.js
 // server.js change influxURL to a local one, not DNS
+// Add public ip to webpage
 
 const http = require('http');
 const socketio = require('socket.io');
@@ -26,7 +27,7 @@ const app = require('./ExpressApp/app');
 // Environment variables.
 require('dotenv').config();
 const remoteMongoURL = process.env.MONGODB_URL;
-const influxURL = `http://${hostname()}.mooo.com`;
+const localInfluxURL = `http://localhost`;
 const token = process.env.INFLUXDB_TOKEN;
 const influxPort = process.env.INFLUXDB_PORT;
 const org = process.env.INFLUXDB_ORG;
@@ -42,7 +43,7 @@ const temperatureSensor = new SensorMonitor('temperature', '°C', 1000*10, 20, t
 const analogSensor = new SensorMonitor('voltage', 'V', 1000*1, 10, analogRetriever);
 const deviceMetadataDB = new JSONdb('deviceMetadataDB.json');
 const remoteMongoDB = new MongoDBHandler(remoteMongoURL);
-const localInfluxDB = new InfluxDBHandler(influxURL, influxPort, token, org, [sensorBucket, systemBucket]);
+const localInfluxDB = new InfluxDBHandler(localInfluxURL, influxPort, token, org, [sensorBucket, systemBucket]);
 
 
 let httpServer, io, dynamicDataInterval, tenSecInterval, minuteInterval;
