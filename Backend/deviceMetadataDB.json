@@ -1,0 +1,60 @@
+{
+    "_id": "611d9de564bd88d2ff358f23",
+    "hostname": "rpi4id0",
+    "hardware": "Raspberry Pi 4",
+    "os": "Ubuntu 21.04 hirsute",
+    "dns": "rpi4id0.mooo.com",
+    "company": "Chilterra",
+    "name_place": "Huite Pozo Profundo 1",
+    "geo_coordinate": "",
+    "input": [
+        {
+            "id": 0,
+            "pin_number": 23,
+            "description": "Caudalimetro",
+            "sensor_model": null,
+            "protocol": null
+        },
+        {
+            "id": 0,
+            "pin_number": [
+                1,
+                3,
+                5,
+                9
+            ],
+            "description": "Presion",
+            "sensor_model": null,
+            "protocol": "i2c"
+        }
+    ],
+    "architecture": "arm64",
+    "node_version": "v16.8.0",
+    "relays": [
+        {
+            "id": 0,
+            "description": "Control bomba 1",
+            "state": false,
+            "autoOn": null,
+            "autoOff": null,
+            "date_update": "Sun Aug 29 2021 23:06:38 GMT-0400 (Chile Standard Time)"
+        },
+        {
+            "id": 1,
+            "description": "Control bomba 2",
+            "state": false,
+            "autoOn": null,
+            "autoOff": null,
+            "date_update": "Sun Aug 29 2021 01:18:30 GMT-0400 (Chile Standard Time)"
+        },
+        {
+            "id": 2,
+            "description": "Electrovalvula principal",
+            "state": true,
+            "autoOn": null,
+            "autoOff": null,
+            "date_update": "Sun Aug 29 2021 01:18:30 GMT-0400 (Chile Standard Time)"
+        }
+    ],
+    "date_update": "Mon Aug 30 2021 18:38:19 GMT-0400 (Chile Standard Time)"
+}
