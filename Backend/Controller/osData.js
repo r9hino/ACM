@@ -1,5 +1,6 @@
 const si = require('systeminformation');
 const process = require('process');
+const ifaces = require('os').networkInterfaces();
 
 const getStaticData = async () => {
     try {
@@ -17,7 +18,7 @@ const getStaticData = async () => {
         };
 
         staticSystemData.network = {
-            ip4: network.ip4,
+            publicIP: ifaces["eth0"][0].address,
             ip4subnet: network.ip4subnet,
             gateway: networkGateway,
         };
@@ -31,11 +32,8 @@ const getStaticData = async () => {
 };
 
 const getDynamicData = async () => {
-    try {
-        let time = await si.time();
-        let cpu = await si.currentLoad();
-        let memoryRAM = await si.mem();
-        let memoryDisk = await si.fsSize();
+    try{
+        let [time, cpu, memoryRAM, memoryDisk, network, networkGateway] = await Promise.all([si.time(), si.currentLoad(), si.mem(), si.fsSize()]);
         memoryDisk = memoryDisk[0];
 
         const dynamicSystemData = {};

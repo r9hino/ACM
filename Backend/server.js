@@ -110,7 +110,6 @@ async function initializer(){
         await task().catch(e => process.exit(1));
     }
 }
-
 initializer();
 
 // Intervals for data retrieval and injection.

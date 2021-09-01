@@ -36,6 +36,10 @@
           <td>{{dynamicSystemData !== "" ? dynamicSystemData.time.timezone : ""}}</td>
         </tr>
         <tr>
+          <td>Public IP</td>
+          <td>{{staticSystemData !== "" ? staticSystemData.network.publicIP : ""}}</td>
+        </tr>
+        <tr>
           <td>Gateway IP</td>
           <td>{{staticSystemData !== "" ? staticSystemData.network.gateway : ""}}</td>
         </tr>
