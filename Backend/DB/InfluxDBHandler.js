@@ -16,7 +16,7 @@ class InfluxDBHandler {
             //writeFailed: [Function: writeFailed],
             //writeSuccess: [Function: writeSuccess],
             maxRetries: 10,
-            maxRetryTime: 1000*60*60*24*3,
+            maxRetryTime: 1000*60*60*24*15,
             maxBufferLines: 32000,
             gzipThreshold: 1000,
             minRetryDelay: 5000,

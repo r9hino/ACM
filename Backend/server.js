@@ -7,14 +7,14 @@
 // To-do
 // Run server on booting and check if influx docker can be reached at startup
 // Change path string to env in routes.js
-// server.js change influxURL to a local one, not DNS
-// Add public ip to webpage
+// API for querying data.
 
 const http = require('http');
 const socketio = require('socket.io');
 const {hostname} = require('os');
 const JSONdb = require('simple-json-db');
 const proceess = require('process');
+const ifaces = require('os').networkInterfaces();
 
 const I2CHandler = require('./Controller/I2CHandler');
 const osData = require('./Controller/osData');
@@ -45,8 +45,8 @@ const deviceMetadataDB = new JSONdb('deviceMetadataDB.json');
 const remoteMongoDB = new MongoDBHandler(remoteMongoURL);
 const localInfluxDB = new InfluxDBHandler(localInfluxURL, influxPort, token, org, [sensorBucket, systemBucket]);
 
-
-let httpServer, io, dynamicDataInterval, tenSecInterval, minuteInterval;
+// Global variables initialization.
+let httpServer, io, dynamicDataInterval, tenSecInterval, minInterval, tenMinInterval;
 
 // Sequential initialization functions.
 const initializationFunctionList = [
@@ -73,6 +73,7 @@ const initializationFunctionList = [
             node_version: process.version,
             architecture: process.arch,
             date_update: new Date().toString(),
+            ip_public: ifaces["eth0"][0].address,
         };
 
         // Store locally OS and system info.
@@ -101,7 +102,8 @@ const initializationFunctionList = [
     // Initialize intervals.
     async () => {
         tenSecInterval = setInterval(tenSecFunction, 1000*10);
-        minuteInterval = setInterval(minuteFunction, 1000*10);
+        minInterval = setInterval(minFunction, 1000*10);
+        tenMinInterval = setInterval(tenMinFunction, 1000*60*10);
     }
 ];
 
@@ -118,13 +120,32 @@ const tenSecFunction = async () => {
     if(dynamicData.memoryRAM.activePercent !== null) localInfluxDB.writeData(systemBucket, 'active-ram', '%', dynamicData.memoryRAM.activePercent);
     if(dynamicData.memoryDisk.usedPercent !== null)  localInfluxDB.writeData(systemBucket, 'used-disk', '%', dynamicData.memoryDisk.usedPercent);
     if(dynamicData.cpu.currentLoad !== null) localInfluxDB.writeData(systemBucket, 'cpu', '%', dynamicData.cpu.currentLoad);
+
+    localInfluxDB.writeData(sensorBucket, temperatureSensor.sensorType, temperatureSensor.unit, temperatureSensor.average());
 };
 
-const minuteFunction = async () => {
-    //console.log(`DEBUG: Average temperature: ${temperatureSensor.average().toFixed(1)}    ${temperatureSensor.values}`);
-    localInfluxDB.writeData(sensorBucket, temperatureSensor.sensorType, temperatureSensor.unit, temperatureSensor.average());
-    //console.log(localInfluxDB.writeAPI[sensorBucket].writeBuffer);
-    //console.log(localInfluxDB.writeAPI[sensorBucket].retryBuffer);
+const minFunction = async () => {
+    // Store public IP if it has changed.
+    let actualPublicIP = ifaces["eth0"][0].address;
+    let actualDate = new Date().toString();
+    if(deviceMetadataDB.get('ip_public') !== actualPublicIP){
+        // Store locally new public ip.
+        deviceMetadataDB.set('ip_public', actualPublicIP);
+        deviceMetadataDB.set('date_update', actualDate);
+        // Store remotely new values retrieved from the OS and system.
+        try{
+            if(remoteMongoDB.isConnected() === false) await remoteMongoDB.connectDB();
+            await remoteMongoDB.updateDevice(hostname(), {ip_public: actualPublicIP, date_update: actualDate});
+            console.log('INFO: New public IP stored locally and remotely.');
+            await remoteMongoDB.close();
+        }
+        catch(e){
+            console.log('WANRING: Couldn\'t store new public IP in the remote MongoDB.');
+        };
+    }
+};
+const tenMinFunction = async () => {
+    
 };
 
 // Coordinate data through sockets.
@@ -154,7 +175,7 @@ function socketCoordinator(socket){
     });
 
     // Home page: listen for changes made by user on client side. Then update device state.
-    socket.on('elementChanged', (relay) => {
+    socket.on('elementChanged', relay => {
         // Broadcast new device state to everyone except sender.
         socket.broadcast.emit('updateClients', relay);
         let idRelay = relay.id;
@@ -192,7 +213,8 @@ function socketCoordinator(socket){
 async function shutdownServer(){
     console.log('INFO: Shuting down the server...');
     clearInterval(tenSecInterval);
-    clearInterval(minuteInterval);
+    clearInterval(minInterval);
+    clearInterval(tenMinInterval);
     clearInterval(dynamicDataInterval);
 
     try {
