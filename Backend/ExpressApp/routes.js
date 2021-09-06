@@ -109,7 +109,7 @@ router.get('/logs/errors', (req, res) => {
 
 router.get('/api/getguardusers', verifyToken, (req, res) => {
     let guardUsers = deviceMetadataDB.get('guard_users');
-    guardUsers = guardUsers === undefined ? [] : guardUsers;
+    guardUsers = guardUsers === undefined ? [] : guardUsers;    // Set array to empty if not guard users are store on the local database.
     res.status(200);
     res.contentType('application/json');
     res.send(guardUsers);
@@ -130,32 +130,47 @@ router.post('/api/addguarduser', verifyToken, async (req, res) => {
             await remoteMongoDB.updateDevice(hostname(), {guard_users: guardUsers});    // Store remotely.
             await remoteMongoDB.close();
             res.status(200);
-            res.json({message: 'Guard user added.'});
+            res.json({message: 'OK: Guard user added to local and remote DBs.'});
         }                            
         catch(err){
             console.error('ERROR:', err);
+            res.status(201);
+            res.json({message: 'WARNING: Guard user added to local DB but not on remote DB.'});
         }
     }
     else{
         res.status(400);
-        res.json({message: 'No guard user added.'});
+        res.json({message: 'ERROR: No guard user added on local and remote DBs.'});
     }
 });
 
-router.post('/api/removeguarduser', verifyToken, (req, res) => {
+router.post('/api/removeguarduser', verifyToken, async (req, res) => {
     let guardUsers = deviceMetadataDB.get('guard_users');       // Recover locally stored guard users.
     if(guardUsers === undefined){
         res.status(400);
-        res.json({message: 'No guard user to remove.'});
+        res.json({message: 'ERROR: No guard user to remove.'});
         return;
     }
 
     const {guardUserRemove} = req.body;
     const  index = guardUsers.indexOf(guardUserRemove);
-    guardUsers.splice(index, 1);
+    guardUsers.splice(index, 1);                                // Remove guard user from array.
+
+    // Store locally array with removed guard user.
     deviceMetadataDB.set('guard_users', guardUsers);
-    res.status(200);
-    res.json({message: 'Guard user removed.'});
+    // Store remotely array with removed guard user.
+    try{
+        await remoteMongoDB.connectDB();
+        await remoteMongoDB.updateDevice(hostname(), {guard_users: guardUsers});    // Store remotely.
+        await remoteMongoDB.close();
+        res.status(200);
+        res.json({message: 'OK: Guard user removed from local and remote DBs.'});
+    }                            
+    catch(err){
+        console.error('ERROR:', err);
+        res.status(201);
+        res.json({message: 'WARNING: Guard user removed from local DB but not from remote DB.'});
+    }
 });
 
 module.exports = router;
