@@ -1,9 +1,4 @@
 const {MongoClient} = require('mongodb');
-const JSONdb = require('simple-json-db');
-const db = new JSONdb('stateDB.json');
-
-//const logger = require('../Logs/logger');
-
 
 class MongoDBHandler {
     constructor(url){

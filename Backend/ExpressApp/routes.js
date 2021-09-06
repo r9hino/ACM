@@ -1,13 +1,20 @@
 // Links:
 // https://github.com/scalablescripts/node-auth/blob/main/routes/routes.js   https://www.youtube.com/watch?v=IxcKMcsBGE8&list=PLlameCF3cMEsjpIRxfB9Rjici3aMCaQVo&index=2&ab_channel=ScalableScripts
 
-require('dotenv').config({ path: '../.env' })
-
+const {hostname} = require('os');
 const router = require('express').Router();
 const jwt = require("jsonwebtoken");
 const readLastLines = require('read-last-lines');
+const JSONdb = require('simple-json-db');
 
-//const logger = require('../Logs/logger');
+const MongoDBHandler = require('../DB/MongoDBHandler');
+const verifyToken = require('./validateToken');
+
+// Initialize DBs
+require('dotenv').config({ path: __dirname + `/../.env` });
+const remoteMongoURL = process.env.MONGODB_URL;
+const deviceMetadataDB = new JSONdb('../deviceMetadataDB.json');
+const remoteMongoDB = new MongoDBHandler(remoteMongoURL);
 
 const ipReqMonitor = {};        // Store IPs and number of attempts.
 const maxNumberOfAttempts = 5;
@@ -30,10 +37,10 @@ router.post('/login', (req, res) => {
     if(ipReqMonitor[ip].numberOfAttempts > 0){
         if(username === USERNAME && password === PASSWORD){
             const user = {id: 1, username: 'pi'};
-            const token = jwt.sign(user, process.env.WEB_JWT_KEY);
+            const token = jwt.sign(user, process.env.WEB_JWT_SECRET);
             res.status(200);
             res.json({user, token});
-            // Delete key from object.
+            // Delete ip attemps information because user logged in correctly and it is no longer necessary to store it.
             delete ipReqMonitor[ip];
             console.log(`INFO: IP ${ip} logged in.`);
             return;
@@ -100,10 +107,55 @@ router.get('/logs/errors', (req, res) => {
     });
 });
 
-router.get('/api/info', (req, res) => {
+router.get('/api/getguardusers', verifyToken, (req, res) => {
+    let guardUsers = deviceMetadataDB.get('guard_users');
+    guardUsers = guardUsers === undefined ? [] : guardUsers;
     res.status(200);
     res.contentType('application/json');
-    res.send(JSON.stringify({ip: '200.200.200.200'}));
+    res.send(guardUsers);
+});
+
+router.post('/api/addguarduser', verifyToken, async (req, res) => {
+    let guardUsers = deviceMetadataDB.get('guard_users');       // Recover locally stored guard users.
+    guardUsers = guardUsers === undefined ? [] : guardUsers;    // Check if undefined.
+
+    const {newGuardUser} = req.body;
+    if(newGuardUser !== ''){
+        guardUsers.push(newGuardUser);
+        // Store new guard user locally.
+        deviceMetadataDB.set('guard_users', guardUsers);
+        // Try to store new guard user remotely.
+        try{
+            await remoteMongoDB.connectDB();
+            await remoteMongoDB.updateDevice(hostname(), {guard_users: guardUsers});    // Store remotely.
+            await remoteMongoDB.close();
+            res.status(200);
+            res.json({message: 'Guard user added.'});
+        }                            
+        catch(err){
+            console.error('ERROR:', err);
+        }
+    }
+    else{
+        res.status(400);
+        res.json({message: 'No guard user added.'});
+    }
+});
+
+router.post('/api/removeguarduser', verifyToken, (req, res) => {
+    let guardUsers = deviceMetadataDB.get('guard_users');       // Recover locally stored guard users.
+    if(guardUsers === undefined){
+        res.status(400);
+        res.json({message: 'No guard user to remove.'});
+        return;
+    }
+
+    const {guardUserRemove} = req.body;
+    const  index = guardUsers.indexOf(guardUserRemove);
+    guardUsers.splice(index, 1);
+    deviceMetadataDB.set('guard_users', guardUsers);
+    res.status(200);
+    res.json({message: 'Guard user removed.'});
 });
 
 module.exports = router;

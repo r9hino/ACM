@@ -2,12 +2,13 @@
 // Promise - async/await: https://blog.risingstack.com/mastering-async-await-in-nodejs/ https://dmitripavlutin.com/what-is-javascript-promise/
 // Class: https://javascript.info/class#not-just-a-syntactic-sugar
 // Vue basics: https://github.com/iamshaunjp/Vue-3-Firebase/tree/master  https://www.vuemastery.com/pdf/Vue-3-Cheat-Sheet.pdf
-// Vue authentication: https://www.smashingmagazine.com/2020/10/authentication-in-vue-js/
+// Vue authentication: https://www.smashingmagazine.com/2020/10/authentication-in-vue-js/        https://github.com/firebase007/JWT_VUE_APP
 
 // To-do
 // Run server on booting and check if influx docker can be reached at startup
 // Change path string to env in routes.js
 // API for querying data.
+// Usar bcrypt para hashear passwords.
 
 const http = require('http');
 const socketio = require('socket.io');
