@@ -3,9 +3,11 @@ import store from '../store/index';
 
 import Login from '../views/Login.vue';
 import Home from '../views/Home.vue';
+import Alerts from '../views/Alerts.vue';
 import Process from '../views/Process.vue';
 import Calibration from '../views/Calibration.vue';
 import SystemInfo from '../views/SystemInfo.vue';
+import GuardUsers from '../views/GuardUsers.vue';
 import Logs from '../views/Logs.vue';
 
 const routes = [
@@ -19,6 +21,12 @@ const routes = [
     path: '/',
     name: 'home',
     component: Home,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/alerts',
+    name: 'alerts',
+    component: Alerts,
     meta: { requiresAuth: true },
   },
   {
@@ -38,6 +46,12 @@ const routes = [
     name: 'systeminfo',
     component: SystemInfo,
     props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/guardusers',
+    name: 'guardusers',
+    component: GuardUsers,
     meta: { requiresAuth: true },
   },
   {

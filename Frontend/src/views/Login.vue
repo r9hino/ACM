@@ -48,8 +48,8 @@ export default {
                 headers: {"Content-Type": "application/json"},
                 //credentials: 'include',
                 body: JSON.stringify({
-                username: this.username,
-                password: this.password,
+                  username: this.username,
+                  password: this.password,
                 }),
             });
 

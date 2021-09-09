@@ -54,6 +54,7 @@ export default {
       socket.off('resRelayStates');
       socket.off('updateClients');
       socket.disconnect();
+      socket.sendBuffer = []; // If it could not connect, remove all emits on buffer.
     });
 
     return {

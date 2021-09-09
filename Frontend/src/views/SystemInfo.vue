@@ -94,12 +94,12 @@ export default {
   data(){
     socket.on("socketStaticSystemData", data => {
       this.staticSystemData = data;
-      console.log(data);
+      //console.log(data);
     });
     
     socket.on("socketDynamicSystemData", data => {
       this.dynamicSystemData = data;
-      console.log(data);
+      //console.log(data);
     });
 
     return {
