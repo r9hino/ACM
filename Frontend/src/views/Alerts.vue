@@ -1,10 +1,10 @@
 <template>
-    <div class="container-sm">
+    <div class="container-fluid">
         <div class="mt-3 mb-4">
             <h3>Definicion de Alertas</h3>
         </div>
         <!--UI for editing and deleting alerts already defined.-->
-        <div class="d-inline-flex justify-content-center align-items-center mb-4 mx-4" v-for="(alert, index) in alerts" :key="index">
+        <div class="d-inline-flex justify-content-center align-items-center mb-4 mx-3" v-for="(alert, index) in alerts" :key="index">
             <div class="d-flex flex-column align-items-center">
                 <button class="btn btn-outline-secondary width-alert-items dropdown-toggle mb-1" type="button" data-bs-toggle="dropdown" :id="`sensorDropdown${index}`">{{alert.sensor}}</button>
                 <ul class="dropdown-menu" :aria-labelledby="`sensorDropdown${index}`">
@@ -43,19 +43,23 @@
         </div>
         <hr>
         <!--UI for adding alerts.-->
-        <div class="d-inline-flex justify-content-center align-items-center">
-            <div class="d-flex flex-column align-items-center mt-4">
-                <button class="btn btn-outline-secondary width-alert-items dropdown-toggle mb-1" type="button" data-bs-toggle="dropdown" id="dropdownMenuSensors">{{sensorDropdown}}</button>
-                <ul class="dropdown-menu" :aria-labelledby="`sensorDropdown${index}`">
-                    <li v-for="(sensor, indexSensor) in sensors" :key="indexSensor"><a class="dropdown-item" href="#" @click="sensorDropdown=sensor">{{sensor}}</a></li>
+        <div class="d-inline-flex justify-content-center align-items-center mt-4 mx-3">
+            <div class="d-flex flex-column align-items-center">
+                <button class="btn btn-outline-secondary width-alert-items dropdown-toggle mb-1" type="button" data-bs-toggle="dropdown" id="idDropdownSensorsAdd">{{sensorDropdown}}</button>
+                <ul class="dropdown-menu" aria-labelledby="idDropdownSensorsAdd">
+                    <li v-for="(sensor, indexSensor) in sensors" :key="indexSensor">
+                        <a class="dropdown-item" href="#" @click="sensorDropdown = sensor.sensor">{{sensor.sensor}}</a>
+                    </li>
                 </ul>
-                <button class="sm-text btn btn-outline-secondary width-alert-items dropdown-toggle mb-1" type="button" data-bs-toggle="dropdown" id="dropdownMenuCriterias">{{criteriaDropdown}}</button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuCriterias">
-                    <li><a class="dropdown-item" href="#" @click="criteriaDropdown=`menor`">menor</a></li>
+                <button class="btn btn-outline-secondary width-alert-items dropdown-toggle mb-1" type="button" data-bs-toggle="dropdown" id="idDropdownCriteriasAdd">{{criteriaDropdown}}</button>
+                <ul class="dropdown-menu" aria-labelledby="idDropdownCriteriasAdd">
+                    <li><a class="dropdown-item" href="#" @click="criteriaDropdown = `menor`">menor</a></li>
                     <li><a class="dropdown-item" href="#" @click="criteriaDropdown=`menor o igual`">menor o igual</a></li>
-                    <li><a class="dropdown-item" href="#" @click="criteriaDropdown=`igual`">igual</a></li>
-                    <li><a class="dropdown-item" href="#" @click="criteriaDropdown=`mayor o igual`">mayor o igual</a></li>
-                    <li><a class="dropdown-item" href="#" @click="criteriaDropdown=`mayor`">mayor</a></li>
+                    <li><a class="dropdown-item" href="#" @click="criteriaDropdown = `igual`">igual</a></li>
+                    <li><a class="dropdown-item" href="#" @click="criteriaDropdown = `mayor o igual`">mayor o igual</a></li>
+                    <li><a class="dropdown-item" href="#" @click="criteriaDropdown = `mayor`">mayor</a></li>
+                    <li><a class="dropdown-item" href="#" @click="criteriaDropdown = `entre el rango`">entre el rango</a></li>
+                    <li><a class="dropdown-item" href="#" @click="criteriaDropdown = `fuera del rango`">fuera del rango</a></li>
                 </ul>
                 <div class="form-floating mb-1">
                     <input v-model="username" type="user" class="form-control width-alert-items" style="height: 50px" id="floatingInput" placeholder="Valor (m)">
@@ -66,7 +70,7 @@
                     <label for="floatingInput">Tiempo estabilization (s)</label>
                 </div>
             </div>
-            <button class="sm-text btn btn-secondary ms-3 me-5" style="width: 85px" @click="addAlert(index)">Agregar</button>
+            <button class="sm-text btn btn-secondary ms-2" style="width: 85px" @click="addAlert(index)">Agregar</button>
         </div>
     </div>
 </template>
@@ -167,10 +171,10 @@ export default {
 </script>
 <style>
     .width-alert-items{
-        width: 270px !important;
+        width: 260px !important;
     }
     .placeholder-width-alert-items{
-        width: 130px !important;
+        width: 125px !important;
     }
     div.div-label{
         width: 140px;
