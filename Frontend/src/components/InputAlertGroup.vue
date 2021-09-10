@@ -7,8 +7,8 @@
                     <a class="dropdown-item" href="#" @click.prevent="alert.sensor=sensor.sensor; alert.unit=sensor.unit">{{sensor.sensor}}</a>
                 </li>
             </ul>
-            <button class="btn btn-outline-secondary width-alert-items dropdown-toggle mb-1" type="button" data-bs-toggle="dropdown" id="dropdownMenuCriterias">{{alert.criteria}}</button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuCriterias">
+            <button class="btn btn-outline-secondary width-alert-items dropdown-toggle mb-1" type="button" data-bs-toggle="dropdown" :id="`dropdownCriterias${indexAlert}`">{{alert.criteria}}</button>
+            <ul class="dropdown-menu" :aria-labelledby="`dropdownCriterias${indexAlert}`">
                 <li><a class="dropdown-item" href="#" @click.prevent="alert.criteria=`menor`">menor</a></li>
                 <li><a class="dropdown-item" href="#" @click.prevent="alert.criteria=`menor o igual`">menor o igual</a></li>
                 <li><a class="dropdown-item" href="#" @click.prevent="alert.criteria=`igual`">igual</a></li>
@@ -25,12 +25,12 @@
                     <label for="floatingInput">{{alert.unit}}</label>
                 </div>
                 <div class="form-floating mb-1" v-if="alert.criteria == 'entre el rango' || alert.criteria == 'fuera del rango'">
-                    <input v-model="alert.valueAux" type="user" class="form-control placeholder-width-alert-items" style="height: 55px" id="floatingInput" :placeholder="alert.unit">
+                    <input v-model="alert.value_aux" type="user" class="form-control placeholder-width-alert-items" style="height: 55px" id="floatingInput" :placeholder="alert.unit">
                     <label for="floatingInput">{{alert.unit}}</label>
                 </div>
             </div>
             <div class="form-floating">
-                <input v-model="alert.settlingTime" type="user" class="form-control width-alert-items" style="height: 55px" id="floatingInput" placeholder="Tiempo estabilization (s)">
+                <input v-model="alert.settling_time" type="user" class="form-control width-alert-items" style="height: 55px" id="floatingInput" placeholder="Tiempo estabilization (s)">
                 <label for="floatingInput">Tiempo estabilization (s)</label>
             </div>
         </div>

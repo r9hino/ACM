@@ -9,7 +9,7 @@
         </InputAlertGroup>
         <hr>
         <!--UI for adding alerts.-->
-        <InputAlertGroup :alert="newAlert" :sensors="sensors" :endFunction="addAlert" textEndFunction="Agregar" colorEndFunction="btn-secondary"></InputAlertGroup>
+        <InputAlertGroup :alert="newAlert" :indexAlert="alerts.length" :sensors="sensors" :endFunction="addAlert" textEndFunction="Agregar" colorEndFunction="btn-secondary"></InputAlertGroup>
     </div>
 </template>
 
@@ -28,12 +28,12 @@ export default {
             {sensor: 'Caudal bomba 1', unit: 'Caudal [L/s]'}
         ]);
         let alerts = ref([
-            {sensor: 'Voltaje bomba 1', criteria: 'entre el rango', value: 23, valueAux: 25, unit: 'Voltaje [v]', settlingTime: 10},
-            {sensor: 'Caudal bomba 1', criteria: 'menor', value: 23, valueAux: null, unit: 'Caudal [L/s]', settlingTime: 10},
-            {sensor: 'Corriente bomba 1', criteria: 'mayor o igual', valueAux: null, value: 23, unit: 'Corriente [A]', settlingTime: 10},
-            {sensor: 'Caudal bomba 1', criteria: 'menor', value: 23, valueAux: null, unit: 'Caudal [L/s]', settlingTime: 10}
+            {sensor: 'Voltaje bomba 1', criteria: 'entre el rango', value: 23, value_aux: 25, unit: 'Voltaje [v]', settling_time: 10},
+            {sensor: 'Caudal bomba 1', criteria: 'menor', value: 23, value_aux: null, unit: 'Caudal [L/s]', settling_time: 10},
+            {sensor: 'Corriente bomba 1', criteria: 'mayor o igual', value_aux: null, value: 23, unit: 'Corriente [A]', settling_time: 10},
+            {sensor: 'Caudal bomba 1', criteria: 'menor', value: 23, value_aux: null, unit: 'Caudal [L/s]', settling_time: 10}
         ]);
-        let newAlert = ref({sensor: 'Sensor', criteria: 'Criterio', value: null, valueAux: null, unit: 'Unidad', settlingTime: null});
+        let newAlert = ref({sensor: 'Sensor', criteria: 'Criterio', value: null, value_aux: null, unit: 'Unidad', settling_time: null});
 
         const user = computed(() => store.getters.getUser);
         const isAuthenticated = computed(() => store.getters.getAuthenticated);
@@ -55,34 +55,29 @@ export default {
         }
 
         let addAlert = async () => {
-            /*const response = await fetch("http://rpi4id0.mooo.com:5000/api/addguarduser", {
+            const response = await fetch("http://rpi4id0.mooo.com:5000/api/addalert", {
                 method: "POST",
                 headers: {"Authorization": `Bearer ${token.value}`, "Content-Type": "application/json"},
-                body: JSON.stringify({newGuardUser: newGuardUser.value})
+                body: JSON.stringify({newAlert: newAlert.value})
             });
             const message = await response.json();
             if(response.status == 200 || response.status == 201){
-                guardUsers.value.push(newAlert.value);
-                newGuardUser.value = '';
+                alerts.value.push({sensor: newAlert.value.sensor, criteria: newAlert.value.criteria, value: newAlert.value.value, value_aux: newAlert.value.value_aux, unit: newAlert.value.unit, settling_time: newAlert.value.sttling_time});
             }
-            console.log(message);*/
-            alerts.value.push(newAlert.value);
-            console.log(newAlert.value);
-            console.log(alerts.value);
+            console.log(message);
         };
 
         let removeAlert = async (index) => {
-            /*const response = await fetch("http://rpi4id0.mooo.com:5000/api/removeguarduser", {
+            const response = await fetch("http://rpi4id0.mooo.com:5000/api/removealert", {
                 method: "POST",
                 headers: {"Authorization": `Bearer ${token.value}`, "Content-Type": "application/json"},
-                body: JSON.stringify({guardUserRemove: guardUsers.value[index]})
+                body: JSON.stringify({alertRemove: alerts.value[index]})
             });
             const message = await response.json();
             if(response.status == 200 || response.status == 201){
-                guardUsers.value.splice(index, 1);
+                alerts.value.splice(index, 1);
             }
-            console.log(message);*/
-            alerts.value.splice(index, 1);
+            console.log(message);
         };
 
 

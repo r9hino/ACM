@@ -9,6 +9,8 @@
 // Change path string to env in routes.js
 // API for querying data.
 // Usar bcrypt para hashear passwords.
+// Add only one array element when saving to local and remote DB.
+// Add index to arrays in DBs.
 
 const http = require('http');
 const socketio = require('socket.io');

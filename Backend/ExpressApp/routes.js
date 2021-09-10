@@ -107,6 +107,7 @@ router.get('/logs/errors', (req, res) => {
     });
 });
 
+// Guard users apis -------------------------------------------------------------------------------------------------
 router.get('/api/getguardusers', verifyToken, (req, res) => {
     let guardUsers = deviceMetadataDB.get('guard_users');
     guardUsers = guardUsers === undefined ? [] : guardUsers;    // Set array to empty if not guard users are store on the local database.
@@ -124,6 +125,7 @@ router.post('/api/addguarduser', verifyToken, async (req, res) => {
         guardUsers.push(newGuardUser);
         // Store new guard user locally.
         deviceMetadataDB.set('guard_users', guardUsers);
+        deviceMetadataDB.sync();
         // Try to store new guard user remotely.
         try{
             await remoteMongoDB.connectDB();
@@ -135,12 +137,12 @@ router.post('/api/addguarduser', verifyToken, async (req, res) => {
         catch(err){
             console.error('ERROR:', err);
             res.status(201);
-            res.json({message: 'WARNING: Guard user added to local DB but not on remote DB.'});
+            res.json({message: 'WARNING: Guard user added only to local DB.'});
         }
     }
     else{
         res.status(400);
-        res.json({message: 'ERROR: No guard user added on local and remote DBs.'});
+        res.json({message: 'ERROR: No guard user added on local or remote DBs.'});
     }
 });
 
@@ -158,6 +160,7 @@ router.post('/api/removeguarduser', verifyToken, async (req, res) => {
 
     // Store locally array with removed guard user.
     deviceMetadataDB.set('guard_users', guardUsers);
+    deviceMetadataDB.sync();
     // Store remotely array with removed guard user.
     try{
         await remoteMongoDB.connectDB();
@@ -170,6 +173,78 @@ router.post('/api/removeguarduser', verifyToken, async (req, res) => {
         console.error('ERROR:', err);
         res.status(201);
         res.json({message: 'WARNING: Guard user removed from local DB but not from remote DB.'});
+    }
+});
+
+// Alerts apis -------------------------------------------------------------------------------------------------
+router.post('/api/addalert', verifyToken, async (req, res) => {
+    let alerts = deviceMetadataDB.get('alerts');        // Recover locally stored guard users.
+    alerts = alerts === undefined ? [] : alerts;        // Check if undefined.
+
+    let {newAlert} = req.body;
+    if(newAlert !== ''){
+        const dateUpdate = new Date().toString();
+        newAlert = Object.assign(newAlert, {date_update: dateUpdate});
+        alerts.push(newAlert);
+        
+        // Store new guard user locally.
+        deviceMetadataDB.set('alerts', alerts);
+        deviceMetadataDB.set('date_update', dateUpdate);
+        deviceMetadataDB.sync();
+        // Try to store new guard user remotely.
+        try{
+            await remoteMongoDB.connectDB();
+            await remoteMongoDB.updateDevice(hostname(), {alerts: alerts, date_update: dateUpdate});    // Store remotely.
+            await remoteMongoDB.close();
+            res.status(200);
+            res.json({message: 'OK: Alert added to local and remote DBs.'});
+        }                            
+        catch(err){
+            console.error('ERROR:', err);
+            res.status(201);
+            res.json({message: 'WARNING: Alert added only to local DB.'});
+        }
+    }
+    else{
+        res.status(400);
+        res.json({message: 'ERROR: No alert added on local or remote DBs.'});
+    }
+});
+
+router.post('/api/removealert', verifyToken, async (req, res) => {
+    let alerts = deviceMetadataDB.get('alerts');            // Recover locally stored alerts.
+    if(alerts === undefined){
+        res.status(400);
+        res.json({message: 'ERROR: No alert to remove.'});
+        return;
+    }
+    const {alertRemove} = req.body;
+
+    const  index = alerts.findIndex(({sensor, criteria}) => sensor === alertRemove.sensor && criteria === alertRemove.criteria);
+    if(index < 0){
+        res.status(401);
+        res.json({message: 'ERROR: Alert not found.'});
+        return;
+    }
+    alerts.splice(index, 1);                                // Remove alert from array.
+    const dateUpdate = new Date().toString();
+
+    // Store locally array with removed alert.
+    deviceMetadataDB.set('alerts', alerts);
+    deviceMetadataDB.set('date_update', dateUpdate);
+    deviceMetadataDB.sync();
+    // Store remotely array with removed alert.
+    try{
+        await remoteMongoDB.connectDB();
+        await remoteMongoDB.updateDevice(hostname(), {alerts: alerts, date_update: dateUpdate});    // Store remotely.
+        await remoteMongoDB.close();
+        res.status(200);
+        res.json({message: 'OK: Alert removed from local and remote DBs.'});
+    }                            
+    catch(err){
+        console.error('ERROR:', err);
+        res.status(201);
+        res.json({message: 'WARNING: Alert removed from local DB but not from remote DB.'});
     }
 });
 
