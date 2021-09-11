@@ -13,7 +13,7 @@ const verifyToken = require('./validateToken');
 // Initialize DBs
 require('dotenv').config({ path: __dirname + `/../.env` });
 const remoteMongoURL = process.env.MONGODB_URL;
-const deviceMetadataDB = new JSONdb('../deviceMetadataDB.json');
+const deviceMetadataDB = new JSONdb(__dirname + '/../deviceMetadataDB.json');
 const remoteMongoDB = new MongoDBHandler(remoteMongoURL);
 
 const ipReqMonitor = {};        // Store IPs and number of attempts.
@@ -177,8 +177,30 @@ router.post('/api/removeguarduser', verifyToken, async (req, res) => {
 });
 
 // Alerts apis -------------------------------------------------------------------------------------------------
+// Retrieve alerts and sensors available connected to the system.
+router.get('/api/getalertsandsensorsavailable', verifyToken, (req, res) => {
+    let alerts = deviceMetadataDB.get('alerts');                // Retrieve all alerts already defined.s
+    alerts = alerts === undefined ? [] : alerts;                // Set array to empty if not alerts are store on the local database.
+    
+    let sensorsAvailable = deviceMetadataDB.get('sensors');     // Retrieve all sensors connected in the system.
+    if(sensorsAvailable === undefined){
+        res.status(401);
+        res.contentType('application/json');
+        res.json({message: 'ERROR: No sensors found on DB.'});
+        return;
+    }
+    sensorsAvailable = sensorsAvailable.map((sensorAvailable) => {
+        return {sensor: sensorAvailable.sensor, unit: sensorAvailable.unit};
+    });
+    
+    res.status(200);
+    res.contentType('application/json');
+    if(alerts.length === 0) res.json({alerts, sensorsAvailable, message: "OK: No alerts defined on server, only sensors retrieved."});
+    else res.json({alerts, sensorsAvailable, message: "OK: Alerts and sensors availables successfully retrieved."});
+});
+
 router.post('/api/addalert', verifyToken, async (req, res) => {
-    let alerts = deviceMetadataDB.get('alerts');        // Recover locally stored guard users.
+    let alerts = deviceMetadataDB.get('alerts');        // Recover locally stored alerts.
     alerts = alerts === undefined ? [] : alerts;        // Check if undefined.
 
     let {newAlert} = req.body;

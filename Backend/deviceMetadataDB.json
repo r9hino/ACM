@@ -7,27 +7,6 @@
     "company": "Chilterra",
     "name_place": "Huite Pozo Profundo 1",
     "geo_coordinate": "",
-    "input": [
-        {
-            "id": 0,
-            "pin_number": 23,
-            "description": "Caudalimetro",
-            "sensor_model": null,
-            "protocol": null
-        },
-        {
-            "id": 0,
-            "pin_number": [
-                1,
-                3,
-                5,
-                9
-            ],
-            "description": "Presion",
-            "sensor_model": null,
-            "protocol": "i2c"
-        }
-    ],
     "architecture": "arm64",
     "node_version": "v16.4.2",
     "relays": [
@@ -56,6 +35,53 @@
             "date_update": "Sun Sep 05 2021 03:38:50 GMT-0300 (Chile Summer Time)"
         }
     ],
-    "date_update": "Thu Sep 09 2021 23:55:25 GMT-0300 (Chile Summer Time)",
-    "ip_public": "190.217.196.109"
+    "date_update": "Sat Sep 11 2021 00:19:11 GMT-0300 (Chile Summer Time)",
+    "ip_public": "190.217.196.109",
+    "guard_users": [
+        "philippe.ilharreguy@gmail.com",
+        "amunoz@chilterra.com"
+    ],
+    "alerts": [
+        {
+            "sensor": "Presion manifold",
+            "criteria": "mayor o igual",
+            "value": "6",
+            "value_aux": null,
+            "unit": "Presion [bar]",
+            "settling_time": "10",
+            "date_update": "Sat Sep 11 2021 00:17:45 GMT-0300 (Chile Summer Time)"
+        },
+        {
+            "sensor": "Caudal manifold",
+            "criteria": "menor o igual",
+            "value": "1",
+            "value_aux": null,
+            "unit": "Caudal [m3/h]",
+            "settling_time": "10",
+            "date_update": "Sat Sep 11 2021 00:18:13 GMT-0300 (Chile Summer Time)"
+        }
+    ],
+    "sensors": [
+        {
+            "id": 0,
+            "pin_number": 23,
+            "sensor": "Presion manifold",
+            "sensor_model": null,
+            "protocol": null,
+            "unit": "Presion [bar]"
+        },
+        {
+            "id": 0,
+            "pin_number": [
+                1,
+                3,
+                5,
+                9
+            ],
+            "sensor": "Caudal manifold",
+            "sensor_model": null,
+            "protocol": "i2c",
+            "unit": "Caudal [m3/h]"
+        }
+    ]
 }
