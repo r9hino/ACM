@@ -11,6 +11,8 @@
 // Usar bcrypt para hashear passwords.
 // Add only one array element when saving to local and remote DB.
 // Add index to arrays in DBs.
+// Agregar boton actualizar en alertas y validar que no hayan duplicados.
+// Agregar otro criterio para definir si existe alerta o no.
 
 const http = require('http');
 const socketio = require('socket.io');

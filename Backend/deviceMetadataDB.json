@@ -35,7 +35,7 @@
             "date_update": "Sun Sep 05 2021 03:38:50 GMT-0300 (Chile Summer Time)"
         }
     ],
-    "date_update": "Sat Sep 11 2021 00:19:11 GMT-0300 (Chile Summer Time)",
+    "date_update": "Sat Sep 11 2021 17:15:42 GMT-0300 (Chile Summer Time)",
     "ip_public": "190.217.196.109",
     "guard_users": [
         "philippe.ilharreguy@gmail.com",
@@ -43,22 +43,22 @@
     ],
     "alerts": [
         {
-            "sensor": "Presion manifold",
-            "criteria": "mayor o igual",
-            "value": "6",
-            "value_aux": null,
-            "unit": "Presion [bar]",
-            "settling_time": "10",
-            "date_update": "Sat Sep 11 2021 00:17:45 GMT-0300 (Chile Summer Time)"
-        },
-        {
             "sensor": "Caudal manifold",
-            "criteria": "menor o igual",
+            "criteria": "menor",
             "value": "1",
             "value_aux": null,
             "unit": "Caudal [m3/h]",
             "settling_time": "10",
             "date_update": "Sat Sep 11 2021 00:18:13 GMT-0300 (Chile Summer Time)"
+        },
+        {
+            "sensor": "Presion manifold",
+            "criteria": "mayor o igual",
+            "value": "7",
+            "value_aux": null,
+            "unit": "Presion [bar]",
+            "settling_time": "5",
+            "date_update": "Sat Sep 11 2021 17:01:00 GMT-0300 (Chile Summer Time)"
         }
     ],
     "sensors": [

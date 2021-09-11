@@ -270,4 +270,43 @@ router.post('/api/removealert', verifyToken, async (req, res) => {
     }
 });
 
+router.put('/api/updatealert', verifyToken, async (req, res) => {
+    let alerts = deviceMetadataDB.get('alerts');            // Recover locally stored alerts.
+    // Send error if no alerts are found on the local DB.
+    if(alerts === undefined){
+        res.status(400);
+        res.json({message: 'ERROR: There are no alerts defined on server to update.'});
+        return;
+    }
+    const {alertUpdate, index} = req.body;
+
+    // Send error if alert with index is not found.
+    if(alerts[index] === undefind){
+        res.status(401);
+        res.json({message: 'ERROR: Alert not found.'});
+        return;
+    }
+    alerts[index] = alertUpdate;                            // Update alert from array.
+    const dateUpdate = new Date().toString();
+    alerts[index] = Object.assign(alerts[index], {date_update: dateUpdate});
+
+    // Store locally array with removed alert.
+    deviceMetadataDB.set('alerts', alerts);
+    deviceMetadataDB.set('date_update', dateUpdate);
+    deviceMetadataDB.sync();
+    // Store remotely array with removed alert.
+    try{
+        await remoteMongoDB.connectDB();
+        await remoteMongoDB.updateDevice(hostname(), {alerts: alerts, date_update: dateUpdate});    // Store remotely.
+        await remoteMongoDB.close();
+        res.status(200);
+        res.json({message: 'OK: Alert updated on local and remote DBs.'});
+    }                            
+    catch(err){
+        console.error('ERROR:', err);
+        res.status(201);
+        res.json({message: 'WARNING: Alert updated only on local DB and not on remote DB.'});
+    }
+});
+
 module.exports = router;
