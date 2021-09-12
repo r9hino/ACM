@@ -281,7 +281,7 @@ router.put('/api/updatealert', verifyToken, async (req, res) => {
     const {alertUpdate, index} = req.body;
 
     // Send error if alert with index is not found.
-    if(alerts[index] === undefind){
+    if(alerts[index] === undefined){
         res.status(401);
         res.json({message: 'ERROR: Alert not found.'});
         return;

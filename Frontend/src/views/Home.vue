@@ -1,5 +1,6 @@
 <template>
-    <!-- Checked disabled switch -->
+    <Spinner v-if="loading"></Spinner>
+
     <div class="container-fluid">
       <h2>Hello {{ user }}, your authentication is {{ isAuthenticated }}</h2>
       <div class="switch-container">
@@ -9,18 +10,24 @@
           </div>
       </div>
     </div>
+    <Footer :message="footerMessage"></Footer>
 </template>
 
 <script>
 import { useStore } from 'vuex';
 import { ref, computed, onBeforeMount, onBeforeUnmount } from 'vue';
-import io from 'socket.io-client'
+import io from 'socket.io-client';
+import Spinner from '../components/Spinner.vue';
+import Footer from '../components/Footer.vue';
 
 const socket = io('http://rpi4id0.mooo.com:5000', {autoConnect: false}) // Avoid to connect when the application start. Do it manually.
 
 export default {
+  components: { Spinner, Footer },
   setup(){
     const store = useStore();
+    let loading = ref(false);
+    let footerMessage = ref();
     let relays = ref([]);
 
     const user = computed(() => store.getters.getUser);
@@ -28,7 +35,8 @@ export default {
 
     socket.on('resRelayStates', relay => {
       relays.value.push(...relay);
-      console.log(relays.value);
+      loading.value = false;
+      //console.log(relays.value);
     });
 
     // Listener in charge of updating element when other clients change it state.
@@ -47,6 +55,7 @@ export default {
 
     onBeforeMount(() => {
       socket.connect();
+      loading.value = true;;
       socket.emit('reqRelayStates');  // Request to server relay states.
     });
 
@@ -60,6 +69,8 @@ export default {
     return {
       user,
       isAuthenticated,
+      loading,
+      footerMessage,
       relays,
       onChangeSwitch
     };

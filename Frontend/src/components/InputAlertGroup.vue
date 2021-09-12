@@ -3,7 +3,7 @@
         <div class="d-flex flex-column align-items-center">
             <button class="btn btn-outline-secondary width-alert-items dropdown-toggle mb-1" type="button" data-bs-toggle="dropdown" :id="`sensorDropdown${indexAlert}`">{{alert.sensor}}</button>
             <ul class="dropdown-menu" :aria-labelledby="`sensorDropdown${indexAlert}`">
-                <li v-for="(sensor, indexSensor) in sensors" :key="indexSensor">
+                <li v-for="(sensor, indexSensor) in sensorsAvailable" :key="indexSensor">
                     <a class="dropdown-item" href="#" @click.prevent="alert.sensor=sensor.sensor; alert.unit=sensor.unit">{{sensor.sensor}}</a>
                 </li>
             </ul>
@@ -34,15 +34,20 @@
                 <label for="floatingInput">Tiempo estabilization (s)</label>
             </div>
         </div>
-        <button class="btn ms-2" :class="{'btn-danger': colorEndFunction=='btn-danger', 'btn-secondary': colorEndFunction=='btn-secondary'}"
-            style="width: 85px" @click="endFunction(indexAlert)">{{ textEndFunction }}
-        </button>
+        <div class="d-flex flex-column align-items-center">
+            <button class="btn mb-1 ms-2" :class="{'btn-danger': colorEndFunction=='btn-danger', 'btn-secondary': colorEndFunction=='btn-secondary'}"
+                style="width: 85px" @click="endFunction(indexAlert)">{{ textEndFunction }}
+            </button>
+            <button class="btn btn-secondary ms-2" v-if="colorEndFunction == 'btn-danger'"
+                style="width: 85px" @click="updateFunction(indexAlert)">Guardar
+            </button>
+        </div>
     </div>
 </template>
 
 <script>
 export default {
-    props: ['alert', 'indexAlert', 'sensors', 'endFunction', 'textEndFunction', 'colorEndFunction'],
+    props: ['alert', 'indexAlert', 'sensorsAvailable', 'endFunction', 'textEndFunction', 'colorEndFunction', 'updateFunction'],
     methods: {
 
     }

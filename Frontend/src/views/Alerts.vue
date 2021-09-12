@@ -1,88 +1,129 @@
 <template>
+    <Spinner v-if="loading"></Spinner>
     <div class="container-fluid">
         <div class="mt-3 mb-1">
             <h3>Definicion de Alertas</h3>
         </div>
         <!--UI for editing and deleting alerts already defined.-->
         <InputAlertGroup v-for="(alert, index) in alerts" :key="index" 
-            :alert="alert" :indexAlert="index" :sensors="sensors" :endFunction="removeAlert" textEndFunction="Borrar" colorEndFunction="btn-danger">
+            :alert="alert" :indexAlert="index" :sensorsAvailable="sensorsAvailable"
+            :endFunction="removeAlert" textEndFunction="Borrar" colorEndFunction="btn-danger" :updateFunction="updateAlert">
         </InputAlertGroup>
-        <hr>
+        <hr v-if="sensorsAvailable.length !== 0">
         <!--UI for adding alerts.-->
-        <InputAlertGroup :alert="newAlert" :indexAlert="alerts.length" :sensors="sensors" :endFunction="addAlert" textEndFunction="Agregar" colorEndFunction="btn-secondary"></InputAlertGroup>
+        <InputAlertGroup v-if="sensorsAvailable.length !== 0"
+            :alert="newAlert" :indexAlert="alerts.length" :sensorsAvailable="sensorsAvailable"
+            :endFunction="addAlert" textEndFunction="Agregar" colorEndFunction="btn-secondary"></InputAlertGroup>
     </div>
+    <Footer ref="footerRef"></Footer>
 </template>
 
 <script>
 import { useStore } from 'vuex';
-import { ref, computed, onBeforeMount, onBeforeUnmount } from 'vue';
-import InputAlertGroup from '../components/InputAlertGroup.vue'
+import { ref, computed, onBeforeMount, onBeforeUnmount} from 'vue';
+import Spinner from '../components/Spinner.vue';
+import InputAlertGroup from '../components/InputAlertGroup.vue';
+import Footer from '../components/Footer.vue';
 
 export default {
-    components: { InputAlertGroup },
+    name: 'Alerts',
+    components: { Spinner, InputAlertGroup, Footer },
     setup(){
         const store = useStore();
-        let sensors = ref([
-            {sensor: 'Corriente bomba 1', unit: 'Corriente [A]'},
-            {sensor: 'Voltaje bomba 1', unit: 'Voltaje[v]'},
-            {sensor: 'Caudal bomba 1', unit: 'Caudal [L/s]'}
-        ]);
-        let alerts = ref([
-            {sensor: 'Voltaje bomba 1', criteria: 'entre el rango', value: 23, value_aux: 25, unit: 'Voltaje [v]', settling_time: 10},
-            {sensor: 'Caudal bomba 1', criteria: 'menor', value: 23, value_aux: null, unit: 'Caudal [L/s]', settling_time: 10},
-            {sensor: 'Corriente bomba 1', criteria: 'mayor o igual', value_aux: null, value: 23, unit: 'Corriente [A]', settling_time: 10},
-            {sensor: 'Caudal bomba 1', criteria: 'menor', value: 23, value_aux: null, unit: 'Caudal [L/s]', settling_time: 10}
-        ]);
-        let newAlert = ref({sensor: 'Sensor', criteria: 'Criterio', value: null, value_aux: null, unit: 'Unidad', settling_time: null});
+        let loading = ref(false);
+        let footerRef = ref();
+        let alerts = ref([]);
+        let newAlert = ref({sensor: 'Sensor', criteria: 'Criterio', value: undefined, value_aux: undefined, unit: 'Unidad', settling_time: null});
 
         const user = computed(() => store.getters.getUser);
         const isAuthenticated = computed(() => store.getters.getAuthenticated);
         const token = computed(() => store.getters.getToken);
 
-        async function getAlerts(){
-            const response = await fetch("http://rpi4id0.mooo.com:5000/api/getalerts", {
+        let sensorsAvailable = ref([]);
+
+        let getAlertsAndSensorsAvailable = async () => {
+            loading.value = true;
+            const response = await fetch("http://rpi4id0.mooo.com:5000/api/getalertsandsensorsavailable", {
                 method: "GET",
-                headers: {"Authorization": `Bearer ${token.value}`},
+                headers: {"Authorization": `Bearer ${token.value}`, "Content-Type": "application/json"},
             });
-            //console.log(token.value);
+            const responseJSON = await response.json();
+
             if(response.status == 200){
-                // Return array of all guard users stored on server.
-                alerts.value = await response.json();
+                // Return array of all alerts and sensors available on system.
+                alerts.value = responseJSON.alerts;
+                sensorsAvailable.value = responseJSON.sensorsAvailable;
             }
             else{
-                console.log('Alerts not retrieved from server.');
-            }
+                // Only if there is a warning or and error display footer message.
+                footerRef.value.setTemporalMessage(responseJSON.message, 5000);
+            } 
+            loading.value = false;
         }
 
         let addAlert = async () => {
+            // Validate that all input fields are correct before posting data on server.
+            if(newAlert.value.sensor === 'Sensor' || newAlert.value.criteria === 'Criterio' || newAlert.value.value === '' || newAlert.value.value === undefined || newAlert.value.value === null){
+                footerRef.value.setTemporalMessage('ERROR: Todos los campos necesarios deben definirse', 5000);
+                return;
+            }
+            // Validation for range criterias.
+            if((newAlert.value.criteria === 'entre el rango' || newAlert.value.criteria === 'fuera del rango') && (newAlert.value.value_aux === '' || newAlert.value.value_aux === undefined || newAlert.value.value_aux === null)){
+                footerRef.value.setTemporalMessage('ERROR: Todos los campos necesarios deben definirse', 5000);
+                return;
+            }
+
+            loading.value = true;
             const response = await fetch("http://rpi4id0.mooo.com:5000/api/addalert", {
                 method: "POST",
                 headers: {"Authorization": `Bearer ${token.value}`, "Content-Type": "application/json"},
                 body: JSON.stringify({newAlert: newAlert.value})
             });
-            const message = await response.json();
+            const responseJSON = await response.json();
             if(response.status == 200 || response.status == 201){
                 alerts.value.push({sensor: newAlert.value.sensor, criteria: newAlert.value.criteria, value: newAlert.value.value, value_aux: newAlert.value.value_aux, unit: newAlert.value.unit, settling_time: newAlert.value.sttling_time});
             }
-            console.log(message);
+            footerRef.value.setTemporalMessage(responseJSON.message,5000);
+            loading.value = false;
         };
 
         let removeAlert = async (index) => {
+            loading.value = true;
             const response = await fetch("http://rpi4id0.mooo.com:5000/api/removealert", {
                 method: "POST",
                 headers: {"Authorization": `Bearer ${token.value}`, "Content-Type": "application/json"},
                 body: JSON.stringify({alertRemove: alerts.value[index]})
             });
-            const message = await response.json();
+            const responseJSON = await response.json();
             if(response.status == 200 || response.status == 201){
                 alerts.value.splice(index, 1);
             }
-            console.log(message);
+            else{
+                footerRef.value.setTemporalMessage(responseJSON.message, 5000);
+            }
+            loading.value = false;
         };
 
+        let updateAlert = async (index) => {
+            loading.value = true;
+            const response = await fetch("http://rpi4id0.mooo.com:5000/api/updatealert", {
+                method: "PUT",
+                headers: {"Authorization": `Bearer ${token.value}`, "Content-Type": "application/json"},
+                body: JSON.stringify({
+                    alertUpdate: alerts.value[index],
+                    index: index,
+                })
+            });
+            const responseJSON = await response.json();
+            if(response.status == 200 || response.status == 201){
+
+            }
+            footerRef.value.setTemporalMessage(responseJSON.message, 5000);
+            loading.value = false;
+        };
 
         onBeforeMount(() => {
-            getAlerts();
+            getAlertsAndSensorsAvailable();
         });
 
         onBeforeUnmount(() => {
@@ -92,11 +133,14 @@ export default {
         return{
             user,
             isAuthenticated,
-            sensors,
+            loading,
+            footerRef,
+            sensorsAvailable,
             alerts,
             newAlert,
             addAlert,
             removeAlert,
+            updateAlert,
         };
     }
 };
