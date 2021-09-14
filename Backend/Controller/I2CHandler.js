@@ -62,14 +62,14 @@ class I2CHandler {
             let value = (high << 8) + low;
             done(null, value);
         });
-    };
+    }
 
     readWordSync(cmd){
         let high = this.bus.readByteSync(MPU6050_ADDRESS, cmd);
         let low = this.bus.readByteSync(MPU6050_ADDRESS, cmd+1);
         let value = (high << 8) + low;
         return value;
-    };
+    }
 
     readWord2c(cmd, done){
         this.readWord(cmd, function (err, value){
@@ -80,15 +80,20 @@ class I2CHandler {
             }
             else done(null, value);
         });
-    };
-    
+    }
+
     readWord2cSync(cmd){
         let value = this.readWordSync(cmd);
         if(value >= 0x8000){
             return -((65535 - value) + 1);
         }
         else return value;
-    };
+    }
+
+    readSensor(sensor){
+        if(sensor === 'temperature') return this.readTempSync();
+        else if(sensor === 'analog') return this.readAnalog();
+    }
 
     readTemp(done){
         this.readWord2c(MPU6050_TEMP_OUT, function(err, value){
@@ -96,7 +101,7 @@ class I2CHandler {
             let temp = value / 340 + 36.53; // In degrees Celcius
             done(null, temp);
         });
-    };
+    }
     
     readTempSync(){
         let temperature = this.readWord2cSync(MPU6050_TEMP_OUT) / 340 + 36.53;

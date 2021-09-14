@@ -42,8 +42,8 @@ class InfluxDBHandler {
         });
     }
 
-    writeData = (bucket, measurementType, measurementUnit, value) => {
-        const point = new Point(measurementType).floatField(measurementUnit, value);
+    writeData = (bucket, sensorType, sensorName, sensorUnit, value) => {
+        const point = new Point(sensorType).tag(sensorName).floatField(sensorUnit, value);
         this.writeAPI[bucket].writePoint(point);
     }
 

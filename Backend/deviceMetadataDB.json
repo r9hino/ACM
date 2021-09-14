@@ -35,7 +35,7 @@
             "date_update": "Sun Sep 05 2021 03:38:50 GMT-0300 (Chile Summer Time)"
         }
     ],
-    "date_update": "Sun Sep 12 2021 18:55:24 GMT-0300 (Chile Summer Time)",
+    "date_update": "Mon Sep 13 2021 22:26:30 GMT-0300 (Chile Summer Time)",
     "ip_public": "190.217.196.109",
     "guard_users": [
         "philippe.ilharreguy@gmail.com",
@@ -45,43 +45,76 @@
         {
             "sensor": "Caudal manifold",
             "criteria": "menor",
-            "value": "1",
+            "value": "2",
             "value_aux": null,
             "unit": "Caudal [m3/h]",
             "settling_time": "10",
-            "date_update": "Sat Sep 11 2021 00:18:13 GMT-0300 (Chile Summer Time)"
+            "date_update": "Mon Sep 13 2021 14:36:53 GMT-0300 (Chile Summer Time)"
         },
         {
             "sensor": "Presion manifold",
             "criteria": "mayor o igual",
-            "value": "7",
-            "value_aux": null,
+            "value": "4",
             "unit": "Presion [bar]",
-            "settling_time": null,
-            "date_update": "Sun Sep 12 2021 18:55:24 GMT-0300 (Chile Summer Time)"
+            "settling_time": "0",
+            "date_update": "Mon Sep 13 2021 14:54:56 GMT-0300 (Chile Summer Time)"
+        },
+        {
+            "sensor": "Temperatura estacion",
+            "criteria": "menor o igual",
+            "value": "19.4",
+            "unit": "Temperatura [°C]",
+            "settling_time": "5",
+            "date_update": "Mon Sep 13 2021 18:04:05 GMT-0300 (Chile Summer Time)"
         }
     ],
     "sensors": [
         {
             "id": 0,
             "pin_number": 23,
-            "sensor": "Presion manifold",
-            "sensor_model": null,
-            "protocol": null,
-            "unit": "Presion [bar]"
+            "name": "Presion manifold",
+            "model": null,
+            "protocol": "mqtt",
+            "unit": "bar",
+            "samples_number": 10,
+            "sample_time_s": 1,
+            "type": "pressure"
         },
         {
-            "id": 0,
+            "id": 1,
             "pin_number": [
                 1,
                 3,
                 5,
                 9
             ],
-            "sensor": "Caudal manifold",
-            "sensor_model": null,
+            "name": "Caudal manifold",
+            "model": null,
+            "protocol": "mqtt",
+            "unit": "m3/h",
+            "samples_number": 10,
+            "sample_time_s": 0.5,
+            "type": "flow"
+        },
+        {
+            "id": 2,
+            "name": "Temperatura estacion",
+            "model": null,
             "protocol": "i2c",
-            "unit": "Caudal [m3/h]"
+            "unit": "°C",
+            "samples_number": 20,
+            "sample_time_s": 10,
+            "type": "temperature"
+        },
+        {
+            "id": 3,
+            "name": "Temperatura portal",
+            "model": null,
+            "protocol": "i2c",
+            "unit": "°C",
+            "samples_number": 20,
+            "sample_time_s": 10,
+            "type": "temperature"
         }
     ]
 }

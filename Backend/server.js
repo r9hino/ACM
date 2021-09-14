@@ -13,6 +13,7 @@
 // Add index to arrays in DBs.
 // Agregar boton actualizar en alertas y validar que no hayan duplicados.
 // Agregar otro criterio para definir si existe alerta o no.
+// Run influxdb write from SensorMonitor?
 
 const http = require('http');
 const socketio = require('socket.io');
@@ -42,16 +43,14 @@ const socketioPort = process.env.SOCKETIO_PORT;
 
 // Objects initialization.
 const i2c = new I2CHandler();
-const temperatureRetriever = async () => await i2c.readTempSync();
-const analogRetriever = async () => await i2c.readAnalog();
-const temperatureSensor = new SensorMonitor('temperature', '°C', 1000*10, 20, temperatureRetriever);
-const analogSensor = new SensorMonitor('voltage', 'V', 1000*1, 10, analogRetriever);
 const deviceMetadataDB = new JSONdb('deviceMetadataDB.json');
 const remoteMongoDB = new MongoDBHandler(remoteMongoURL);
 const localInfluxDB = new InfluxDBHandler(localInfluxURL, influxPort, token, org, [sensorBucket, systemBucket]);
 
 // Global variables initialization.
-let httpServer, io, dynamicDataInterval, tenSecInterval, minInterval, tenMinInterval;
+let httpServer, io, 
+    monitoredSensors = [],
+    dynamicDataInterval, tenSecInterval, minInterval, tenMinInterval;
 
 // Sequential initialization functions.
 const initializationFunctionList = [
@@ -98,6 +97,22 @@ const initializationFunctionList = [
             console.log('WANRING: Couldn\'t store new OS and system values in the remote MongoDB.');
         };
     },
+    // Initialize sensors available.
+    async () => {
+        // Load local storage for system state if any.
+        let deviceMetadata = deviceMetadataDB.JSON();
+
+        // Iterate over all sensors defined in DB.
+        for(const sensor of deviceMetadata.sensors){
+            // Define retriever function depending on sensor protocol and type.
+            if(sensor.protocol === 'i2c'){
+                monitoredSensors.push(new SensorMonitor(sensor.name, sensor.type, sensor.unit, sensor.sample_time_s,
+                    sensor.samples_number, async () => await i2c.readSensor(sensor.type)));
+            }
+            else if(sensor.protocol === 'mqtt'){
+            }
+        }
+    },
     // Initialize http server and socket.io.
     async () => {
         httpServer = http.createServer(app).listen(socketioPort, () => console.log(`INFO: HTTP server for socket.io is listening on port ${socketioPort}`));
@@ -122,11 +137,14 @@ initializer();
 // Intervals for data retrieval and injection.
 const tenSecFunction = async () => {
     let dynamicData = await osData.getDynamicData();
-    if(dynamicData.memoryRAM.activePercent !== null) localInfluxDB.writeData(systemBucket, 'active-ram', '%', dynamicData.memoryRAM.activePercent);
-    if(dynamicData.memoryDisk.usedPercent !== null)  localInfluxDB.writeData(systemBucket, 'used-disk', '%', dynamicData.memoryDisk.usedPercent);
-    if(dynamicData.cpu.currentLoad !== null) localInfluxDB.writeData(systemBucket, 'cpu', '%', dynamicData.cpu.currentLoad);
+    if(dynamicData.memoryRAM.activePercent !== null) localInfluxDB.writeData(systemBucket, 'ram', 'active','%', dynamicData.memoryRAM.activePercent);
+    if(dynamicData.memoryDisk.usedPercent !== null)  localInfluxDB.writeData(systemBucket, 'disk', 'used', '%', dynamicData.memoryDisk.usedPercent);
+    if(dynamicData.cpu.currentLoad !== null) localInfluxDB.writeData(systemBucket, 'cpu', 'total', '%', dynamicData.cpu.currentLoad);
 
-    localInfluxDB.writeData(sensorBucket, temperatureSensor.sensorType, temperatureSensor.unit, temperatureSensor.average());
+    monitoredSensors.forEach((sensor, index) => {
+        //console.log(sensor);
+        if(Number(sensor.sampleTime) === 10) localInfluxDB.writeData(sensorBucket, sensor.type, sensor.name, sensor.unit, sensor.average());
+    })
 };
 
 const minFunction = async () => {
@@ -149,8 +167,8 @@ const minFunction = async () => {
         };
     }
 };
+
 const tenMinFunction = async () => {
-    
 };
 
 // Coordinate data through sockets.
@@ -168,8 +186,8 @@ function socketCoordinator(socket){
         osData.getDynamicData().then(data => socket.emit('socketDynamicSystemData', data));
 
         socket.emit('socketAnalogValues', {
-            analog0: analogSensor.average(),
-            temperature: temperatureSensor.average()
+            //analog0: analogSensor.average(),
+            //temperature: temperatureSensor.average()
         });
     }, 2000);
 

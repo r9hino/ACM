@@ -4,14 +4,14 @@
 // Properties:
 //      interval set a fixed time execution of the sensorRetrieve function.
 class SensorMonitor {
-    constructor(sensorType, unit, retrieveTime, maxArrayElements, sensorRetriever){
-
-        this.sensorType = sensorType;
-        this.unit = unit;
-        this.retrieveTime = retrieveTime;           // Interval time for retrieving sensor value.
-        this.maxArrayElements = maxArrayElements;
+    constructor(name, type, unit, sampleTime, samplesNumber, sensorRetriever){
+        this.name = name;                           // Caudal bomba 1, Temperatura oficina
+        this.type = type;                           // voltaje, temperatura, caudal
+        this.unit = unit;                           // V, °C, m3/h
+        this.sampleTime = sampleTime;               // Interval time for retrieving sensor values.
+        this.samplesNumber = samplesNumber; 
         this.value = null;                          // Store last value from sensor.
-        this.values = [];                           // Store last maxArrayElements values from sensor.
+        this.values = [];                           // Store last samplesNumber values from sensor.
 
         // Values from sensor are stored in arrays.
         this.sensorRetriever = async () => {
@@ -20,17 +20,17 @@ class SensorMonitor {
             // Add new value to the beginning of the array.
             this.values.unshift(this.value);
 
-            // Remove last elements in array if number of elements exceed maxArrayElements.
-            if(this.values.length > this.maxArrayElements){
+            // Remove last elements in array if number of elements exceed samplesNumber.
+            if(this.values.length > this.samplesNumber){
                 this.values.pop();
             }
         };
-        this.interval = setInterval(this.sensorRetriever, retrieveTime);
+        this.interval = setInterval(this.sensorRetriever, sampleTime*1000);
     }
 
-    changeIntervalTime(newRetrieveTime){
+    changeIntervalTime(newSampleTime){
         clearInterval(this.interval);
-        this.interval = setInterval(this.sensorRetriever, newRetrieveTime);
+        this.interval = setInterval(this.sensorRetriever, newSampleTime*1000);
     }
 
     average(){
