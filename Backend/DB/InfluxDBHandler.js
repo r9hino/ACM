@@ -1,11 +1,10 @@
 // Links
-// https://github.com/influxdata/influxdb-client-js/blob/master/examples/writeAdvanced.js
+// Examples: https://github.com/influxdata/influxdb-client-js/blob/master/examples/writeAdvanced.js
+// Concepts: https://docs.influxdata.com/influxdb/cloud/reference/key-concepts/data-elements/
 
 const {InfluxDB, Point} = require('@influxdata/influxdb-client');
 const {hostname} = require('os');
-
 //const logger = require('../Logs/logger');
-
 
 class InfluxDBHandler {
     constructor(url, port, token, org, buckets){
@@ -45,6 +44,10 @@ class InfluxDBHandler {
     writeData = (bucket, sensorType, sensorName, sensorUnit, value) => {
         const point = new Point(sensorType).tag(sensorName).floatField(sensorUnit, value);
         this.writeAPI[bucket].writePoint(point);
+    }
+
+    getLastData = async (bucket, sensorType, sensorName, sensorUnit, value) => {
+        //await
     }
 
     close = async (buckets) => {

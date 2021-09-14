@@ -14,12 +14,12 @@
 // Agregar boton actualizar en alertas y validar que no hayan duplicados.
 // Agregar otro criterio para definir si existe alerta o no.
 // Run influxdb write from SensorMonitor?
+// Add environment variable js file to import
 
 const http = require('http');
 const socketio = require('socket.io');
 const {hostname} = require('os');
 const JSONdb = require('simple-json-db');
-const proceess = require('process');
 const ifaces = require('os').networkInterfaces();
 
 const I2CHandler = require('./Controller/I2CHandler');
@@ -33,8 +33,8 @@ const app = require('./ExpressApp/app');
 // Environment variables.
 require('dotenv').config();
 const remoteMongoURL = process.env.MONGODB_URL;
-const localInfluxURL = `http://localhost`;
-const token = process.env.INFLUXDB_TOKEN;
+const localInfluxURL = process.env.INFLUXDB_LOCAL_URL;
+const influxToken = process.env.INFLUXDB_TOKEN;
 const influxPort = process.env.INFLUXDB_PORT;
 const org = process.env.INFLUXDB_ORG;
 const sensorBucket = process.env.INFLUXDB_SENSORS_BUCKET;
@@ -45,7 +45,7 @@ const socketioPort = process.env.SOCKETIO_PORT;
 const i2c = new I2CHandler();
 const deviceMetadataDB = new JSONdb('deviceMetadataDB.json');
 const remoteMongoDB = new MongoDBHandler(remoteMongoURL);
-const localInfluxDB = new InfluxDBHandler(localInfluxURL, influxPort, token, org, [sensorBucket, systemBucket]);
+const localInfluxDB = new InfluxDBHandler(localInfluxURL, influxPort, influxToken, org, [sensorBucket, systemBucket]);
 
 // Global variables initialization.
 let httpServer, io, 
