@@ -1,4 +1,5 @@
 // Links:
+// Microservices patterns: https://blog.bitsrc.io/my-favorite-microservice-design-patterns-for-node-js-fe048c635d83
 // Promise - async/await: https://blog.risingstack.com/mastering-async-await-in-nodejs/ https://dmitripavlutin.com/what-is-javascript-promise/
 // Class: https://javascript.info/class#not-just-a-syntactic-sugar
 // Vue basics: https://github.com/iamshaunjp/Vue-3-Firebase/tree/master  https://www.vuemastery.com/pdf/Vue-3-Cheat-Sheet.pdf
@@ -6,7 +7,6 @@
 
 // To-do
 // Run server on booting and check if influx docker can be reached at startup
-// Change path string to env in routes.js
 // API for querying data.
 // Usar bcrypt para hashear passwords.
 // Add only one array element when saving to local and remote DB.
@@ -14,7 +14,6 @@
 // Agregar boton actualizar en alertas y validar que no hayan duplicados.
 // Agregar otro criterio para definir si existe alerta o no.
 // Run influxdb write from SensorMonitor?
-// Add environment variable js file to import
 
 const http = require('http');
 const socketio = require('socket.io');
@@ -28,24 +27,14 @@ const SensorMonitor = require('./Controller/SensorMonitor');
 const MongoDBHandler = require('./DB/MongoDBHandler');
 const InfluxDBHandler = require('./DB/InfluxDBHandler');
 const app = require('./ExpressApp/app');
+const env = require('./Helper/envExport');   // Environment variables.
 //const logger = require('./Logs/logger');
-
-// Environment variables.
-require('dotenv').config();
-const remoteMongoURL = process.env.MONGODB_URL;
-const localInfluxURL = process.env.INFLUXDB_LOCAL_URL;
-const influxToken = process.env.INFLUXDB_TOKEN;
-const influxPort = process.env.INFLUXDB_PORT;
-const org = process.env.INFLUXDB_ORG;
-const sensorBucket = process.env.INFLUXDB_SENSORS_BUCKET;
-const systemBucket = process.env.INFLUXDB_SYSTEM_BUCKET;
-const socketioPort = process.env.SOCKETIO_PORT;
 
 // Objects initialization.
 const i2c = new I2CHandler();
 const deviceMetadataDB = new JSONdb('deviceMetadataDB.json');
-const remoteMongoDB = new MongoDBHandler(remoteMongoURL);
-const localInfluxDB = new InfluxDBHandler(localInfluxURL, influxPort, influxToken, org, [sensorBucket, systemBucket]);
+const remoteMongoDB = new MongoDBHandler(env.MONGODB_REMOTE_URL);
+const localInfluxDB = new InfluxDBHandler(env.INFLUXDB_LOCAL_URL, env.INFLUXDB_PORT, env.INFLUXDB_TOKEN, env.INFLUXDB_ORG, [env.INFLUXDB_SENSORS_BUCKET, env.INFLUXDB_SYSTEM_BUCKET]);
 
 // Global variables initialization.
 let httpServer, io, 
@@ -115,7 +104,7 @@ const initializationFunctionList = [
     },
     // Initialize http server and socket.io.
     async () => {
-        httpServer = http.createServer(app).listen(socketioPort, () => console.log(`INFO: HTTP server for socket.io is listening on port ${socketioPort}`));
+        httpServer = http.createServer(app).listen(env.SOCKETIO_PORT, () => console.log(`INFO: HTTP server for socket.io is listening on port ${env.SOCKETIO_PORT}`));
         io = socketio(httpServer, {cors: true});
         io.on("connection", socketCoordinator);
     },
@@ -137,13 +126,14 @@ initializer();
 // Intervals for data retrieval and injection.
 const tenSecFunction = async () => {
     let dynamicData = await osData.getDynamicData();
-    if(dynamicData.memoryRAM.activePercent !== null) localInfluxDB.writeData(systemBucket, 'ram', 'active','%', dynamicData.memoryRAM.activePercent);
-    if(dynamicData.memoryDisk.usedPercent !== null)  localInfluxDB.writeData(systemBucket, 'disk', 'used', '%', dynamicData.memoryDisk.usedPercent);
-    if(dynamicData.cpu.currentLoad !== null) localInfluxDB.writeData(systemBucket, 'cpu', 'total', '%', dynamicData.cpu.currentLoad);
+    if(dynamicData.memoryRAM.activePercent !== null) localInfluxDB.writeData(env.INFLUXDB_SYSTEM_BUCKET, 'ram', 'active','%', dynamicData.memoryRAM.activePercent);
+    if(dynamicData.memoryDisk.usedPercent !== null)  localInfluxDB.writeData(env.INFLUXDB_SYSTEM_BUCKET, 'disk', 'used', '%', dynamicData.memoryDisk.usedPercent);
+    if(dynamicData.cpu.currentLoad !== null) localInfluxDB.writeData(env.INFLUXDB_SYSTEM_BUCKET, 'cpu', 'total', '%', dynamicData.cpu.currentLoad);
 
+    // Write data to Influx DB of all sensors stored on array sensors in local or remote DB.
     monitoredSensors.forEach((sensor, index) => {
         //console.log(sensor);
-        if(Number(sensor.sampleTime) === 10) localInfluxDB.writeData(sensorBucket, sensor.type, sensor.name, sensor.unit, sensor.average());
+        if(Number(sensor.sampleTime) === 10) localInfluxDB.writeData(env.INFLUXDB_SENSORS_BUCKET, sensor.type, sensor.name, sensor.unit, sensor.average());
     })
 };
 
@@ -189,7 +179,7 @@ function socketCoordinator(socket){
             //analog0: analogSensor.average(),
             //temperature: temperatureSensor.average()
         });
-    }, 2000);
+    }, 1000);
 
     // Home page: client request for device states only when mounting the page.
     socket.on('reqRelayStates', () => {
@@ -242,7 +232,7 @@ async function shutdownServer(){
 
     try {
         await i2c.close();
-        await localInfluxDB.close([sensorBucket, systemBucket]);
+        await localInfluxDB.close([env.INFLUXDB_SENSORS_BUCKET, env.INFLUXDB_SYSTEM_BUCKET]);
         await remoteMongoDB.close();
 
         io.close(() => {

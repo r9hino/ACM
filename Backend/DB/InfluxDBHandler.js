@@ -27,6 +27,9 @@ class InfluxDBHandler {
 
         // witeAPI object store different bucket API.
         this.writeAPI = {};
+        // Define query Api for the organization.
+        this.queryApi = this.dbClient.getQueryApi(this.org);
+
         // Create a default writeAPI for a bucket.
         this.addWriteAPI(buckets);
     }
@@ -35,25 +38,41 @@ class InfluxDBHandler {
     addWriteAPI(buckets){
         buckets.forEach(bucket => {
             let writeAPI = this.dbClient.getWriteApi(this.org, bucket);
-            console.log(`INFO: Influx ${bucket} bucket API available.`);
+            console.log(`INFO - InfluxDBHandler.js: Influx ${bucket} bucket API available.`);
 
             this.writeAPI[bucket] = writeAPI;  
         });
     }
 
     writeData = (bucket, sensorType, sensorName, sensorUnit, value) => {
-        const point = new Point(sensorType).tag(sensorName).floatField(sensorUnit, value);
+        const point = new Point(sensorType).tag('name', sensorName).floatField(sensorUnit, value);
         this.writeAPI[bucket].writePoint(point);
     }
 
-    getLastData = async (bucket, sensorType, sensorName, sensorUnit, value) => {
-        //await
+    queryLastData = async (bucket, sensorType, sensorName, timeWindow) => {
+        //const queryApi = this.dbClient.getQueryApi(this.org);
+        //console.time("dbsave");
+        const fluxQuery = `from(bucket: "${bucket}")
+            |> range(start: -${timeWindow})
+            |> filter(fn: (r) => r._measurement == "${sensorType}")
+            |> filter(fn: (r) => r["name"] == "${sensorName}")
+            |> last()`;
+
+        try{
+            let o = await this.queryApi.collectRows(fluxQuery);     // return an array.
+            //console.timeEnd("dbsave");
+            return o[0] === undefined ? undefined : {time: o[0]._time, measurement: o[0]._measurement, name: o[0].name, unit: o[0]._field, value: o[0]._value.toFixed(2)};
+        }
+        catch(error){
+            console.error(error)
+            console.error(`ERROR - InfluxDBHandler.js: Last value from the sensor "${sensorName}" couldn't be retrieved.`)
+        };
     }
 
     close = async (buckets) => {
         await Promise.all(buckets.map(async bucket => {
             await this.writeAPI[bucket].close();
-            console.log(`INFO: InfluxDB ${bucket} bucket closed.`);
+            console.log(`INFO - InfluxDBHandler.js: InfluxDB ${bucket} bucket closed.`);
         }));
     }
 }

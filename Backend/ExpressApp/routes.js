@@ -9,22 +9,19 @@ const JSONdb = require('simple-json-db');
 
 const MongoDBHandler = require('../DB/MongoDBHandler');
 const verifyToken = require('./validateToken');
+const {MONGODB_REMOTE_URL, WEB_USERNAME, WEB_PASSWORD, WEB_JWT_SECRET} = require('../Helper/envExport');   // Environment variables.
 
 // Initialize DBs
-require('dotenv').config({ path: __dirname + `/../.env` });
-const remoteMongoURL = process.env.MONGODB_URL;
-const remoteMongoDB = new MongoDBHandler(remoteMongoURL);
+const remoteMongoDB = new MongoDBHandler(MONGODB_REMOTE_URL);
 
+// Global variables.
 const ipReqMonitor = {};        // Store IPs and number of attempts.
 const maxNumberOfAttempts = 5;
 const waitTime = 10*1000;
 let timeoutInterval = null;
 let start, stop;
 
-router.post('/login', (req, res) => {
-    const USERNAME = process.env.WEB_USERNAME;
-    const PASSWORD = process.env.WEB_PASSWORD;
-    
+router.post('/login', (req, res) => {    
     const ip = req.headers['x-forwarded-for'] || req.ip.split(':')[3];// || req.connection.remoteAddress.split(":")[3];
     const {username, password} = req.body;
     
@@ -34,9 +31,9 @@ router.post('/login', (req, res) => {
     }
 
     if(ipReqMonitor[ip].numberOfAttempts > 0){
-        if(username === USERNAME && password === PASSWORD){
+        if(username === WEB_USERNAME && password === WEB_PASSWORD){
             const user = {id: 1, username: 'pi'};
-            const token = jwt.sign(user, process.env.WEB_JWT_SECRET);
+            const token = jwt.sign(user, WEB_JWT_SECRET);
             res.status(200);
             res.json({user, token});
             // Delete ip attemps information because user logged in correctly and it is no longer necessary to store it.
