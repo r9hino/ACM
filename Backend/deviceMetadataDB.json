@@ -35,7 +35,7 @@
             "date_update": "Sun Sep 05 2021 03:38:50 GMT-0300 (Chile Summer Time)"
         }
     ],
-    "date_update": "Wed Sep 15 2021 18:27:51 GMT-0300 (Chile Summer Time)",
+    "date_update": "Wed Sep 15 2021 22:54:46 GMT-0300 (Chile Summer Time)",
     "ip_public": "190.217.196.109",
     "guard_users": [
         "philippe.ilharreguy@gmail.com",
@@ -43,7 +43,7 @@
     ],
     "alerts": [
         {
-            "sensor": "Caudal manifold",
+            "sensor_name": "Caudal manifold",
             "criteria": "menor",
             "value": "2",
             "value_aux": null,
@@ -53,7 +53,7 @@
             "state": "off"
         },
         {
-            "sensor": "Presion manifold",
+            "sensor_name": "Presion manifold",
             "criteria": "mayor o igual",
             "value": "4",
             "unit": "bar",
@@ -62,20 +62,20 @@
             "state": "off"
         },
         {
-            "sensor": "Temperatura estacion",
+            "sensor_name": "Temperatura estacion",
             "criteria": "mayor",
-            "value": "19",
+            "value": "18",
             "unit": "°C",
             "settling_time": "10",
             "state": "on",
-            "date_update": "Wed Sep 15 2021 18:27:51 GMT-0300 (Chile Summer Time)"
+            "date_update": "Wed Sep 15 2021 22:54:46 GMT-0300 (Chile Summer Time)"
         }
     ],
     "sensors": [
         {
             "id": 0,
             "pin_number": 23,
-            "name": "Presion manifold",
+            "sensor_name": "Presion manifold",
             "model": null,
             "protocol": "mqtt",
             "unit": "bar",
@@ -91,7 +91,7 @@
                 5,
                 9
             ],
-            "name": "Caudal manifold",
+            "sensor_name": "Caudal manifold",
             "model": null,
             "protocol": "mqtt",
             "unit": "m3/h",
@@ -101,7 +101,7 @@
         },
         {
             "id": 2,
-            "name": "Temperatura estacion",
+            "sensor_name": "Temperatura estacion",
             "model": null,
             "protocol": "i2c",
             "unit": "°C",

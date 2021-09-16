@@ -45,7 +45,7 @@ class InfluxDBHandler {
     }
 
     writeData = (bucket, sensorType, sensorName, sensorUnit, value) => {
-        const point = new Point(sensorType).tag('name', sensorName).floatField(sensorUnit, value);
+        const point = new Point(sensorType).tag('sensor_name', sensorName).floatField(sensorUnit, value);
         this.writeAPI[bucket].writePoint(point);
     }
 
@@ -55,13 +55,13 @@ class InfluxDBHandler {
         const fluxQuery = `from(bucket: "${bucket}")
             |> range(start: -${timeWindow})
             |> filter(fn: (r) => r._measurement == "${sensorType}")
-            |> filter(fn: (r) => r["name"] == "${sensorName}")
+            |> filter(fn: (r) => r["sensor_name"] == "${sensorName}")
             |> last()`;
 
         try{
             let o = await this.queryApi.collectRows(fluxQuery);     // return an array.
             //console.timeEnd("dbsave");
-            return o[0] === undefined ? undefined : {time: o[0]._time, measurement: o[0]._measurement, name: o[0].name, unit: o[0]._field, value: o[0]._value.toFixed(2)};
+            return o[0] === undefined ? undefined : {time: o[0]._time, measurement: o[0]._measurement, sensor_name: o[0].sensor_name, unit: o[0]._field, value: o[0]._value.toFixed(2)};
         }
         catch(error){
             console.error(error)

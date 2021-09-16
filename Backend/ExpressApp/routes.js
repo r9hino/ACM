@@ -190,7 +190,7 @@ router.get('/api/getalertsandsensorsavailable', verifyToken, (req, res) => {
         return;
     }
     sensorsAvailable = sensorsAvailable.map(sensorAvailable => {
-        return {name: sensorAvailable.name, unit: sensorAvailable.unit};
+        return {sensor_name: sensorAvailable.sensor_name, unit: sensorAvailable.unit};
     });
 
     res.status(200);
@@ -244,7 +244,7 @@ router.post('/api/removealert', verifyToken, async (req, res) => {
     }
     const {alertRemove} = req.body;
 
-    const  index = alerts.findIndex(({sensor, criteria}) => sensor === alertRemove.sensor && criteria === alertRemove.criteria);
+    const  index = alerts.findIndex(({sensor_name, criteria}) => sensor_name === alertRemove.sensor_name && criteria === alertRemove.criteria);
     if(index < 0){
         res.status(401);
         res.json({message: 'ERROR: Alert not found.'});
