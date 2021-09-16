@@ -96,7 +96,6 @@ export default {
                 footerRef.value.setTemporalMessage('Celular requerido.', 5000);
                 return false;
             }
-            let re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
             if(phone.length !== 9 || phone.match(/^[0-9]+$/) == null){
                 footerRef.value.setTemporalMessage('Numero debe contener 9 digitos.', 5000);

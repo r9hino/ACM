@@ -1,6 +1,7 @@
-const accountSid = 'AC21024cdd87e9e65f08dff7c833717361'; 
-const authToken = 'b53c593398c935c5687dc289265e73fa'; 
-const client = require('twilio')(accountSid, authToken);
+const env = require('../Helper/envExport.js');   // Environment variables.
+
+const client = require('twilio')(env.TWILIO_ACCOUNT_SID, env.TWILIO_TOKEN);
+
 
 // Objects initialization.
 const pathDeviceMetadataDB = __dirname + '/../deviceMetadataDB.json';
