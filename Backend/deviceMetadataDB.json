@@ -35,11 +35,17 @@
             "date_update": "Sun Sep 05 2021 03:38:50 GMT-0300 (Chile Summer Time)"
         }
     ],
-    "date_update": "Thu Sep 16 2021 09:43:07 GMT-0300 (Chile Summer Time)",
+    "date_update": "Thu Sep 16 2021 12:36:28 GMT-0300 (Chile Summer Time)",
     "ip_public": "190.217.196.109",
     "guard_users": [
-        "philippe.ilharreguy@gmail.com",
-        "amunoz@chilterra.com"
+        {
+            "email": "philippe.ilharreguy@gmail.com",
+            "phone": "+56999972023"
+        },
+        {
+            "email": "amunoz@chilterra.com",
+            "phone": "+56963032904"
+        }
     ],
     "alerts": [
         {
@@ -67,8 +73,8 @@
             "value": "18",
             "unit": "°C",
             "settling_time": "10",
-            "state": "on",
-            "date_update": "Thu Sep 16 2021 09:43:07 GMT-0300 (Chile Summer Time)"
+            "state": "off",
+            "date_update": "Thu Sep 16 2021 12:36:28 GMT-0300 (Chile Summer Time)"
         }
     ],
     "sensors": [

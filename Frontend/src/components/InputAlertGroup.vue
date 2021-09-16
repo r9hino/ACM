@@ -35,11 +35,11 @@
             </div>
         </div>
         <div class="d-flex flex-column align-items-center">
+            <button class="btn btn-secondary mb-1 ms-2" v-if="colorEndFunction == 'btn-danger'"
+                style="width: 85px" @click="updateFunction(indexAlert)">Guardar
+            </button>
             <button class="btn mb-1 ms-2" :class="{'btn-danger': colorEndFunction=='btn-danger', 'btn-secondary': colorEndFunction=='btn-secondary'}"
                 style="width: 85px" @click="endFunction(indexAlert)">{{ textEndFunction }}
-            </button>
-            <button class="btn btn-secondary ms-2" v-if="colorEndFunction == 'btn-danger'"
-                style="width: 85px" @click="updateFunction(indexAlert)">Guardar
             </button>
         </div>
     </div>
