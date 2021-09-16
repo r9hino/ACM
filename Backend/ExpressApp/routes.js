@@ -278,15 +278,15 @@ router.put('/api/updatealert', verifyToken, async (req, res) => {
     // Send error if no alerts are found on the local DB.
     if(alerts === undefined){
         res.status(400);
-        res.json({message: 'ERROR: There are no alerts defined on server to update.'});
+        res.json({message: 'ERROR - routes.js: There are no alerts defined on server to update.'});
         return;
     }
     const {alertUpdate, index} = req.body;
 
     // Send error if alert with index is not found.
     if(alerts[index] === undefined){
-        res.status(401);
-        res.json({message: 'ERROR: Alerta no encontrada.'});
+        res.status(400);
+        res.json({message: 'ERROR: Alert not found.'});
         return;
     }
     alerts[index] = alertUpdate;                            // Update alert from array.

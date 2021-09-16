@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 
 export default {
     name: 'Footer',

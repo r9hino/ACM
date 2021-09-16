@@ -1,10 +1,10 @@
 <template>
     <div class="d-inline-flex justify-content-center align-items-center mt-4 mb-3 mx-4">
         <div class="d-flex flex-column align-items-center">
-            <button class="btn btn-outline-secondary width-alert-items dropdown-toggle mb-1" type="button" data-bs-toggle="dropdown" :id="`sensorDropdown${indexAlert}`">{{alert.sensor}}</button>
+            <button class="btn btn-outline-secondary width-alert-items dropdown-toggle mb-1" type="button" data-bs-toggle="dropdown" :id="`sensorDropdown${indexAlert}`">{{alert.sensor_name}}</button>
             <ul class="dropdown-menu" :aria-labelledby="`sensorDropdown${indexAlert}`">
                 <li v-for="(sensor, indexSensor) in sensorsAvailable" :key="indexSensor">
-                    <a class="dropdown-item" href="#" @click.prevent="alert.sensor=sensor.sensor; alert.unit=sensor.unit">{{sensor.sensor}}</a>
+                    <a class="dropdown-item" href="#" @click.prevent="alert.sensor_name=sensor.sensor_name; alert.unit=sensor.unit">{{sensor.sensor_name}}</a>
                 </li>
             </ul>
             <button class="btn btn-outline-secondary width-alert-items dropdown-toggle mb-1" type="button" data-bs-toggle="dropdown" :id="`dropdownCriterias${indexAlert}`">{{alert.criteria}}</button>

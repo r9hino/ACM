@@ -35,7 +35,7 @@
             "date_update": "Sun Sep 05 2021 03:38:50 GMT-0300 (Chile Summer Time)"
         }
     ],
-    "date_update": "Wed Sep 15 2021 22:54:46 GMT-0300 (Chile Summer Time)",
+    "date_update": "Thu Sep 16 2021 09:43:07 GMT-0300 (Chile Summer Time)",
     "ip_public": "190.217.196.109",
     "guard_users": [
         "philippe.ilharreguy@gmail.com",
@@ -68,7 +68,7 @@
             "unit": "°C",
             "settling_time": "10",
             "state": "on",
-            "date_update": "Wed Sep 15 2021 22:54:46 GMT-0300 (Chile Summer Time)"
+            "date_update": "Thu Sep 16 2021 09:43:07 GMT-0300 (Chile Summer Time)"
         }
     ],
     "sensors": [

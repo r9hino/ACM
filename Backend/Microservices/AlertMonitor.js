@@ -1,21 +1,16 @@
-// Handle all alarms defined at startup or on UI.
-// For this, it retrieve sensor values from InfluxDB and compare them with defined alarms.
-// If an alarm is triggered a notification logic is executed.
+// Handle all alerts defined at startup or on UI.
+// For this, it retrieve sensor values from InfluxDB and compare them with defined alerts.
+// If an alerts is triggered a notification logic is executed.
 
 const fs = require('fs');
-const http = require('http');
-const socketio = require('socket.io');
-const {hostname} = require('os');
 const JSONdb = require('simple-json-db');
 
-const MongoDBHandler = require('../DB/MongoDBHandler');
 const InfluxDBHandler = require('../DB/InfluxDBHandler');
 const env = require('../Helper/envExport.js');   // Environment variables.
 
 // Objects initialization.
 const pathDeviceMetadataDB = __dirname + '/../deviceMetadataDB.json';
 let deviceMetadataDB = new JSONdb(pathDeviceMetadataDB);
-const remoteMongoDB = new MongoDBHandler(env.MONGODB_REMOTE_URL);
 const localInfluxDB = new InfluxDBHandler(env.INFLUXDB_LOCAL_URL, env.INFLUXDB_PORT, env.INFLUXDB_TOKEN, env.INFLUXDB_ORG, [env.INFLUXDB_SENSORS_BUCKET, env.INFLUXDB_SYSTEM_BUCKET]);
 
 // Global variables intitalization.
@@ -40,30 +35,20 @@ fs.watch(pathDeviceMetadataDB, (event, filename) => {
             alerts = deviceMetadataDB.get('alerts');
 
             // If an alert was removed from the local DB, delete corresponding firstAlertTriggerTime key.
-            // Iterate over object properties.
-            /*console.log('Before delete');
-            console.log(firstAlertTriggerTime);
             for(const prop in firstAlertTriggerTime){
                 // Search for the index of the properties on the alerts array.
                 let index = alerts.findIndex(alert => alert.sensor_name == prop);
-                //console.log(alerts);
-                //console.log(index);
-
                 // If prop (sensor name) is not found, remove property from firstAlertTriggerTime.
-                if(index < 0){
-                    console.log('delete ' + prop);
-                    delete firstAlertTriggerTime[prop];
-                    console.log(firstAlertTriggerTime);
-                    console.log('End delete');
-                }
-            }*/
+                if(index < 0) delete firstAlertTriggerTime[prop];
+            }
         }, 1000);
     }
 });
 
 
-// Activate alerts.
+// Activate alerts and check if settling time has passed in order to set alert state to 'on'.
 const activateAlert = (sensor, alert, alertIndex, alertLog) => {
+    // Enter here only the first time. It will defined the time for the first time the alert was triggered.
     if(firstAlertTriggerTime[sensor.sensor_name] === undefined){
         firstAlertTriggerTime[sensor.sensor_name] = Date.now();
         return;
