@@ -30,7 +30,7 @@ fs.watch(pathDeviceMetadataDB, (event, filename) => {
         clearTimeout(delayStateUpdateInterval);
 
         delayStateUpdateInterval = setTimeout(() => {
-            console.log(`INFO - AlertActivation.js: Instance of deviceMetadataDB has been updated.`);
+            //console.log(`INFO - AlertActivation.js: Instance of deviceMetadataDB has been updated.`);
 
             // Update alarms and sensors if local dB is changed or updated.
             deviceMetadataDB = new JSONdb(pathDeviceMetadataDB);
@@ -50,7 +50,7 @@ fs.watch(pathDeviceMetadataDB, (event, filename) => {
 
 
 // Activate alerts and check if settling time has passed in order to set alert state to 'on'.
-const activateAlert = async (sensor, alert, alertIndex, alertLog) => {
+const activateAlert = async (sensor, alert, alertIndex, alertMessage) => {
     // Enter here only the first time. It will defined the time for the first time the alert was triggered.
     if(firstAlertTriggerTime[sensor.sensor_name] === undefined){
         firstAlertTriggerTime[sensor.sensor_name] = Date.now();
@@ -63,23 +63,26 @@ const activateAlert = async (sensor, alert, alertIndex, alertLog) => {
     if(timeElapsedSinceFirstTrigger >= alert.settling_time){
         const dateUpdate = new Date().toString();
         alerts[alertIndex].state = 'on';
-        alerts[alertIndex] = Object.assign(alerts[alertIndex], {date_update: dateUpdate});
+        alerts[alertIndex].alert_message = alertMessage;
+        alerts[alertIndex].date_update = dateUpdate;
+        //alerts[alertIndex] = Object.assign(alerts[alertIndex], {date_update: dateUpdate});
         delete firstAlertTriggerTime[sensor.sensor_name];
-        console.log(alertLog);
+        console.log(alertMessage);
 
         // Store on local DB.
         deviceMetadataDB.set('alerts', alerts);
+        deviceMetadataDB.set('date_update', dateUpdate);
         deviceMetadataDB.sync();
 
         // Store on remote DB.
         try{
             await remoteMongoDB.connectDB();
-            await remoteMongoDB.updateDevice(hostname(), {alerts: alerts, date_update: dateUpdate});    // Store remotely.
+            await remoteMongoDB.updateDevice(hostname(), {alerts: alerts, date_update: dateUpdate});
             await remoteMongoDB.close();
         }                            
         catch(error){
             console.error('ERROR - AlertActivation.js:', error);
-            console.log('WARNING - AlertActivation.js: Alert added only to local DB.');
+            console.log('WARNING - AlertActivation.js: Alert state change stored only in local DB.');
         }
     }
 };
@@ -96,44 +99,44 @@ let alertActivationInterval = setInterval(() => {
             switch(alert.criteria){
                 case 'menor':
                     if(lastSensorData.value < alert.value){
-                        let alertLog = `WARNING - AlertActivation.js: Alarma sensor "${sensor.sensor_name}" es menor que ${alert.value} ${alert.unit}.`;
-                        if(alert.state === 'off') activateAlert(lastSensorData, alert, index, alertLog);
+                        let alertMessage = `Alarma: "${sensor.sensor_name}" es menor que ${alert.value} ${alert.unit}.`;
+                        if(alert.state === 'off') activateAlert(lastSensorData, alert, index, alertMessage);
                     }
                     break;
                 case 'menor o igual':
                     if(lastSensorData.value <= alert.value){
-                        let alertLog = `WARNING - AlertActivation.js: Alarma sensor "${lastSensorData.sensor_name}" es menor o igual que ${alert.value} ${alert.unit}.`;
-                        if(alert.state === 'off') activateAlert(lastSensorData, alert, index, alertLog);
+                        let alertMessage = `Alarma: "${lastSensorData.sensor_name}" es menor o igual que ${alert.value} ${alert.unit}.`;
+                        if(alert.state === 'off') activateAlert(lastSensorData, alert, index, alertMessage);
                     }
                     break;
                 case 'igual':
                     if(lastSensorData.value == alert.value){
-                        let alertLog = `WARNING - AlertActivation.js: Alarma sensor "${lastSensorData.sensor_name}" es igual que ${alert.value} ${alert.unit}.`;
-                        if(alert.state === 'off') activateAlert(lastSensorData, alert, index, alertLog);
+                        let alertMessage = `Alarma: "${lastSensorData.sensor_name}" es igual que ${alert.value} ${alert.unit}.`;
+                        if(alert.state === 'off') activateAlert(lastSensorData, alert, index, alertMessage);
                     }
                     break;
                 case 'mayor o igual':
                     if(lastSensorData.value >= alert.value){
-                        let alertLog = `WARNING - AlertActivation.js: Alarma sensor "${lastSensorData.sensor_name}" es mayor o igual que ${alert.value} ${alert.unit}.`;
-                        if(alert.state === 'off') activateAlert(lastSensorData, alert, index, alertLog);
+                        let alertMessage = `Alarma: "${lastSensorData.sensor_name}" es mayor o igual que ${alert.value} ${alert.unit}.`;
+                        if(alert.state === 'off') activateAlert(lastSensorData, alert, index, alertMessage);
                     }
                     break;
                 case 'mayor':
                     if(lastSensorData.value > alert.value){
-                        let alertLog = `WARNING - AlertActivation.js: Alarma sensor "${lastSensorData.sensor_name}" es mayor que ${alert.value} ${alert.unit}.`;
-                        if(alert.state === 'off') activateAlert(lastSensorData, alert, index, alertLog);
+                        let alertMessage = `Alarma: "${lastSensorData.sensor_name}" es mayor que ${alert.value} ${alert.unit}.`;
+                        if(alert.state === 'off') activateAlert(lastSensorData, alert, index, alertMessage);
                     }
                     break;
                 case 'entre el rango':
                     if(lastSensorData.value >= alert.value && lastSensorData.value <= alert.value_aux){
-                        let alertLog = `WARNING - AlertActivation.js: Alarma sensor "${lastSensorData.sensor_name}" se encuentra entre el rango ${alert.value} y ${alert.value_aux} ${alert.unit}.`;
-                        if(alert.state === 'off') activateAlert(lastSensorData, alert, index, alertLog);
+                        let alertMessage = `Alarma: "${lastSensorData.sensor_name}" se encuentra entre el rango ${alert.value} y ${alert.value_aux} ${alert.unit}.`;
+                        if(alert.state === 'off') activateAlert(lastSensorData, alert, index, alertMessage);
                     }
                     break;
                 case 'fuera del rango':
                     if(lastSensorData.value < alert.value || lastSensorData.value > alert.value_aux){
-                        let alertLog = `WARNING - AlertActivation.js: Alarma sensor "${lastSensorData.sensor_name}" se encuentra fuera del rango ${alert.value} y ${alert.value_aux} ${alert.unit}.`;
-                        if(alert.state === 'off') activateAlert(lastSensorData, alert, index, alertLog);
+                        let alertMessage = `Alarma: "${lastSensorData.sensor_name}" se encuentra fuera del rango ${alert.value} y ${alert.value_aux} ${alert.unit}.`;
+                        if(alert.state === 'off') activateAlert(lastSensorData, alert, index, alertMessage);
                     }
                     break;
                 default:
