@@ -11,11 +11,11 @@ class MongoDBHandler {
         try{
             this.dbClient = await MongoClient.connect(this.url, { useNewUrlParser: true, useUnifiedTopology: true });
             this.connected = true;
-            console.log('INFO: Connected to remote MongoDB.');
+            //console.log('INFO - MongoDBHandler.js: Connected to remote MongoDB.');
         }
         catch(err){
             this.connected = false;
-            console.error('ERROR:', err);
+            console.error('ERROR - MongoDBHandler.js:', err);
             throw err;
         }
     }
@@ -31,7 +31,7 @@ class MongoDBHandler {
             return cursor[0];
         }
         catch(err){
-            console.error('ERROR:', err);
+            console.error('ERROR - MongoDBHandler.js:', err);
             throw err;
         }
     }
@@ -44,7 +44,7 @@ class MongoDBHandler {
             return id;
         }
         catch(err){
-            console.error('ERROR:', err);
+            console.error('ERROR - MongoDBHandler.js:', err);
             throw err;
         }
     }
@@ -62,22 +62,22 @@ class MongoDBHandler {
             return id;
         }
         catch(err){
-            console.error('ERROR:', err);
+            console.error('ERROR - MongoDBHandler.js:', err);
             throw err;
         }
     }
 
     close = async () => {
         // Disconnect only if there is a connection established.
-        if(this.connected === false) console.log('INFO: Remote MongoDB connection has already been closed.');
+        if(this.connected === false) console.log('INFO - MongoDBHandler.js: Remote MongoDB connection is already closed.');
         else{
             try{
                 this.dbClient.close();
                 this.connected = false;
-                console.log('INFO: Remote MongoDB closed.');
+                //console.log('INFO - MongoDBHandler.js: Remote MongoDB closed.');
             }
             catch(err){
-                console.error('ERROR:', err);
+                console.error('ERROR - MongoDBHandler.js:', err);
             }
         }
     }

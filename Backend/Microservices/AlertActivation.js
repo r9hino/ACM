@@ -1,6 +1,6 @@
 // Handle all alerts defined at startup or on UI.
 // For this, it retrieve sensor values from InfluxDB and compare them with defined alerts.
-// If an alerts is triggered the alert is activeted setting it state to 'on'.
+// If an alerts is triggered, the alert is activeted setting it state to 'on' and adding an alert message.
 
 const fs = require('fs');
 const {hostname} = require('os');
@@ -12,7 +12,7 @@ const env = require('../Helper/envExport.js');   // Environment variables.
 
 // Objects initialization.
 const pathDeviceMetadataDB = __dirname + '/../deviceMetadataDB.json';
-let deviceMetadataDB = new JSONdb(pathDeviceMetadataDB);
+let deviceMetadataDB = new JSONdb(pathDeviceMetadataDB, {syncOnWrite: false});
 const remoteMongoDB = new MongoDBHandler(env.MONGODB_REMOTE_URL);
 const localInfluxDB = new InfluxDBHandler(env.INFLUXDB_LOCAL_URL, env.INFLUXDB_PORT, env.INFLUXDB_TOKEN, env.INFLUXDB_ORG, [env.INFLUXDB_SENSORS_BUCKET, env.INFLUXDB_SYSTEM_BUCKET]);
 
@@ -30,10 +30,8 @@ fs.watch(pathDeviceMetadataDB, (event, filename) => {
         clearTimeout(delayStateUpdateInterval);
 
         delayStateUpdateInterval = setTimeout(() => {
-            //console.log(`INFO - AlertActivation.js: Instance of deviceMetadataDB has been updated.`);
-
             // Update alarms and sensors if local dB is changed or updated.
-            deviceMetadataDB = new JSONdb(pathDeviceMetadataDB);
+            deviceMetadataDB = new JSONdb(pathDeviceMetadataDB, {syncOnWrite: false});
             sensors = deviceMetadataDB.get('sensors');
             alerts = deviceMetadataDB.get('alerts');
 
@@ -48,15 +46,14 @@ fs.watch(pathDeviceMetadataDB, (event, filename) => {
     }
 });
 
-
 // Activate alerts and check if settling time has passed in order to set alert state to 'on'.
-const activateAlert = async (sensor, alert, alertIndex, alertMessage) => {
+const activateAlert = async (alert, alertIndex, alertMessage) => {
     // Enter here only the first time. It will defined the time for the first time the alert was triggered.
-    if(firstAlertTriggerTime[sensor.sensor_name] === undefined){
-        firstAlertTriggerTime[sensor.sensor_name] = Date.now();
+    if(firstAlertTriggerTime[alert.sensor_name] === undefined){
+        firstAlertTriggerTime[alert.sensor_name] = Date.now();
         return;
     }
-    let timeElapsedSinceFirstTrigger = (Date.now() - firstAlertTriggerTime[sensor.sensor_name])/1000;
+    let timeElapsedSinceFirstTrigger = (Date.now() - firstAlertTriggerTime[alert.sensor_name])/1000;
 
     // Set alert state to "on", log the alert and send notification.
     // Delete firstAlertTriggerTime prop for the sensor as it no longer needed.
@@ -65,15 +62,14 @@ const activateAlert = async (sensor, alert, alertIndex, alertMessage) => {
         alerts[alertIndex].state = 'on';
         alerts[alertIndex].alert_message = alertMessage;
         alerts[alertIndex].date_update = dateUpdate;
-        //alerts[alertIndex] = Object.assign(alerts[alertIndex], {date_update: dateUpdate});
-        delete firstAlertTriggerTime[sensor.sensor_name];
+
+        delete firstAlertTriggerTime[alert.sensor_name];
         console.log(alertMessage);
 
         // Store on local DB.
         deviceMetadataDB.set('alerts', alerts);
         deviceMetadataDB.set('date_update', dateUpdate);
         deviceMetadataDB.sync();
-
         // Store on remote DB.
         try{
             await remoteMongoDB.connectDB();
@@ -87,61 +83,67 @@ const activateAlert = async (sensor, alert, alertIndex, alertMessage) => {
     }
 };
 
+// Continously check if any of the defined alerts get triggered.
 let alertActivationInterval = setInterval(() => {
     // Iterate over array of alerts.
     alerts.forEach(async (alert, index) => {
         // Get last sensor data from Influx DB.
-        let sensorIndex = sensors.findIndex(sensor => sensor.sensor_name == alert.sensor_name);
+        let sensorIndex = sensors.findIndex(sensor => sensor.sensor_name == alert.sensor_name); // Get sensor index for retrieving sensor type.
         let lastSensorData = await localInfluxDB.queryLastData(env.INFLUXDB_SENSORS_BUCKET, sensors[sensorIndex].type, sensors[sensorIndex].sensor_name, '1h');
-
+        //console.log(lastSensorData);
         if(lastSensorData !== undefined){
-            //console.log(lastSensorData);
-            switch(alert.criteria){
-                case 'menor':
-                    if(lastSensorData.value < alert.value){
-                        let alertMessage = `Alarma: "${sensor.sensor_name}" es menor que ${alert.value} ${alert.unit}.`;
-                        if(alert.state === 'off') activateAlert(lastSensorData, alert, index, alertMessage);
-                    }
-                    break;
-                case 'menor o igual':
-                    if(lastSensorData.value <= alert.value){
-                        let alertMessage = `Alarma: "${lastSensorData.sensor_name}" es menor o igual que ${alert.value} ${alert.unit}.`;
-                        if(alert.state === 'off') activateAlert(lastSensorData, alert, index, alertMessage);
-                    }
-                    break;
-                case 'igual':
-                    if(lastSensorData.value == alert.value){
-                        let alertMessage = `Alarma: "${lastSensorData.sensor_name}" es igual que ${alert.value} ${alert.unit}.`;
-                        if(alert.state === 'off') activateAlert(lastSensorData, alert, index, alertMessage);
-                    }
-                    break;
-                case 'mayor o igual':
-                    if(lastSensorData.value >= alert.value){
-                        let alertMessage = `Alarma: "${lastSensorData.sensor_name}" es mayor o igual que ${alert.value} ${alert.unit}.`;
-                        if(alert.state === 'off') activateAlert(lastSensorData, alert, index, alertMessage);
-                    }
-                    break;
-                case 'mayor':
-                    if(lastSensorData.value > alert.value){
-                        let alertMessage = `Alarma: "${lastSensorData.sensor_name}" es mayor que ${alert.value} ${alert.unit}.`;
-                        if(alert.state === 'off') activateAlert(lastSensorData, alert, index, alertMessage);
-                    }
-                    break;
-                case 'entre el rango':
-                    if(lastSensorData.value >= alert.value && lastSensorData.value <= alert.value_aux){
-                        let alertMessage = `Alarma: "${lastSensorData.sensor_name}" se encuentra entre el rango ${alert.value} y ${alert.value_aux} ${alert.unit}.`;
-                        if(alert.state === 'off') activateAlert(lastSensorData, alert, index, alertMessage);
-                    }
-                    break;
-                case 'fuera del rango':
-                    if(lastSensorData.value < alert.value || lastSensorData.value > alert.value_aux){
-                        let alertMessage = `Alarma: "${lastSensorData.sensor_name}" se encuentra fuera del rango ${alert.value} y ${alert.value_aux} ${alert.unit}.`;
-                        if(alert.state === 'off') activateAlert(lastSensorData, alert, index, alertMessage);
-                    }
-                    break;
-                default:
-                    // code block
-            }       // switch
-        }           // if
-    });             // forEach
-}, 2000);           // setInterval
+            let isNotNumber = typeof lastSensorData.value === 'string' && lastSensorData.value.length === 0 || lastSensorData.value === null || lastSensorData.value === undefined;
+            if(!isNotNumber){
+                switch(alert.criteria){
+                    case 'menor':
+                        if(lastSensorData.value < alert.value){
+                            let alertMessage = `Alarma: "${alert.sensor_name}" es menor que ${alert.value} ${alert.unit}.`;
+                            if(alert.state === 'off') activateAlert(alert, index, alertMessage);
+                        }
+                        break;
+                    case 'menor o igual':
+                        if(lastSensorData.value <= alert.value){
+                            let alertMessage = `Alarma: "${alert.sensor_name}" es menor o igual que ${alert.value} ${alert.unit}.`;
+                            if(alert.state === 'off') activateAlert(alert, index, alertMessage);
+                        }
+                        break;
+                    case 'igual':
+                        if(lastSensorData.value == alert.value){
+                            let alertMessage = `Alarma: "${alert.sensor_name}" es igual que ${alert.value} ${alert.unit}.`;
+                            if(alert.state === 'off') activateAlert(alert, index, alertMessage);
+                        }
+                        break;
+                    case 'mayor o igual':
+                        if(lastSensorData.value >= alert.value){
+                            let alertMessage = `Alarma: "${alert.sensor_name}" es mayor o igual que ${alert.value} ${alert.unit}.`;
+                            if(alert.state === 'off') activateAlert(alert, index, alertMessage);
+                        }
+                        break;
+                    case 'mayor':
+                        if(lastSensorData.value > alert.value){
+                            let alertMessage = `Alarma: "${alert.sensor_name}" es mayor que ${alert.value} ${alert.unit}.`;
+                            if(alert.state === 'off') activateAlert(alert, index, alertMessage);
+                        }
+                        break;
+                    case 'entre el rango':
+                        if(lastSensorData.value >= alert.value && lastSensorData.value <= alert.value_aux){
+                            let alertMessage = `Alarma: "${lastSensorData.sensor_name}" se encuentra entre el rango ${alert.value} y ${alert.value_aux} ${alert.unit}.`;
+                            if(alert.state === 'off') activateAlert(alert, index, alertMessage);
+                        }
+                        break;
+                    case 'fuera del rango':
+                        if(lastSensorData.value < alert.value || lastSensorData.value > alert.value_aux){
+                            let alertMessage = `Alarma: "${alert.sensor_name}" se encuentra fuera del rango ${alert.value} y ${alert.value_aux} ${alert.unit}.`;
+                            if(alert.state === 'off') activateAlert(alert, index, alertMessage);
+                        }
+                        break;
+                    default:
+                        // code block
+                }       // switch
+            }           // if isNotNumber
+            else{
+                console.log(`WARNING - AlertActivation.js: Influx DB do not have a number type value for ${alert.sensor_name}.`);
+            }
+        }               // if
+    });                 // forEach
+}, 2000);               // setInterval

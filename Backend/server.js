@@ -14,6 +14,7 @@
 // Agregar boton actualizar en alertas y validar que no hayan duplicados.
 // Agregar otro criterio para definir si existe alerta o no.
 // Run influxdb write from SensorMonitor?
+// How to avoid sending a bulk of messages if Twilio client continously keep getting errors?
 
 const http = require('http');
 const socketio = require('socket.io');
