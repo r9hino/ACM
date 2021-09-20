@@ -125,7 +125,7 @@ let notificationInterval = setInterval(async () => {
                         await wspNotificationAlert(alert.alert_message, phones);
                     }
                     catch(error){
-                        console.log('WARNING - Notifications.js: There was problems with Twilio, none of the guard users were notified on the schedule.');
+                        console.log('WARNING - Notifications.js: There was problems with Twilio, none of the guard users were notified with the scheduler.');
                     }
                 });
                 console.log(`INFO - Notifications.js: Added scheduler for "${alert.sensor_name}".`);

@@ -68,9 +68,9 @@
             "value": "18",
             "value_aux": "18.5",
             "unit": "°C",
-            "settling_time": "5",
+            "settling_time": "10",
             "state": "on",
-            "date_update": "Sat Sep 18 2021 13:09:31 GMT-0300 (Chile Summer Time)",
+            "date_update": "Mon Sep 20 2021 15:19:15 GMT-0300 (Chile Summer Time)",
             "alert_message": "Alarma: \"Temperatura estacion\" es mayor que 18 °C."
         }
     ],
@@ -113,5 +113,5 @@
             "type": "temperature"
         }
     ],
-    "date_update": "Sat Sep 18 2021 13:09:31 GMT-0300 (Chile Summer Time)"
+    "date_update": "Mon Sep 20 2021 15:19:15 GMT-0300 (Chile Summer Time)"
 }

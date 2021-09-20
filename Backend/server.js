@@ -131,7 +131,7 @@ const tenSecFunction = async () => {
     if(dynamicData.memoryDisk.usedPercent !== null)  localInfluxDB.writeData(env.INFLUXDB_SYSTEM_BUCKET, 'disk', 'used', '%', dynamicData.memoryDisk.usedPercent);
     if(dynamicData.cpu.currentLoad !== null) localInfluxDB.writeData(env.INFLUXDB_SYSTEM_BUCKET, 'cpu', 'total', '%', dynamicData.cpu.currentLoad);
 
-    // Write data to Influx DB of all sensors stored on array sensors in local or remote DB.
+    // Write data to Influx DB of all sensors with sample time equal to 10 seconds.
     monitoredSensors.forEach((sensor, index) => {
         //console.log(sensor);
         if(Number(sensor.sampleTime) === 10) localInfluxDB.writeData(env.INFLUXDB_SENSORS_BUCKET, sensor.type, sensor.name, sensor.unit, sensor.average());

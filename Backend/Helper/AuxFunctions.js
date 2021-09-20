@@ -1,12 +1,11 @@
-function getDate(){
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
+// Auxiliary functions.
 
-    const hour = date.getHours();
-    const min = date.getMinutes();
-    const sec = date.getSeconds();
+// Return true if it is a number, false otherwise.
+let isNumber = (number) => {
+    if(number === '' || number === null || number === undefined || number === NaN) return false;
+    return !isNaN(number)
+};
 
-    return `${year}-${month}-${day} `
+module.exports = {
+    isNumber
 }
