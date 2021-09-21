@@ -8,6 +8,7 @@ class MongoDBHandler {
     }
 
     connectDB = async () => {
+        // If it is not connected, proceed to create a new connection.
         try{
             this.dbClient = await MongoClient.connect(this.url, { useNewUrlParser: true, useUnifiedTopology: true });
             this.connected = true;
@@ -68,17 +69,12 @@ class MongoDBHandler {
     }
 
     close = async () => {
-        // Disconnect only if there is a connection established.
-        if(this.connected === false) console.log('INFO - MongoDBHandler.js: Remote MongoDB connection is already closed.');
-        else{
-            try{
-                this.dbClient.close();
-                this.connected = false;
-                //console.log('INFO - MongoDBHandler.js: Remote MongoDB closed.');
-            }
-            catch(err){
-                console.error('ERROR - MongoDBHandler.js:', err);
-            }
+        try{
+            await this.dbClient.close();
+            this.connected = false;
+        }
+        catch(err){
+            console.error('ERROR - MongoDBHandler.js:', err);
         }
     }
 }

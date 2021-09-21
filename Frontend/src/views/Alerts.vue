@@ -37,7 +37,8 @@ export default {
         let footerRef = ref();
         let alerts = ref([]);
         let sensorsAvailable = ref([]);
-        let newAlert = ref({sensor_name: 'Sensor', criteria: 'Criterio', value: undefined, value_aux: undefined, unit: 'Unidad', settling_time: null, state: 'off'});
+        let newAlert = ref({sensor_name: 'Sensor', criteria: 'Criterio', value: undefined, value_aux: undefined,
+            unit: 'Unidad', settling_time: null, state: 'off', notified_users: []});
 
         const user = computed(() => store.getters.getUser);
         const isAuthenticated = computed(() => store.getters.getAuthenticated);
@@ -109,8 +110,8 @@ export default {
             });
             const responseJSON = await response.json();
             if(response.status == 200 || response.status == 201){
-                alerts.value.push({sensor_name: newAlert.value.sensor_name, criteria: newAlert.value.criteria, value: newAlert.value.value,
-                    value_aux: newAlert.value.value_aux, unit: newAlert.value.unit, settling_time: newAlert.value.settling_time, state: 'off'});
+                alerts.value.push({id: responseJSON.id, sensor_name: newAlert.value.sensor_name, criteria: newAlert.value.criteria, value: newAlert.value.value,
+                    value_aux: newAlert.value.value_aux, unit: newAlert.value.unit, settling_time: newAlert.value.settling_time, state: 'off', notified_users: []});
             }
             footerRef.value.setTemporalMessage(responseJSON.message,5000);
             loading.value = false;
@@ -138,6 +139,9 @@ export default {
             if(!validateAlert(alerts.value[index])) return;
 
             loading.value = true;
+            alerts.value[index].state = 'off';
+            alerts.value[index].notified_users = [];
+
             const response = await fetch("http://rpi4id0.mooo.com:5000/api/updatealert", {
                 method: "PUT",
                 headers: {"Authorization": `Bearer ${token.value}`, "Content-Type": "application/json"},

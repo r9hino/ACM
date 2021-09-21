@@ -15,6 +15,7 @@
 // Agregar otro criterio para definir si existe alerta o no.
 // Run influxdb write from SensorMonitor?
 // How to avoid sending a bulk of messages if Twilio client continously keep getting errors?
+// Test if everything is good when two or more alert get activated.
 
 const http = require('http');
 const socketio = require('socket.io');

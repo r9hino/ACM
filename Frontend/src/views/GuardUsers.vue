@@ -20,13 +20,13 @@
             <div class="d-flex flex-column align-items-center">
                 <div class="input-group mb-1 mx-2" style="width: 300px">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">@</span>
+                        <span class="input-group-text justify-content-center" id="basic-addon1" style="width: 60px">@</span>
                     </div>
                     <input type="text" class="form-control" v-model="newGuardUser.email" placeholder="email" aria-label="Email" aria-describedby="basic-addon1">
                 </div>
                 <div class="input-group mx-2" style="width: 300px">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">+56</span>
+                        <span class="input-group-text justify-content-center" id="basic-addon1" style="width: 60px">+56</span>
                     </div>
                     <input type="text" class="form-control" v-model="newGuardUser.phone" placeholder="celular (9 digitos)" aria-label="Celular" aria-describedby="basic-addon1">
                 </div>
@@ -90,13 +90,10 @@ export default {
         };
 
         let validatePhone = (phone) => {
-            console.log(typeof phone);
-            console.log(phone);
             if(!phone){
                 footerRef.value.setTemporalMessage('Celular requerido.', 5000);
                 return false;
             }
-
             if(phone.length !== 9 || phone.match(/^[0-9]+$/) == null){
                 footerRef.value.setTemporalMessage('Numero debe contener 9 digitos.', 5000);
                 return false;
@@ -108,16 +105,16 @@ export default {
             // Validate user email.
             if(!validateEmail(newGuardUser.value.email)) return;  // Do not add any user if email is invalid.
             if(!validatePhone(newGuardUser.value.phone)) return;  // Do not add any user if phone is invalid.
-
             loading.value = true;
+
             const response = await fetch("http://rpi4id0.mooo.com:5000/api/addguarduser", {
                 method: "POST",
                 headers: {"Authorization": `Bearer ${token.value}`, "Content-Type": "application/json"},
-                body: JSON.stringify({newGuardUser: newGuardUser.value})
+                body: JSON.stringify({newGuardUser: {email: newGuardUser.value.email, phone: '+56'+newGuardUser.value.phone}})
             });
             const responseJSON = await response.json();
             if(response.status == 200 || response.status == 201){
-                guardUsers.value.push({email: newGuardUser.value.email, phone: newGuardUser.value.phone});
+                guardUsers.value.push({email: newGuardUser.value.email, phone: '+56'+newGuardUser.value.phone});
                 newGuardUser.value.email = '';
                 newGuardUser.value.phone = '';
             }

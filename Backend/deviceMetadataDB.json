@@ -38,14 +38,14 @@
     "ip_public": "190.217.196.109",
     "guard_users": [
         {
-            "email": "ph@ph.cl",
-            "phone": "+56123123123",
-            "notified": true,
-            "date_update": "Mon Sep 20 2021 23:30:31 GMT-0300 (Chile Summer Time)"
+            "email": "philippe.ilharreguy@gmail.com",
+            "phone": "+56999972023",
+            "date_update": "Tue Sep 21 2021 17:57:32 GMT-0300 (Chile Summer Time)"
         }
     ],
     "alerts": [
         {
+            "id": 0,
             "sensor_name": "Caudal manifold",
             "criteria": "menor",
             "value": "2",
@@ -53,27 +53,33 @@
             "unit": "m3/h",
             "settling_time": "10",
             "date_update": "Mon Sep 13 2021 14:36:53 GMT-0300 (Chile Summer Time)",
-            "state": "off"
+            "state": "off",
+            "notified_users": []
         },
         {
+            "id": 1,
             "sensor_name": "Presion manifold",
-            "criteria": "mayor o igual",
+            "criteria": "menor",
             "value": "4",
             "unit": "bar",
             "settling_time": "0",
-            "date_update": "Mon Sep 13 2021 14:54:56 GMT-0300 (Chile Summer Time)",
-            "state": "off"
+            "date_update": "Tue Sep 21 2021 14:48:16 GMT-0300 (Chile Summer Time)",
+            "state": "off",
+            "notified_users": []
         },
         {
+            "id": 2,
             "sensor_name": "Temperatura estacion",
-            "criteria": "menor",
-            "value": "30",
+            "criteria": "mayor o igual",
+            "value": "18",
             "unit": "°C",
-            "settling_time": "10",
+            "settling_time": "5",
             "state": "on",
-            "date_update": "Mon Sep 20 2021 21:43:37 GMT-0300 (Chile Summer Time)",
-            "notified": true,
-            "alert_message": "Alerta: \"Temperatura estacion\" es menor que 30 °C."
+            "notified_users": [
+                "philippe.ilharreguy@gmail.com"
+            ],
+            "date_update": "Tue Sep 21 2021 17:57:20 GMT-0300 (Chile Summer Time)",
+            "alert_message": "Alerta: \"Temperatura estacion\" es mayor o igual que 18 °C."
         }
     ],
     "sensors": [
@@ -115,5 +121,5 @@
             "type": "temperature"
         }
     ],
-    "date_update": "Mon Sep 20 2021 23:32:10 GMT-0300 (Chile Summer Time)"
+    "date_update": "Tue Sep 21 2021 17:57:32 GMT-0300 (Chile Summer Time)"
 }

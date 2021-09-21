@@ -214,6 +214,8 @@ router.post('/api/addalert', verifyToken, async (req, res) => {
     if(newAlert !== ''){
         const dateUpdate = new Date().toString();
         newAlert = Object.assign(newAlert, {date_update: dateUpdate});
+        // Set new id, from max id found on array + 1.
+        newAlert.id = alerts.reduce((prev, current) => (prev.id > current.id) ? prev : current).id+1;
         alerts.push(newAlert);
         
         // Store new guard user locally.
@@ -226,12 +228,12 @@ router.post('/api/addalert', verifyToken, async (req, res) => {
             await remoteMongoDB.updateDevice(hostname(), {alerts: alerts, date_update: dateUpdate});    // Store remotely.
             await remoteMongoDB.close();
             res.status(200);
-            res.json({message: 'OK: Alert added to local and remote DBs.'});
+            res.json({id: newAlert.id, message: 'OK: Alert added to local and remote DBs.'});
         }                            
         catch(err){
             console.error('ERROR:', err);
             res.status(201);
-            res.json({message: 'WARNING: Alert added only to local DB.'});
+            res.json({id: newAlert.id, message: 'WARNING: Alert added only to local DB.'});
         }
     }
     else{
@@ -250,9 +252,9 @@ router.post('/api/removealert', verifyToken, async (req, res) => {
     }
     const {alertRemove} = req.body;
 
-    const  index = alerts.findIndex(({sensor_name, criteria}) => sensor_name === alertRemove.sensor_name && criteria === alertRemove.criteria);
+    const index = alerts.findIndex(({sensor_name, criteria}) => sensor_name === alertRemove.sensor_name && criteria === alertRemove.criteria);
     if(index < 0){
-        res.status(401);
+        res.status(400);
         res.json({message: 'ERROR: Alert not found.'});
         return;
     }

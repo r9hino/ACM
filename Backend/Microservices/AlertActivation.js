@@ -83,7 +83,6 @@ const activateAlert = async (alert, alertIndex, sensorTime, alertMessage) => {
     if(timeElapsedSinceFirstTrigger >= alert.settling_time){
         const dateUpdate = new Date().toString();
         alerts[alertIndex].state = 'on';
-        alerts[alertIndex].notified = false;
         alerts[alertIndex].alert_message = alertMessage;
         alerts[alertIndex].date_update = dateUpdate;
 
