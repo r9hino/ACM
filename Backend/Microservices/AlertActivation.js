@@ -32,29 +32,49 @@ fs.watch(pathDeviceMetadataDB, (event, filename) => {
         clearTimeout(delayStateUpdateInterval);
 
         delayStateUpdateInterval = setTimeout(() => {
-            // Update alarms and sensors if local dB is changed or updated.
+            let previousAlerts = alerts;
+            // Update alarms and sensors if local DB is changed or updated.
             deviceMetadataDB = new JSONdb(pathDeviceMetadataDB, {syncOnWrite: false});
             sensors = deviceMetadataDB.get('sensors');
             alerts = deviceMetadataDB.get('alerts');
 
-            // If an alert was removed from the local DB, delete corresponding alertTriggerTimes key.
-            for(const prop in alertTriggerTimes){
+            // If an alert was updated or removed from the local DB, log the alert deactivation and its alertTriggerTimes.
+            previousAlerts.forEach(previousAlert => {
                 // Search for the index of the properties on the alerts array.
-                let index = alerts.findIndex(alert => alert.sensor_name == prop);
-                // If prop (sensor name) is not found, remove property from alertTriggerTimes.
-                if(index < 0) delete alertTriggerTimes[prop];
-            }
+                let index = alerts.findIndex(alert => alert.sensor_name == previousAlert.sensor_name);
+                // If previous alert sensor name is not found, remove property from alertTriggerTimes.
+                if(index < 0){
+                    if(alertTriggerTimes[previousAlert.sensor_name] !== undefined){
+                        delete alertTriggerTimes[previousAlert.sensor_name];
+                        console.log(`INFO - AlertActivation.js: Property alertTriggerTimes["${previousAlert.sensor_name}"] was removed.`);
+                    }
+                    if(previousAlert.state === 'on') console.log(`INFO - AlertActivation.js: Alert for "${previousAlert.sensor_name}" was deactivated.`);
+                }
+                // If state change from 'on' to 'off', remove property from alertTriggerTimes.
+                else if(index >= 0){
+                    if(alerts[index].state === 'off'){
+                        if(alertTriggerTimes[previousAlert.sensor_name] !== undefined){
+                            delete alertTriggerTimes[previousAlert.sensor_name];
+                            console.log(`INFO - AlertActivation.js: Property alertTriggerTimes["${previousAlert.sensor_name}"] was removed.`);
+                        }
+                        if(previousAlert.state === 'on') console.log(`INFO - AlertActivation.js: Alert for "${previousAlert.sensor_name}" was deactivated.`);
+                    }
+                }
+            });
         }, 1000);
     }
 });
 
 // Activate alerts and check if settling time has passed in order to set alert state to 'on'.
+// This function is called twice, in the last call it set state to 'on'.
+// sensorTime come from InfluxDb, not from actual current time.
 const activateAlert = async (alert, alertIndex, sensorTime, alertMessage) => {
     // Enter here only the first time. It will defined the time for the first time the alert was triggered.
     if(alertTriggerTimes[alert.sensor_name] === undefined){
         alertTriggerTimes[alert.sensor_name] = {firstTimeTrigger: Date.parse(sensorTime), lastTime: Date.parse(sensorTime)};
         return;
     }
+    // Calculate elapsed time since first trigger.
     alertTriggerTimes[alert.sensor_name].lastTime = Date.parse(sensorTime);
     let timeElapsedSinceFirstTrigger = (alertTriggerTimes[alert.sensor_name].lastTime - alertTriggerTimes[alert.sensor_name].firstTimeTrigger)/1000;
 
@@ -63,6 +83,7 @@ const activateAlert = async (alert, alertIndex, sensorTime, alertMessage) => {
     if(timeElapsedSinceFirstTrigger >= alert.settling_time){
         const dateUpdate = new Date().toString();
         alerts[alertIndex].state = 'on';
+        alerts[alertIndex].notified = false;
         alerts[alertIndex].alert_message = alertMessage;
         alerts[alertIndex].date_update = dateUpdate;
 
@@ -102,37 +123,37 @@ let alertActivationInterval = setInterval(() => {
                     switch(alert.criteria){
                         case 'menor':
                             if(lastSensorData.value < alert.value){
-                                activateAlert(alert, index, lastSensorData.time, `Alarma: "${alert.sensor_name}" es menor que ${alert.value} ${alert.unit}.`);
+                                activateAlert(alert, index, lastSensorData.time, `Alerta: "${alert.sensor_name}" es menor que ${alert.value} ${alert.unit}.`);
                             }
                             break;
                         case 'menor o igual':
                             if(lastSensorData.value <= alert.value){
-                                activateAlert(alert, index, lastSensorData.time, `Alarma: "${alert.sensor_name}" es menor o igual que ${alert.value} ${alert.unit}.`);
+                                activateAlert(alert, index, lastSensorData.time, `Alerta: "${alert.sensor_name}" es menor o igual que ${alert.value} ${alert.unit}.`);
                             }
                             break;
                         case 'igual':
                             if(lastSensorData.value == alert.value){
-                                activateAlert(alert, index, lastSensorData.time, `Alarma: "${alert.sensor_name}" es igual que ${alert.value} ${alert.unit}.`);
+                                activateAlert(alert, index, lastSensorData.time, `Alerta: "${alert.sensor_name}" es igual que ${alert.value} ${alert.unit}.`);
                             }
                             break;
                         case 'mayor o igual':
                             if(lastSensorData.value >= alert.value){
-                                activateAlert(alert, index, lastSensorData.time, `Alarma: "${alert.sensor_name}" es mayor o igual que ${alert.value} ${alert.unit}.`);
+                                activateAlert(alert, index, lastSensorData.time, `Alerta: "${alert.sensor_name}" es mayor o igual que ${alert.value} ${alert.unit}.`);
                             }
                             break;
                         case 'mayor':
                             if(lastSensorData.value > alert.value){
-                                activateAlert(alert, index, lastSensorData.time, `Alarma: "${alert.sensor_name}" es mayor que ${alert.value} ${alert.unit}.`);
+                                activateAlert(alert, index, lastSensorData.time, `Alerta: "${alert.sensor_name}" es mayor que ${alert.value} ${alert.unit}.`);
                             }
                             break;
                         case 'entre el rango':
                             if(lastSensorData.value >= alert.value && lastSensorData.value <= alert.value_aux){
-                                activateAlert(alert, index, lastSensorData.time, `Alarma: "${lastSensorData.sensor_name}" se encuentra entre el rango ${alert.value} y ${alert.value_aux} ${alert.unit}.`);
+                                activateAlert(alert, index, lastSensorData.time, `Alerta: "${lastSensorData.sensor_name}" se encuentra entre el rango ${alert.value} y ${alert.value_aux} ${alert.unit}.`);
                             }
                             break;
                         case 'fuera del rango':
                             if(lastSensorData.value < alert.value || lastSensorData.value > alert.value_aux){
-                                activateAlert(alert, index, lastSensorData.time, `Alarma: "${alert.sensor_name}" se encuentra fuera del rango ${alert.value} y ${alert.value_aux} ${alert.unit}.`);
+                                activateAlert(alert, index, lastSensorData.time, `Alerta: "${alert.sensor_name}" se encuentra fuera del rango ${alert.value} y ${alert.value_aux} ${alert.unit}.`);
                             }
                             break;
                         default:

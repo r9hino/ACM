@@ -154,7 +154,13 @@ router.post('/api/removeguarduser', verifyToken, async (req, res) => {
     }
 
     const {guardUserRemove} = req.body;
-    const  index = guardUsers.indexOf(guardUserRemove);
+    const  index = guardUsers.findIndex(guardUser => guardUser.email === guardUserRemove.email && guardUser.phone === guardUserRemove.phone);
+    if(index < 0){
+        console.error('ERROR: No guard user found on server.');
+        res.status(400);
+        res.json({message: 'ERROR: No guard user found on server.'});
+        return;
+    }
     guardUsers.splice(index, 1);                                // Remove guard user from array.
 
     // Store locally array with removed guard user.
