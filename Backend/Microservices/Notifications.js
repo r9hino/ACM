@@ -11,7 +11,6 @@ const MongoDBHandler = require('../DB/MongoDBHandler');
 const pathDeviceMetadataDB = __dirname + '/../deviceMetadataDB.json';
 let deviceMetadataDB = new JSONdb(pathDeviceMetadataDB, {syncOnWrite: false});
 const remoteMongoDB = new MongoDBHandler(env.MONGODB_REMOTE_URL);
-remoteMongoDB.connectDB();
 
 // Global variables intitalization.
 let guardUsers = deviceMetadataDB.get('guard_users');
@@ -150,6 +149,7 @@ const storeOnAllDB = async (keyProps) =>{
     try{
         await remoteMongoDB.connectDB();
         await remoteMongoDB.updateDevice(hostname(), keyProps);
+        await remoteMongoDB.close();
     }
     catch(error){
         console.error('ERROR - Notifications.js:', error);
@@ -163,7 +163,7 @@ async function shutdownMicroservice(){
     clearInterval(delayStateUpdateInterval);
 
     try {
-        await remoteMongoDB.close();
+        if(remoteMongoDB.isConnected() === true) await remoteMongoDB.close();
         process.exit(0);
     }
     catch(error){
