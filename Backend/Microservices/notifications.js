@@ -36,13 +36,13 @@ fs.watch(pathDeviceMetadataDB, (event, filename) => {
                 if(alertScheduler[alert.sensor_name + ' - id' + alert.id] !== undefined && alert.state === 'off'){
                     alertScheduler[alert.sensor_name + ' - id' + alert.id].stop();
                     delete alertScheduler[alert.sensor_name + ' - id' + alert.id];
-                    console.log(`INFO - Notifications.js: Scheduler for "${alert.sensor_name} - id${alert.id}" was deleted.`);
+                    console.log(`INFO - notifications.js: Scheduler for "${alert.sensor_name} - id${alert.id}" was deleted.`);
                 }
                 // If there are no guard users, clean all alert schedulers.
                 if(alertScheduler[alert.sensor_name + ' - id' + alert.id] !== undefined && alert.state === 'on' && guardUsers.length === 0){
                     alertScheduler[alert.sensor_name + ' - id' + alert.id].stop();
                     delete alertScheduler[alert.sensor_name + ' - id' + alert.id];
-                    console.log(`INFO - Notifications.js: No guard users, scheduler for "${alert.sensor_name} - id${alert.id}" was deleted.`);
+                    console.log(`INFO - notifications.js: No guard users, scheduler for "${alert.sensor_name} - id${alert.id}" was deleted.`);
                 }
             });
 
@@ -54,7 +54,7 @@ fs.watch(pathDeviceMetadataDB, (event, filename) => {
                 if(index < 0){
                     alertScheduler[prop].stop();
                     delete alertScheduler[prop];
-                    console.log(`INFO - Notifications.js: Scheduler for "${prop}" was deleted as there are not alert associated to it.`);
+                    console.log(`INFO - notifications.js: Scheduler for "${prop}" was deleted as there are not alert associated to it.`);
                 }
             }
         }, 1000);
@@ -72,7 +72,7 @@ let notificationInterval = setInterval(() => {
             alert.date_update = new Date().toString();
 
             storeOnAllDB({alerts: alerts, date_update: alert.date_update});
-            console.log(`INFO - Notifications.js: Non existing notified users [${nonExistingGuardUsers}] were removed from "${alert.sensor_name} - id${alert.id}".`);
+            console.log(`INFO - notifications.js: Non existing notified users [${nonExistingGuardUsers}] were removed from "${alert.sensor_name} - id${alert.id}".`);
         }
         // Clean alert.notified_users if alert changed its state to 'off'.
         // Will not enter here ff alert was updated from web UI, as alert.notified_users is empty when updated from UI.
@@ -81,7 +81,7 @@ let notificationInterval = setInterval(() => {
             alert.date_update = new Date().toString();
 
             storeOnAllDB({alerts: alerts, date_update: alert.date_update});
-            console.log(`INFO - Notifications.js: All notified users were removed from "${alert.sensor_name} - id${alert.id}".`);
+            console.log(`INFO - notifications.js: All notified users were removed from "${alert.sensor_name} - id${alert.id}".`);
         }
 
         // Notify immediately each guard user.
@@ -91,7 +91,7 @@ let notificationInterval = setInterval(() => {
                 // Immediately notify guard users through Whatsapp.
                 try{
                     await wspNotificationAlert(alert.alert_message, guardUser.phone);
-                    console.log(`INFO - Notifications.js: Immediate notification for user ${guardUser.email} - ${guardUser.phone} about alert "${alert.sensor_name} - id${alert.id}".`);
+                    console.log(`INFO - notifications.js: Immediate notification for user ${guardUser.email} - ${guardUser.phone} about alert "${alert.sensor_name} - id${alert.id}".`);
                     let dateUpdate = new Date().toString();
                     alert.notified_users.push(guardUser.email);
                     alert.date_update = dateUpdate;
@@ -100,7 +100,7 @@ let notificationInterval = setInterval(() => {
                 }
                 catch(error){
                     console.error(error);
-                    console.log(`WARNING - Notifications.js: Problems with Twilio, no immediate notification for user ${guardUser.email} - ${guardUser.phone} about alert "${alert.sensor_name} - id${alert.id}".`);
+                    console.log(`WARNING - notifications.js: Problems with Twilio, no immediate notification for user ${guardUser.email} - ${guardUser.phone} about alert "${alert.sensor_name} - id${alert.id}".`);
                 }
             }
         });
@@ -114,14 +114,14 @@ let notificationInterval = setInterval(() => {
                     guardUsers.forEach(async (guardUser, index) => {
                         try{
                             await wspNotificationAlert(alert.alert_message, guardUser.phone);
-                            console.log(`INFO - Notifications.js: Scheduled notification for user ${guardUser.email} - ${guardUser.phone} about alert "${alert.sensor_name} - id${alert.id}".`);
+                            console.log(`INFO - notifications.js: Scheduled notification for user ${guardUser.email} - ${guardUser.phone} about alert "${alert.sensor_name} - id${alert.id}".`);
                         }
                         catch(error){
-                            console.log(`WARNING - Notifications.js: Problems with Twilio, no scheduled notification for user ${guardUser.email} - ${guardUser.phone} about alert "${alert.sensor_name} - id${alert.id}".`);
+                            console.log(`WARNING - notifications.js: Problems with Twilio, no scheduled notification for user ${guardUser.email} - ${guardUser.phone} about alert "${alert.sensor_name} - id${alert.id}".`);
                         }
                     });
                 });
-                console.log(`INFO - Notifications.js: Added notification scheduler for "${alert.sensor_name} - id${alert.id}".`);
+                console.log(`INFO - notifications.js: Added notification scheduler for "${alert.sensor_name} - id${alert.id}".`);
             }
         }
     });
@@ -152,13 +152,13 @@ const storeOnAllDB = async (keyProps) =>{
         await remoteMongoDB.close();
     }
     catch(error){
-        console.error('ERROR - Notifications.js:', error);
-        console.log('WARNING - Notifications.js: Data was stored only in local DB.');
+        console.error('ERROR - notifications.js:', error);
+        console.log('WARNING - notifications.js: Data was stored only in local DB.');
     }
 }
 
 async function shutdownMicroservice(){
-    console.log('INFO: Shuting down Notifications.js microservice...');
+    console.log('INFO - notifications.js: Shuting down notifications.js microservice...');
     clearInterval(notificationInterval);
     clearInterval(delayStateUpdateInterval);
 
