@@ -57,7 +57,7 @@ fs.watch(pathDeviceMetadataDB, (event, filename) => {
                     console.log(`INFO - notifications.js: Scheduler for "${prop}" was deleted as there are not alert associated to it.`);
                 }
             }
-        }, 1000);
+        }, 100);
     }
 });
 

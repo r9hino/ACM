@@ -8,6 +8,7 @@ const env = require('../Helper/envExport.js');              // Environment varia
 const fs = require('fs');
 const {hostname} = require('os');
 const JSONdb = require('simple-json-db');
+const md5 = require('md5');
 
 const MongoDBHandler = require('../DB/MongoDBHandler');
 const InfluxDBHandler = require('../DB/InfluxDBHandler');
@@ -24,18 +25,35 @@ let delayStateUpdateInterval;
 let alerts = deviceMetadataDB.get('alerts');
 let sensors = deviceMetadataDB.get('sensors');
 let alertTriggerTimes = {};             // Store current time and time at which each sensor alert trigger for the first time.
+let previousAlerts = alerts;
+let md5PreviousFile = null;
+let semaforeAlertActivation = false, semaforeAlertDeactivation = false;
 
 
 // Watch for changes in local DB (json file).
 // If a change was made to the file, deviceMetadaDB instance is updated.
 fs.watch(pathDeviceMetadataDB, (event, filename) => {
     if(filename){
-        clearTimeout(delayStateUpdateInterval);
+        clearInterval(delayStateUpdateInterval);
 
+        //if(delayStateUpdateInterval) return;
         delayStateUpdateInterval = setTimeout(() => {
-            console.log(new Date().toString(), alerts);
-            let previousAlerts = alerts;
-            // Update alarms and sensors if local DB is changed or updated.
+            const md5CurrentFile = md5(fs.readFileSync(pathDeviceMetadataDB));
+            if(md5CurrentFile === md5PreviousFile || event !== 'change') return;
+            md5PreviousFile = md5CurrentFile;
+
+            // If the local DB was modified by this microservices, execution of the code below is not required.
+            if(semaforeAlertActivation === true){
+                semaforeAlertActivation = false;
+                return;
+            }
+            if(semaforeAlertDeactivation === true){
+                semaforeAlertDeactivation = false;
+                return;
+            }
+
+            // Update alarms and sensors if local DB is changed or updated by another microservice.
+            previousAlerts = alerts;
             deviceMetadataDB = new JSONdb(pathDeviceMetadataDB, {syncOnWrite: false});
             sensors = deviceMetadataDB.get('sensors');
             alerts = deviceMetadataDB.get('alerts');
@@ -64,7 +82,7 @@ fs.watch(pathDeviceMetadataDB, (event, filename) => {
                     }
                 }
             });
-        }, 100);
+        }, 250);
     }
 });
 
@@ -84,6 +102,8 @@ const activateAlert = async (alert, alertIndex, sensorTime, alertMessage) => {
     // Set alert state to "on", log the alert.
     // Delete alertTriggerTimes prop for the sensor as it no longer needed.
     if(timeElapsedSinceFirstTrigger >= alert.settling_time){
+        semaforeAlertActivation = true;
+
         const dateUpdate = new Date().toString();
         alerts[alertIndex].state = 'on';
         alerts[alertIndex].alert_message = alertMessage;
@@ -123,7 +143,7 @@ let alertActivationInterval = setInterval(() => {
                             break;
                         case 'igual':
                             if(lastSensorData.value == alert.value){
-                                activateAlert(alert, index, lastSensorData.time, `Alerta: "${alert.sensor_name}" es igual que ${alert.value} ${alert.unit}.`);
+                                activateAlert(alert, index, lastSensorData.time, `Alerta: "${alert.sensor_name}" es igual a ${alert.value} ${alert.unit}.`);
                             }
                             break;
                         case 'mayor o igual':
@@ -199,23 +219,29 @@ let alertDeactivationInterval = setInterval(() => {
 
                 // If alert conditions are still triggering, just update date_trigger.
                 if(keepTriggering === true){
+                    semaforeAlertDeactivation = true;
                     alert.date_trigger = new Date().toString();
                     storeOnAllDB({alerts: alerts, date_update: alert.date_trigger});
                 }
                 // If alert conditions are not been triggering now, change alert state to 'off' if x amount of time has passed.
                 else{
                     let timeElapsedSinceLastTrigger = (Date.now() - Date.parse(alert.date_trigger))/1000;   // Convert to seconds.
-                    if(timeElapsedSinceLastTrigger > 20){
+                    if(timeElapsedSinceLastTrigger > alert.settling_time*6){
+                        semaforeAlertDeactivation = true;
+
+                        alert.state = 'off';
                         alert.date_trigger = null;
                         alert.date_update = new Date().toString();
-                        alert.state = 'off';
+                        alert.alert_message = null;
                         storeOnAllDB({alerts: alerts, date_update: alert.date_update});
+
+                        console.log(`INFO - alertActivation.js: Alert for "${alert.sensor_name}" was deactivated.`);
                     }
                 }
             }               // if(lastSensorData !== undefined)
         }                   // if alert.state === 'on'
     });                     // forEach
-}, 5000);                   // setInterval
+}, 15000);                   // setInterval
 
 
 const storeOnAllDB = async (keyProps) =>{

@@ -40,7 +40,7 @@
         {
             "email": "philippe.ilharreguy@gmail.com",
             "phone": "+56999972023",
-            "date_update": "Wed Sep 22 2021 10:53:06 GMT-0300 (Chile Summer Time)"
+            "date_update": "Thu Sep 23 2021 18:22:35 GMT-0300 (Chile Summer Time)"
         }
     ],
     "alerts": [
@@ -70,14 +70,14 @@
         {
             "id": 2,
             "sensor_name": "Temperatura estacion",
-            "criteria": "menor o igual",
-            "value": "21.44",
+            "criteria": "mayor o igual",
+            "value": "24",
             "unit": "°C",
-            "settling_time": "5",
+            "settling_time": "15",
             "state": "off",
             "notified_users": [],
-            "date_update": "Thu Sep 23 2021 00:15:26 GMT-0300 (Chile Summer Time)",
-            "alert_message": []
+            "alert_message": [],
+            "date_update": "Fri Sep 24 2021 00:50:22 GMT-0300 (Chile Summer Time)"
         }
     ],
     "sensors": [
@@ -119,5 +119,5 @@
             "type": "temperature"
         }
     ],
-    "date_update": "Thu Sep 23 2021 00:15:26 GMT-0300 (Chile Summer Time)"
+    "date_update": "Fri Sep 24 2021 00:50:22 GMT-0300 (Chile Summer Time)"
 }
