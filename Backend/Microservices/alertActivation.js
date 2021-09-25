@@ -28,10 +28,10 @@ let alertTriggerTimes = {};             // Store current time and time at which 
 let previousAlerts = alerts;
 let md5PreviousFile = null;
 let semaforeAlertActivation = false, semaforeAlertDeactivation = false;
+const hysteresisPercent = 0.05;
 
 
-// Watch for changes in local DB (json file).
-// If a change was made to the file, deviceMetadaDB instance is updated.
+// Watch for changes in local DB (json file) made by other microservices, if there was one update deviceMetadataDB.
 fs.watch(pathDeviceMetadataDB, (event, filename) => {
     if(filename){
         clearInterval(delayStateUpdateInterval);
@@ -42,7 +42,7 @@ fs.watch(pathDeviceMetadataDB, (event, filename) => {
             if(md5CurrentFile === md5PreviousFile || event !== 'change') return;
             md5PreviousFile = md5CurrentFile;
 
-            // If the local DB was modified by this microservices, execution of the code below is not required.
+            // If the local DB was modified by this microservice, the execution of the code below is not required.
             if(semaforeAlertActivation === true){
                 semaforeAlertActivation = false;
                 return;
@@ -68,7 +68,7 @@ fs.watch(pathDeviceMetadataDB, (event, filename) => {
                         delete alertTriggerTimes[previousAlert.sensor_name];
                         console.log(`INFO - alertActivation.js: Property alertTriggerTimes["${previousAlert.sensor_name}"] was removed.`);
                     }
-                    if(previousAlert.state === 'on') console.log(`INFO - alertActivation.js: Alert for "${previousAlert.sensor_name}" was deactivated.`);
+                    if(previousAlert.state === 'on') console.log(`INFO - alertActivation.js: Alert for "${previousAlert.sensor_name} - id${previousAlert.id}" was deactivated.`);
                 }
                 // If state change from 'on' to 'off', remove property from alertTriggerTimes.
                 else if(index >= 0){
@@ -78,7 +78,7 @@ fs.watch(pathDeviceMetadataDB, (event, filename) => {
                             delete alertTriggerTimes[previousAlert.sensor_name];
                             console.log(`INFO - alertActivation.js: Property alertTriggerTimes["${previousAlert.sensor_name}"] was removed.`);
                         }
-                        if(previousAlert.state === 'on') console.log(`INFO - alertActivation.js: Alert for "${previousAlert.sensor_name}" was deactivated.`);
+                        if(previousAlert.state === 'on') console.log(`INFO - alertActivation.js: Alert for "${previousAlert.sensor_name} - id${previousAlert.id}" was deactivated.`);
                     }
                 }
             });
@@ -190,27 +190,30 @@ let alertDeactivationInterval = setInterval(() => {
             if(lastSensorData !== undefined){
                 // If it is a number then enter here.
                 if(isNumber(lastSensorData.value)){
+                    let hysteresisValue;
                     switch(alert.criteria){
                         case 'menor':
-                            if(lastSensorData.value < alert.value) keepTriggering = true;
+                            if(lastSensorData.value < alert.value*(1+hysteresisPercent)) keepTriggering = true;
                             break;
                         case 'menor o igual':
-                            if(lastSensorData.value <= alert.value) keepTriggering = true;
+                            if(lastSensorData.value <= alert.value*(1+hysteresisPercent)) keepTriggering = true;
                             break;
                         case 'igual':
-                            if(lastSensorData.value == alert.value) keepTriggering = true;
+                            if(lastSensorData.value >= alert.value*(1-hysteresisPercent) && lastSensorData.value <= alert.value*(1+hysteresisPercent)) keepTriggering = true;
                             break;
                         case 'mayor o igual':
-                            if(lastSensorData.value >= alert.value) keepTriggering = true;
+                            if(lastSensorData.value >= alert.value*(1-hysteresisPercent)) keepTriggering = true;
                             break;
                         case 'mayor':
-                            if(lastSensorData.value > alert.value) keepTriggering = true;
+                            if(lastSensorData.value > alert.value*(1-hysteresisPercent)) keepTriggering = true;
                             break;
                         case 'entre el rango':
-                            if(lastSensorData.value >= alert.value && lastSensorData.value <= alert.value_aux) keepTriggering = true;
+                            hysteresisValue = (alert.value_aux - alert.value)*hysteresisPercent;
+                            if(lastSensorData.value >= alert.value - hysteresisValue && lastSensorData.value <= alert.value_aux + hysteresisValue) keepTriggering = true;
                             break;
                         case 'fuera del rango':
-                            if(lastSensorData.value < alert.value || lastSensorData.value > alert.value_aux) keepTriggering = true;
+                            hysteresisValue = (alert.value_aux - alert.value)*hysteresisPercent;
+                            if(lastSensorData.value < alert.value + hysteresisValue || lastSensorData.value > alert.value_aux - hysteresisValue) keepTriggering = true;
                             break;
                         default:
                             // default code
@@ -223,7 +226,7 @@ let alertDeactivationInterval = setInterval(() => {
                     alert.date_trigger = new Date().toString();
                     storeOnAllDB({alerts: alerts, date_update: alert.date_trigger});
                 }
-                // If alert conditions are not been triggering now, change alert state to 'off' if x amount of time has passed.
+                // If alert conditions are not been triggered now, change alert state to 'off' if x amount of time has passed.
                 else{
                     let timeElapsedSinceLastTrigger = (Date.now() - Date.parse(alert.date_trigger))/1000;   // Convert to seconds.
                     if(timeElapsedSinceLastTrigger > alert.settling_time*6){
@@ -235,13 +238,13 @@ let alertDeactivationInterval = setInterval(() => {
                         alert.alert_message = null;
                         storeOnAllDB({alerts: alerts, date_update: alert.date_update});
 
-                        console.log(`INFO - alertActivation.js: Alert for "${alert.sensor_name}" was deactivated.`);
+                        console.log(`INFO - alertActivation.js: Alert "${alert.sensor_name} - id${alert.id}" was deactivated. Actual ${lastSensorData.value} ${alert.unit}.`);
                     }
                 }
             }               // if(lastSensorData !== undefined)
         }                   // if alert.state === 'on'
     });                     // forEach
-}, 15000);                   // setInterval
+}, 15000);                  // setInterval
 
 
 const storeOnAllDB = async (keyProps) =>{

@@ -2,7 +2,7 @@
     <div class="d-inline-flex justify-content-center align-items-center mt-3 mb-3 mx-3">
         <div class="d-flex flex-column align-items-center">
             <button class="btn btn-outline-secondary width-alert-items dropdown-toggle mb-1 alert-input" type="button" data-bs-toggle="dropdown"
-                :id="`sensorDropdown${indexAlert}`">{{alert.sensor_name}}</button>
+                :class="{'active-alert': toggleActiveAlertClass}" :id="`sensorDropdown${indexAlert}`">{{alert.sensor_name}}</button>
             <ul class="dropdown-menu" :aria-labelledby="`sensorDropdown${indexAlert}`">
                 <li v-for="(sensor, indexSensor) in sensorsAvailable" :key="indexSensor">
                     <a class="dropdown-item" href="#" @click.prevent="alert.sensor_name=sensor.sensor_name; alert.unit=sensor.unit">{{sensor.sensor_name}}</a>
@@ -49,15 +49,54 @@
 </template>
 
 <script>
+import { ref, watch, onBeforeUnmount } from 'vue';
 export default {
+    name: 'InputAlertGroup',
     props: ['alert', 'indexAlert', 'sensorsAvailable', 'endFunction', 'textEndFunction', 'colorEndFunction', 'updateFunction'],
-    methods: {
+    setup(props){
+        let toggleActiveAlertClass = ref(false);
+        let toggleActiveAlertClassInterval = false;
 
+        // If alert state is 'on', start toggling background color.
+        if(props.alert.state === 'on'){
+            toggleActiveAlertClassInterval = setInterval(() => {
+                console.log(props.alert.state, toggleActiveAlertClass.value);
+
+                toggleActiveAlertClass.value = !toggleActiveAlertClass.value;
+                // If alert state change to 'off', stop toggling background color.
+                if(props.alert.state === 'off'){
+                    clearInterval(toggleActiveAlertClassInterval);
+                    toggleActiveAlertClass.value = false;
+                    return;
+                }
+            }, 2000);
+        }
+
+        onBeforeUnmount(() => {
+            clearInterval(toggleActiveAlertClassInterval);
+            toggleActiveAlertClass.value = false;
+        });
+
+        return {
+            toggleActiveAlertClass,
+        }
     }
 }
 </script>
 
 <style>
+    .no-active-alert{
+        color: #6c757d !important;
+        background-color: white !important;
+        border-color: #6c757d !important;
+        transition: color 2s, background-color 2s !important;
+    }
+    .active-alert{
+        color: white !important;
+        background-color: #dc3545 !important;
+        border-color: #dc3545 !important;
+        transition: color 2s, background-color 2s !important;
+    }
     .alert-input{
         font-size: 14px !important;
     }

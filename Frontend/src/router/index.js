@@ -3,11 +3,12 @@ import store from '../store/index';
 
 import Login from '../views/Login.vue';
 import Home from '../views/Home.vue';
-import Alerts from '../views/Alerts.vue';
+import Monitor from '../views/Monitor.vue';
 import Process from '../views/Process.vue';
 import Calibration from '../views/Calibration.vue';
 import SystemInfo from '../views/SystemInfo.vue';
 import GuardUsers from '../views/GuardUsers.vue';
+import Alerts from '../views/Alerts.vue';
 import Logs from '../views/Logs.vue';
 
 const routes = [
@@ -24,9 +25,9 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/alerts',
-    name: 'alerts',
-    component: Alerts,
+    path: '/monitor',
+    name: 'monitor',
+    component: Monitor,
     meta: { requiresAuth: true },
   },
   {
@@ -52,6 +53,12 @@ const routes = [
     path: '/guardusers',
     name: 'guardusers',
     component: GuardUsers,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/alerts',
+    name: 'alerts',
+    component: Alerts,
     meta: { requiresAuth: true },
   },
   {
