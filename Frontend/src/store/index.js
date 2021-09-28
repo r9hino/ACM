@@ -3,15 +3,19 @@ import { createStore } from "vuex";
 export default createStore({
     state: {
         user: null,
-        token: null,
+        apiToken: null,
+        influxToken: null,
         authenticated: false,
     },
     mutations: {
         setUser(state, user) {
             state.user = user;
         },
-        setToken(state, token) {
-            state.token = token;
+        setApiToken(state, apiToken) {
+            state.apiToken = apiToken;
+        },
+        setInfluxToken(state, influxToken) {
+            state.influxToken = influxToken;
         },
         setAuthenticated(state, isAuthenticated) {
             state.authenticated = isAuthenticated;
@@ -20,7 +24,8 @@ export default createStore({
     actions: {},
     getters: {
         getUser: (state) => state.user,
-        getToken: (state) => state.token,
+        getApiToken: (state) => state.apiToken,
+        getInfluxToken: (state) => state.influxToken,
         getAuthenticated: (state) => state.authenticated,
     },
 });

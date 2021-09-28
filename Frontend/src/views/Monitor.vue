@@ -58,17 +58,18 @@ export default {
         let alerts = ref([]);
         let sensorsAvailable = ref([]);         // Sensors installed in the system.
         let sensorsSelectedToChart = ref([]);   // Sensors selected on checkbox to be displayed on the chart.
-        let sensorData = ref([]);               // Sensor data points retrieved from Influx DB.
+        let sensorData = ref({});               // Sensor data points retrieved from Influx DB.
 
         const user = computed(() => store.getters.getUser);
         const isAuthenticated = computed(() => store.getters.getAuthenticated);
-        const token = computed(() => store.getters.getToken);
+        const apiToken = computed(() => store.getters.getApiToken);
+        const influxToken = computed(() => store.getters.getInfluxToken);
 
         let getAlertsAndSensorsAvailable = async () => {
             loading.value = true;
             const response = await fetch(`http://rpi4id0.mooo.com:5000/api/getalertsandsensorsavailable`, {
                 method: "GET",
-                headers: {"Authorization": `Bearer ${token.value}`, "Content-Type": "application/json"},
+                headers: {"Authorization": `Bearer ${apiToken.value}`, "Content-Type": "application/json"},
             });
             const responseJSON = await response.json();
 
@@ -80,6 +81,89 @@ export default {
             else{
                 // Only if there is a warning or and error display footer message.
                 footerRef.value.setTemporalMessage(responseJSON.message, 5000);
+            }
+            loading.value = false;
+        };
+
+        const csvParser = csvText => {
+            let start = Date.now();
+            let lines = csvText.split('\r\n');        // Create string array.
+            /*lines = lines.map(function(line){
+                return line.replace(/\r/g,'');
+            });*/
+            let end = Date.now();
+            console.log('Milliseconds:', (end-start))            
+            //console.log(lines);
+
+            const titles = lines.shift().split(',');  // Recover titles from first row.
+            //titles.splice(0,3);                       // Remove first 3 columns.
+            const sensorNameIndex = titles.findIndex(title => title === 'sensor_name');
+            const timeIndex = titles.findIndex(title => title === '_time');
+            const valueIndex = titles.findIndex(title => title === '_value');
+            console.log(titles);
+            console.log(lines);
+            start = Date.now();
+            let sensorData = {};
+            // Create array of array for each column.
+            /*lines = lines.map(line => {
+                line = line.split(',');
+                line.splice(0,3);
+                return line;
+            });*/
+            // Create array of array for each column. Faster than using .map().
+            lines.forEach((line, index) => {
+                line = line.split(',');
+                //line.splice(0,3);
+                lines[index] = line;
+
+                let sensorName = line[sensorNameIndex];
+                console.log('line', line);
+                console.log(sensorData[sensorName]);
+                //if(sensorData[sensorName] !== undefined) sensorData[sensorName].push([line[timeIndex], line[valueIndex]]);
+                if(sensorData[sensorName] === undefined) sensorData = {[sensorName]: [[line[timeIndex], line[valueIndex]]]};
+            });
+            end = Date.now();
+            console.log('Milliseconds:', (end-start))   
+            console.log(sensorData);
+        }
+
+        let getSensorData = async (sensorList) => {
+            loading.value = true;
+
+            // Query construction.
+            let querySensorNames = '';
+            /*if(sensorList.length === 1) querySensorNames = `r["sensor_name"] == "${sensorList[0]}"`;
+            else if(sensorList.length > 1){
+                querySensorNames = sensorList.reduce((prev, curr, index) => {
+                    if(index === 0) return prev;
+                    return prev + ' or r["sensor_name"] == ' + curr;
+                }, 'r["sensor_name"] == ' + sensorList[0]);
+            }*/
+
+            const fluxQuery = `from(bucket: "rpi-sensors")
+                |> range(start: -5m)
+                |> filter(fn: (r) => r._measurement == "temperature")
+                |> drop(columns:["_start", "_stop", "host"])`;
+
+            const response = await fetch(`http://rpi4id0.mooo.com:8086/api/v2/query?org=SET`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Token ${influxToken.value}`,
+                    "Content-Type": "application/vnd.flux",
+                    "Accept": "application/text"
+                },
+                body: fluxQuery
+            });
+            const responseText = await response.text();
+
+            sensorData.value = csvParser(responseText);
+            //console.log(responseText);
+            if(response.status == 200){
+                //sensorData.value = responseJSON.sensorData;
+            }
+            else{
+                // Only if there is a warning or and error display footer message.
+                footerRef.value.setTemporalMessage(responseText.message, 5000);
             }
             loading.value = false;
         };
@@ -123,6 +207,7 @@ export default {
 
         onBeforeMount(() => {
             getAlertsAndSensorsAvailable();
+            getSensorData();
         });
         
         return{

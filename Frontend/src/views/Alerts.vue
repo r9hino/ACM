@@ -42,13 +42,13 @@ export default {
 
         const user = computed(() => store.getters.getUser);
         const isAuthenticated = computed(() => store.getters.getAuthenticated);
-        const token = computed(() => store.getters.getToken);
+        const apiToken = computed(() => store.getters.getApiToken);
 
         let getAlertsAndSensorsAvailable = async () => {
             loading.value = true;
             const response = await fetch("http://rpi4id0.mooo.com:5000/api/getalertsandsensorsavailable", {
                 method: "GET",
-                headers: {"Authorization": `Bearer ${token.value}`, "Content-Type": "application/json"},
+                headers: {"Authorization": `Bearer ${apiToken.value}`, "Content-Type": "application/json"},
             });
             const responseJSON = await response.json();
 
@@ -105,7 +105,7 @@ export default {
             loading.value = true;
             const response = await fetch("http://rpi4id0.mooo.com:5000/api/addalert", {
                 method: "POST",
-                headers: {"Authorization": `Bearer ${token.value}`, "Content-Type": "application/json"},
+                headers: {"Authorization": `Bearer ${apiToken.value}`, "Content-Type": "application/json"},
                 body: JSON.stringify({newAlert: newAlert.value})
             });
             const responseJSON = await response.json();
@@ -122,7 +122,7 @@ export default {
             loading.value = true;
             const response = await fetch("http://rpi4id0.mooo.com:5000/api/removealert", {
                 method: "POST",
-                headers: {"Authorization": `Bearer ${token.value}`, "Content-Type": "application/json"},
+                headers: {"Authorization": `Bearer ${apiToken.value}`, "Content-Type": "application/json"},
                 body: JSON.stringify({alertRemove: alerts.value[index]})
             });
             const responseJSON = await response.json();
@@ -146,7 +146,7 @@ export default {
 
             const response = await fetch("http://rpi4id0.mooo.com:5000/api/updatealert", {
                 method: "PUT",
-                headers: {"Authorization": `Bearer ${token.value}`, "Content-Type": "application/json"},
+                headers: {"Authorization": `Bearer ${apiToken.value}`, "Content-Type": "application/json"},
                 body: JSON.stringify({
                     alertUpdate: alerts.value[index],
                     index: index,

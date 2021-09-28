@@ -9,7 +9,7 @@ const JSONdb = require('simple-json-db');
 
 const MongoDBHandler = require('../DB/MongoDBHandler');
 const verifyToken = require('./validateToken');
-const {MONGODB_REMOTE_URL, WEB_USERNAME, WEB_PASSWORD, WEB_JWT_SECRET} = require('../Helper/envExport');   // Environment variables.
+const {MONGODB_REMOTE_URL, WEB_USERNAME, WEB_PASSWORD, WEB_JWT_SECRET, INFLUXDB_TOKEN} = require('../Helper/envExport');   // Environment variables.
 
 // Initialize DBs
 const remoteMongoDB = new MongoDBHandler(MONGODB_REMOTE_URL);
@@ -33,9 +33,11 @@ router.post('/login', (req, res) => {
     if(ipReqMonitor[ip].numberOfAttempts > 0){
         if(username === WEB_USERNAME && password === WEB_PASSWORD){
             const user = {id: 1, username: 'pi'};
-            const token = jwt.sign(user, WEB_JWT_SECRET);
+            const apiToken = jwt.sign(user, WEB_JWT_SECRET);
+            const influxToken = INFLUXDB_TOKEN;
+
             res.status(200);
-            res.json({user, token});
+            res.json({user, apiToken, influxToken});
             // Delete ip attemps information because user logged in correctly and it is no longer necessary to store it.
             delete ipReqMonitor[ip];
             console.log(`INFO: IP ${ip} logged in.`);

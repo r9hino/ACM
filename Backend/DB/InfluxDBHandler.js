@@ -50,8 +50,6 @@ class InfluxDBHandler {
     }
 
     queryLastData = async (bucket, sensorType, sensorName, timeWindow) => {
-        //const queryApi = this.dbClient.getQueryApi(this.org);
-        //console.time("dbsave");
         const fluxQuery = `from(bucket: "${bucket}")
             |> range(start: -${timeWindow})
             |> filter(fn: (r) => r._measurement == "${sensorType}")
@@ -66,6 +64,38 @@ class InfluxDBHandler {
         catch(error){
             console.error(error)
             console.error(`ERROR - InfluxDBHandler.js: Last value from the sensor "${sensorName}" couldn't be retrieved.`)
+        };
+    }
+
+    queryWindowData = async (bucket, sensorList, timeWindow) => {
+        let querySensorNames = '';
+        if(sensorList.length <= 0) return;
+        if(sensorList.length === 1) querySensorNames = `r["sensor_name"] == "${sensorList[0]}"`;
+        else if(sensorList.length > 1){
+            querySensorNames = sensorList.reduce((prev, curr, index) => {
+                if(index === 0) return prev;
+                return prev + ' or r["sensor_name"] == ' + curr;
+            }, 'r["sensor_name"] == ' + sensorList[0]);
+        }
+
+        const fluxQuery = `from(bucket: "${bucket}")
+            |> range(start: -${timeWindow})
+            |> filter(fn: (r) => r._measurement == "${sensorType}")
+            |> filter(fn: (r) => "${querySensorNames}")`;
+
+        try{
+            let o = await this.queryApi.collectRows(fluxQuery);     // return an array.
+            if(o === undefined) throw 'Query returned undefined.';
+            
+            let data = [];
+            o.forEach((row, index) => {
+                data[index] = {time: row._time, measurement: row._measurement, sensor_name: row.sensor_name, unit: row._field, value: row._value.toFixed(2)};
+            });
+            
+            return o;
+        }
+        catch(error){
+            console.error(`ERROR - InfluxDBHandler.js: ${error}.`)
         };
     }
 

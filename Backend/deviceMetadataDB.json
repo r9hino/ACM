@@ -45,18 +45,6 @@
     ],
     "alerts": [
         {
-            "id": 0,
-            "sensor_name": "Caudal manifold",
-            "criteria": "menor",
-            "value": "2",
-            "value_aux": null,
-            "unit": "m3/h",
-            "settling_time": "10",
-            "date_update": "Mon Sep 13 2021 14:36:53 GMT-0300 (Chile Summer Time)",
-            "state": "off",
-            "notified_users": []
-        },
-        {
             "id": 1,
             "sensor_name": "Presion manifold",
             "criteria": "menor",
@@ -80,7 +68,7 @@
             ],
             "date_update": "Mon Sep 27 2021 15:16:09 GMT-0300 (Chile Summer Time)",
             "alert_message": "Alerta: \"Temperatura estacion\" es mayor o igual que 22 °C.",
-            "date_trigger": "Mon Sep 27 2021 16:25:25 GMT-0300 (Chile Summer Time)"
+            "date_trigger": "Mon Sep 27 2021 23:54:25 GMT-0300 (Chile Summer Time)"
         }
     ],
     "sensors": [
@@ -122,5 +110,5 @@
             "type": "temperature"
         }
     ],
-    "date_update": "Mon Sep 27 2021 16:25:25 GMT-0300 (Chile Summer Time)"
+    "date_update": "Mon Sep 27 2021 23:54:25 GMT-0300 (Chile Summer Time)"
 }

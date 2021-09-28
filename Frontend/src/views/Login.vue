@@ -40,7 +40,7 @@ export default {
         };
     },
     methods: {
-        ...mapMutations(["setUser", "setToken", "setAuthenticated"]),
+        ...mapMutations(["setUser", "setApiToken", "setInfluxToken", "setAuthenticated"]),
         async login(e){
             e.preventDefault();
             const response = await fetch("http://rpi4id0.mooo.com:5000/login", {
@@ -56,11 +56,12 @@ export default {
             if(response.status == 200){
                 this.error = null;
 
-                const {user, token} = await response.json();
+                const {user, apiToken, influxToken} = await response.json();
                 this.setUser(user);
-                this.setToken(token);
+                this.setApiToken(apiToken);
+                this.setInfluxToken(influxToken);
                 this.setAuthenticated(true);
-                //console.log(user, token);
+                //console.log(user, apiToken, influxToken);
                 await this.$router.push("/");
             }
             else{
