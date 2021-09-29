@@ -7,8 +7,10 @@
 <script>
 import { computed } from 'vue';
 import Highcharts from 'highcharts';
-import boost from "highcharts/modules/boost";
+import exporting from 'highcharts/modules/exporting';
+import boost from 'highcharts/modules/boost';
 
+exporting(Highcharts);
 boost(Highcharts);
 
 export default {
@@ -22,8 +24,8 @@ export default {
                 chart: {
                     type: "line",
                     redraw: true,
-                    animation: true,
-                    zoomType: "xy",
+                    animation: false,
+                    zoomType: "x",
                     panning: true,
                     panKey: "shift"
                 },

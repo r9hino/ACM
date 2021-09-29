@@ -62,13 +62,11 @@
             "value": "23",
             "unit": "°C",
             "settling_time": "30",
-            "state": "on",
-            "notified_users": [
-                "philippe.ilharreguy@gmail.com"
-            ],
-            "date_update": "Wed Sep 29 2021 09:55:50 GMT-0300 (Chile Summer Time)",
-            "alert_message": "Alerta: \"Temperatura estacion\" es mayor o igual que 23 °C.",
-            "date_trigger": "Wed Sep 29 2021 18:00:06 GMT-0300 (Chile Summer Time)"
+            "state": "off",
+            "notified_users": [],
+            "date_update": "Wed Sep 29 2021 19:11:12 GMT-0300 (Chile Summer Time)",
+            "alert_message": null,
+            "date_trigger": null
         }
     ],
     "sensors": [
@@ -110,5 +108,5 @@
             "type": "temperature"
         }
     ],
-    "date_update": "Wed Sep 29 2021 18:00:06 GMT-0300 (Chile Summer Time)"
+    "date_update": "Wed Sep 29 2021 19:11:12 GMT-0300 (Chile Summer Time)"
 }

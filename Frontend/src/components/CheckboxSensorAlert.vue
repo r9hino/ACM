@@ -20,12 +20,12 @@ import { ref, watch, onBeforeUnmount } from 'vue';
 export default {
     name: 'CheckboxSensorAlert',
     components: {},
-    props: ['sensor', 'alert', 'stopAlertFunction'],
+    props: ['sensor', 'alert', 'checked','stopAlertFunction'],
     emits: ['emitCheckboxStatus'],
     setup(props, { emit }){
         let toggleActiveAlertClass = ref(false);
         let toggleActiveAlertClassInterval = false;
-        let checked = ref(false);
+        //let checked = ref(false);
 
         //console.log(props.alert)
         // If alert state is 'on', start toggling background color.
@@ -45,7 +45,7 @@ export default {
 
         // Emit to Monitor the status of the sensor checkbox.
         let emiterCheckboxStatus = () => {
-            emit('emitCheckboxStatus', {sensor_name: props.sensor.sensor_name, value: checked.value});
+            emit('emitCheckboxStatus', {sensor_name: props.sensor.sensor_name, value: props.checked});
         }
         onBeforeUnmount(() => {
             //clearInterval(toggleActiveAlertClassInterval);
@@ -54,7 +54,6 @@ export default {
 
         return {
             toggleActiveAlertClass,
-            checked,
             emiterCheckboxStatus,
         }
     }

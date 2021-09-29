@@ -3,6 +3,7 @@
   <div class="container-fluid d-flex flex-column justify-content-center">
     <div class="d-flex justify-content-around align-items-center mt-3">
       <h5 class="mt-2">Sensores</h5>
+
       <!-- Botones de tiempo -->
       <div class="d-flex justify-content-between align-items-center">
         <button class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex justify-content-between align-items-center me-3" type="button" data-bs-toggle="dropdown"
@@ -32,21 +33,24 @@
           <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`3 horas`; getSensorData();">3 horas</a></li>
           <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`12 horas`; getSensorData();">12 horas</a></li>
           <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`1 dia`; getSensorData();">1 dia</a></li>
-          <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`3 dias`;getSensorData();">3 dias</a></li>
+          <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`3 dias`; getSensorData();">3 dias</a></li>
           <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`7 dias`; getSensorData();">7 dias</a></li>
           <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`15 dias`; getSensorData();">15 dias</a></li>
           <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`30 dias`; getSensorData();">30 dias</a></li>
         </ul>
       </div>
     </div>
+
     <!-- Graficos -->
     <div>
       <Chart :sensorData="sensorData"></Chart>
     </div>
+
     <!-- Sensor disponibles -->
     <div class="" style="width: 370px; margin: 0 auto">
       <CheckboxSensorAlert v-for="(sensor, index) in sensorsAvailable" :key="index"
         :sensor="sensor" :alert="alerts.find(alert => alert.sensor_name === sensor.sensor_name)"
+        :checked="sensorsSelectedToChart.includes(sensor.sensor_name)"
         :stopAlertFunction="stopAlert" @emitCheckboxStatus="updateSensorsSelectedToChart">
       </CheckboxSensorAlert>
     </div>
@@ -56,7 +60,7 @@
 
 <script>
 import { useStore } from 'vuex';
-import { ref, watch, computed, onBeforeMount, onBeforeUnmount } from 'vue';
+import { ref, computed, onBeforeMount, onBeforeUnmount } from 'vue';
 
 import Spinner from '../components/Spinner.vue';
 import Chart from '../components/Chart.vue';
@@ -70,9 +74,9 @@ export default {
     setup(){
         const store = useStore();
         let loading = ref(false);
-        let timeWindow = ref('15 minutos');
-        let reloadingChartTime = ref(null);
-        let realoadingChartInterval;
+        let timeWindow = ref('15 minutos');     // Time window used for the x-axis in chart.
+        let reloadingChartTime = ref(null);     // Reloading time for updating chart.
+        let realoadingChartInterval;            // Interval for reloading chart with new data.
         let alerts = ref([]);
         let sensorsAvailable = ref([]);         // Sensors installed in the system.
         let sensorsSelectedToChart = ref([]);   // Sensors selected on checkbox to be displayed on the chart.
@@ -84,7 +88,7 @@ export default {
         const apiToken = computed(() => store.getters.getApiToken);
         const influxToken = computed(() => store.getters.getInfluxToken);
 
-        // Return array of all alerts and sensors available on system.
+        // Return array with all alerts and an array with all sensors available on system.
         let getAlertsAndSensorsAvailable = async () => {
             loading.value = true;
             const response = await fetch(`http://rpi4id0.mooo.com:5000/api/getalertsandsensorsavailable`, {
@@ -97,10 +101,7 @@ export default {
                 alerts.value = responseJSON.alerts;
                 sensorsAvailable.value = responseJSON.sensorsAvailable;
             }
-            else{
-                // Only if there is a warning or and error display footer message.
-                footerRef.value.setTemporalMessage(responseJSON.message, 5000);
-            }
+            else footerRef.value.setTemporalMessage(responseJSON.message, 5000); // Only if there is a warning or and error display footer message.
             loading.value = false;
         };
 
@@ -117,7 +118,7 @@ export default {
             const valueIndex = titles.findIndex(title => title === '_value');
             const unitIndex = titles.findIndex(title => title === '_field');
 
-            let start = Date.now();
+            //let start = Date.now();
             let sensorSeries = {};
             // Create array of array for each column.
             lines.forEach((line, index) => {
@@ -129,16 +130,15 @@ export default {
                 if(sensorSeries[sensorName] !== undefined) sensorSeries[sensorName].push([Date.parse(line[timeIndex]) - timeZone, parseFloat(line[valueIndex])]);
                 else sensorSeries[sensorName] = [[Date.parse(line[timeIndex]) - timeZone, parseFloat(line[valueIndex])]];
             });
-            let end = Date.now();
-            console.log('Milliseconds:', (end-start));
+            //let end = Date.now();
+            //console.log('Milliseconds:', (end-start));
 
             // Set Highcharts series format [{name: xx, data: [[], [], ... []]}, {name: yy, data: [[], [], ... []]}].
             let series = [];
             for(const [key, value] of Object.entries(sensorSeries)) {
                 series.push({name: key, data: value});
             }
-
-            console.log(sensorSeries); 
+            //console.log(series); 
             return series;
         }
 
@@ -156,29 +156,33 @@ export default {
                 case '15 dias': localTimeWindow = '15d'; break;
                 case '30 dias': localTimeWindow = '30d'; break;
             }
-            console.log(localTimeWindow);
+
+            // Query construction.
+            let querySensorNames = '';
+            // If no sensor is selected, clean chart.
+            if(sensorsSelectedToChart.value.length === 0){
+                sensorData.value = [];
+                return;   // No sensor selected.
+            }
+            if(sensorsSelectedToChart.value.length === 1) querySensorNames = `r["sensor_name"] == "${sensorsSelectedToChart.value[0]}"`;
+            else if(sensorsSelectedToChart.value.length > 1){
+                querySensorNames = sensorsSelectedToChart.value.reduce((prev, curr, index) => {
+                    if(index === 0) return prev;
+                    return prev + ` or r["sensor_name"] == "${curr}"`;
+                }, `r["sensor_name"] == "${sensorsSelectedToChart.value[0]}"`);
+            }
 
             // Define aggregate window time.
-            // This take data averages for improving laoding time (less data is returned from server when aggregate time window increase).
+            // This will average the data for improving laoding time (less data is returned from server when aggregate time window is increased).
             let aggregateTimeWindow = '';
             if(localTimeWindow === '3d') aggregateTimeWindow = `|> aggregateWindow(every: 30s, fn: mean, createEmpty: false)`;
             else if(localTimeWindow === '7d') aggregateTimeWindow = `|> aggregateWindow(every: 1m, fn: mean, createEmpty: false)`;
             else if(localTimeWindow === '15d') aggregateTimeWindow = `|> aggregateWindow(every: 3m, fn: mean, createEmpty: false)`;
             else if(localTimeWindow === '30d') aggregateTimeWindow = `|> aggregateWindow(every: 5m, fn: mean, createEmpty: false)`;
 
-            // Query construction.
-            let querySensorNames = '';
-            /*if(sensorList.length === 1) querySensorNames = `r["sensor_name"] == "${sensorList[0]}"`;
-            else if(sensorList.length > 1){
-                querySensorNames = sensorList.reduce((prev, curr, index) => {
-                    if(index === 0) return prev;
-                    return prev + ' or r["sensor_name"] == ' + curr;
-                }, 'r["sensor_name"] == ' + sensorList[0]);
-            }*/
-
             const fluxQuery = `from(bucket: "rpi-sensors")
                 |> range(start: -${localTimeWindow})
-                |> filter(fn: (r) => r._measurement == "temperature")
+                |> filter(fn: (r) => ${querySensorNames})
                 ${aggregateTimeWindow}
                 |> drop(columns:["_start", "_stop", "host"])`;
 
@@ -200,14 +204,12 @@ export default {
         let updateSensorsSelectedToChart = (checkboxStatus) => {
             let indexSensorSelected = sensorsSelectedToChart.value.findIndex(sensorSelected => sensorSelected === checkboxStatus.sensor_name);
             // Add sensor to list.
-            if(indexSensorSelected < 0 && checkboxStatus.value === true){
-                sensorsSelectedToChart.value.push(checkboxStatus.sensor_name);
-            }
+            if(indexSensorSelected < 0 && checkboxStatus.value === true) sensorsSelectedToChart.value.push(checkboxStatus.sensor_name);
             // Remove sensor from list.
-            else if(indexSensorSelected >= 0 && checkboxStatus.value === false){
-                sensorsSelectedToChart.value.splice(indexSensorSelected, 1);
-            }
-            console.log(sensorsSelectedToChart.value);
+            else if(indexSensorSelected >= 0 && checkboxStatus.value === false) sensorsSelectedToChart.value.splice(indexSensorSelected, 1);
+            //console.log(sensorsSelectedToChart.value);
+            localStorage.setItem("sensorsSelectedToChart", sensorsSelectedToChart.value);
+            getSensorData();
         };
 
         // Send a request to server updating alert state to 'off'.
@@ -239,6 +241,8 @@ export default {
         };
 
         onBeforeMount(() => {
+            // Load stored data on browser.
+            sensorsSelectedToChart.value = localStorage.getItem("sensorsSelectedToChart").split(',');
             setReloadingChartTime(reloadingChartTime.value);
             getAlertsAndSensorsAvailable();
         });
@@ -257,6 +261,7 @@ export default {
             stopAlert,
             getSensorData,
             setReloadingChartTime,
+            sensorsSelectedToChart,
             updateSensorsSelectedToChart,
             footerRef,
         }
@@ -265,7 +270,5 @@ export default {
 </script>
 
 <style scoped>
-  .btn:disabled{
-    opacity: 0.45 !important;
-  }
+
 </style>
