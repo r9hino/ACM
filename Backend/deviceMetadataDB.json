@@ -35,12 +35,12 @@
             "date_update": "Sun Sep 05 2021 03:38:50 GMT-0300 (Chile Summer Time)"
         }
     ],
-    "ip_public": "190.217.196.109",
+    "ip_public": "190.217.192.208",
     "guard_users": [
         {
             "email": "philippe.ilharreguy@gmail.com",
             "phone": "+56999972023",
-            "date_update": "Mon Sep 27 2021 15:16:09 GMT-0300 (Chile Summer Time)"
+            "date_update": "Wed Sep 29 2021 09:55:50 GMT-0300 (Chile Summer Time)"
         }
     ],
     "alerts": [
@@ -59,16 +59,16 @@
             "id": 2,
             "sensor_name": "Temperatura estacion",
             "criteria": "mayor o igual",
-            "value": "22",
+            "value": "23",
             "unit": "°C",
-            "settling_time": "10",
+            "settling_time": "30",
             "state": "on",
             "notified_users": [
                 "philippe.ilharreguy@gmail.com"
             ],
-            "date_update": "Mon Sep 27 2021 15:16:09 GMT-0300 (Chile Summer Time)",
-            "alert_message": "Alerta: \"Temperatura estacion\" es mayor o igual que 22 °C.",
-            "date_trigger": "Mon Sep 27 2021 23:54:25 GMT-0300 (Chile Summer Time)"
+            "date_update": "Wed Sep 29 2021 09:55:50 GMT-0300 (Chile Summer Time)",
+            "alert_message": "Alerta: \"Temperatura estacion\" es mayor o igual que 23 °C.",
+            "date_trigger": "Wed Sep 29 2021 18:00:06 GMT-0300 (Chile Summer Time)"
         }
     ],
     "sensors": [
@@ -110,5 +110,5 @@
             "type": "temperature"
         }
     ],
-    "date_update": "Mon Sep 27 2021 23:54:25 GMT-0300 (Chile Summer Time)"
+    "date_update": "Wed Sep 29 2021 18:00:06 GMT-0300 (Chile Summer Time)"
 }

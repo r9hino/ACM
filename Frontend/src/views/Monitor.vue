@@ -3,30 +3,47 @@
   <div class="container-fluid d-flex flex-column justify-content-center">
     <div class="d-flex justify-content-around align-items-center mt-3">
       <h5 class="mt-2">Sensores</h5>
-      <button class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex justify-content-between align-items-center" type="button" data-bs-toggle="dropdown"
-        :id="`time-windows`" style="width: 125px">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock me-2" viewBox="0 0 16 16">
-          <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
-          <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
-        </svg>{{ timeWindow }}
-      </button>
-      <ul class="dropdown-menu" :aria-labelledby="`time-window`">
-        <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`5 minutos`">5 minutos</a></li>
-        <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`15 minutos`">15 minutos</a></li>
-        <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`1 hora`">1 hora</a></li>
-        <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`3 horas`">3 horas</a></li>
-        <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`6 horas`">6 horas</a></li>
-        <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`12 horas`">12 horas</a></li>
-        <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`1 dia`">1 dia</a></li>
-        <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`2 dias`">2 dias</a></li>
-        <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`7 dias`">7 dias</a></li>
-        <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`30 dias`">30 dias</a></li>
-      </ul>
+      <!-- Botones de tiempo -->
+      <div class="d-flex justify-content-between align-items-center">
+        <button class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex justify-content-between align-items-center me-3" type="button" data-bs-toggle="dropdown"
+          :id="`reloading-chart-time`" style="width: 110px">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+            <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
+            <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>
+          </svg>{{ reloadingChartTime === null ? 'Pausado' : reloadingChartTime + 's' }}
+        </button>
+        <ul class="dropdown-menu" :aria-labelledby="`reloading-chart-time`">
+          <li><a class="dropdown-item" href="#" @click.prevent="reloadingChartTime=null; setReloadingChartTime();">Pausado</a></li>
+          <li><a class="dropdown-item" href="#" @click.prevent="reloadingChartTime=5; setReloadingChartTime();">5s</a></li>
+          <li><a class="dropdown-item" href="#" @click.prevent="reloadingChartTime=10; setReloadingChartTime();">10s</a></li>
+          <li><a class="dropdown-item" href="#" @click.prevent="reloadingChartTime=60; setReloadingChartTime();">60s</a></li>
+        </ul>
+        <button class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex justify-content-between align-items-center" type="button" data-bs-toggle="dropdown"
+          :id="`time-windows`" style="width: 125px">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock me-2" viewBox="0 0 16 16">
+            <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
+          </svg>{{ timeWindow }}
+        </button>
+        <ul class="dropdown-menu" :aria-labelledby="`time-window`">
+          <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`5 minutos`; getSensorData();">5 minutos</a></li>
+          <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`15 minutos`; getSensorData();">15 minutos</a></li>
+          <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`1 hora`; getSensorData();">1 hora</a></li>
+          <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`3 horas`; getSensorData();">3 horas</a></li>
+          <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`12 horas`; getSensorData();">12 horas</a></li>
+          <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`1 dia`; getSensorData();">1 dia</a></li>
+          <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`3 dias`;getSensorData();">3 dias</a></li>
+          <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`7 dias`; getSensorData();">7 dias</a></li>
+          <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`15 dias`; getSensorData();">15 dias</a></li>
+          <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`30 dias`; getSensorData();">30 dias</a></li>
+        </ul>
+      </div>
     </div>
     <!-- Graficos -->
     <div>
       <Chart :sensorData="sensorData"></Chart>
     </div>
+    <!-- Sensor disponibles -->
     <div class="" style="width: 370px; margin: 0 auto">
       <CheckboxSensorAlert v-for="(sensor, index) in sensorsAvailable" :key="index"
         :sensor="sensor" :alert="alerts.find(alert => alert.sensor_name === sensor.sensor_name)"
@@ -54,17 +71,20 @@ export default {
         const store = useStore();
         let loading = ref(false);
         let timeWindow = ref('15 minutos');
-        let footerRef = ref();
+        let reloadingChartTime = ref(null);
+        let realoadingChartInterval;
         let alerts = ref([]);
         let sensorsAvailable = ref([]);         // Sensors installed in the system.
         let sensorsSelectedToChart = ref([]);   // Sensors selected on checkbox to be displayed on the chart.
         let sensorData = ref({});               // Sensor data points retrieved from Influx DB.
+        let footerRef = ref();
 
         const user = computed(() => store.getters.getUser);
         const isAuthenticated = computed(() => store.getters.getAuthenticated);
         const apiToken = computed(() => store.getters.getApiToken);
         const influxToken = computed(() => store.getters.getInfluxToken);
 
+        // Return array of all alerts and sensors available on system.
         let getAlertsAndSensorsAvailable = async () => {
             loading.value = true;
             const response = await fetch(`http://rpi4id0.mooo.com:5000/api/getalertsandsensorsavailable`, {
@@ -74,7 +94,6 @@ export default {
             const responseJSON = await response.json();
 
             if(response.status == 200){
-                // Return array of all alerts and sensors available on system.
                 alerts.value = responseJSON.alerts;
                 sensorsAvailable.value = responseJSON.sensorsAvailable;
             }
@@ -85,50 +104,67 @@ export default {
             loading.value = false;
         };
 
+        // Convert CSV table to array of series fot highcharts standard.
+        // , , time, field, value -> {name: sensorName, data: [[], [], ... []]}
         const csvParser = csvText => {
-            let start = Date.now();
+            const timeZone = (new Date()).getTimezoneOffset()*60000;
             let lines = csvText.split('\r\n');        // Create string array.
-            /*lines = lines.map(function(line){
-                return line.replace(/\r/g,'');
-            });*/
-            let end = Date.now();
-            console.log('Milliseconds:', (end-start))            
-            //console.log(lines);
 
             const titles = lines.shift().split(',');  // Recover titles from first row.
-            //titles.splice(0,3);                       // Remove first 3 columns.
+
             const sensorNameIndex = titles.findIndex(title => title === 'sensor_name');
             const timeIndex = titles.findIndex(title => title === '_time');
             const valueIndex = titles.findIndex(title => title === '_value');
-            console.log(titles);
-            console.log(lines);
-            start = Date.now();
-            let sensorData = {};
+            const unitIndex = titles.findIndex(title => title === '_field');
+
+            let start = Date.now();
+            let sensorSeries = {};
             // Create array of array for each column.
-            /*lines = lines.map(line => {
-                line = line.split(',');
-                line.splice(0,3);
-                return line;
-            });*/
-            // Create array of array for each column. Faster than using .map().
             lines.forEach((line, index) => {
                 line = line.split(',');
-                //line.splice(0,3);
-                lines[index] = line;
-
                 let sensorName = line[sensorNameIndex];
-                console.log('line', line);
-                console.log(sensorData[sensorName]);
-                //if(sensorData[sensorName] !== undefined) sensorData[sensorName].push([line[timeIndex], line[valueIndex]]);
-                if(sensorData[sensorName] === undefined) sensorData = {[sensorName]: [[line[timeIndex], line[valueIndex]]]};
+                // Do not process a line when there is not sensor name.
+                if(sensorName === undefined) return;
+                // Push (x,y) values to array.
+                if(sensorSeries[sensorName] !== undefined) sensorSeries[sensorName].push([Date.parse(line[timeIndex]) - timeZone, parseFloat(line[valueIndex])]);
+                else sensorSeries[sensorName] = [[Date.parse(line[timeIndex]) - timeZone, parseFloat(line[valueIndex])]];
             });
-            end = Date.now();
-            console.log('Milliseconds:', (end-start))   
-            console.log(sensorData);
+            let end = Date.now();
+            console.log('Milliseconds:', (end-start));
+
+            // Set Highcharts series format [{name: xx, data: [[], [], ... []]}, {name: yy, data: [[], [], ... []]}].
+            let series = [];
+            for(const [key, value] of Object.entries(sensorSeries)) {
+                series.push({name: key, data: value});
+            }
+
+            console.log(sensorSeries); 
+            return series;
         }
 
-        let getSensorData = async (sensorList) => {
-            loading.value = true;
+        let getSensorData = async () => {
+            let localTimeWindow = '15m';
+            switch(timeWindow.value){
+                case '5 minutos': localTimeWindow = '5m'; break;
+                case '15 minutos': localTimeWindow = '15m'; break;
+                case '1 hora': localTimeWindow = '1h'; break;
+                case '3 horas': localTimeWindow = '3h'; break;
+                case '12 horas': localTimeWindow = '12h'; break;
+                case '1 dia': localTimeWindow = '1d'; break;
+                case '3 dias': localTimeWindow = '3d'; break;
+                case '7 dias': localTimeWindow = '7d'; break;
+                case '15 dias': localTimeWindow = '15d'; break;
+                case '30 dias': localTimeWindow = '30d'; break;
+            }
+            console.log(localTimeWindow);
+
+            // Define aggregate window time.
+            // This take data averages for improving laoding time (less data is returned from server when aggregate time window increase).
+            let aggregateTimeWindow = '';
+            if(localTimeWindow === '3d') aggregateTimeWindow = `|> aggregateWindow(every: 30s, fn: mean, createEmpty: false)`;
+            else if(localTimeWindow === '7d') aggregateTimeWindow = `|> aggregateWindow(every: 1m, fn: mean, createEmpty: false)`;
+            else if(localTimeWindow === '15d') aggregateTimeWindow = `|> aggregateWindow(every: 3m, fn: mean, createEmpty: false)`;
+            else if(localTimeWindow === '30d') aggregateTimeWindow = `|> aggregateWindow(every: 5m, fn: mean, createEmpty: false)`;
 
             // Query construction.
             let querySensorNames = '';
@@ -141,31 +177,23 @@ export default {
             }*/
 
             const fluxQuery = `from(bucket: "rpi-sensors")
-                |> range(start: -5m)
+                |> range(start: -${localTimeWindow})
                 |> filter(fn: (r) => r._measurement == "temperature")
+                ${aggregateTimeWindow}
                 |> drop(columns:["_start", "_stop", "host"])`;
 
             const response = await fetch(`http://rpi4id0.mooo.com:8086/api/v2/query?org=SET`, {
                 method: "POST",
                 headers: {
-                    "Authorization": `Token ${influxToken.value}`,
-                    "Content-Type": "application/vnd.flux",
-                    "Accept": "application/text"
+                    "Authorization": `Token ${influxToken.value}`, "Content-Type": "application/vnd.flux",
+                    "Accept-Encoding": "gzip, deflate, br", "Accept": "application/text"
                 },
                 body: fluxQuery
             });
             const responseText = await response.text();
 
-            sensorData.value = csvParser(responseText);
-            //console.log(responseText);
-            if(response.status == 200){
-                //sensorData.value = responseJSON.sensorData;
-            }
-            else{
-                // Only if there is a warning or and error display footer message.
-                footerRef.value.setTemporalMessage(responseText.message, 5000);
-            }
-            loading.value = false;
+            if(response.status == 200) sensorData.value = csvParser(responseText);
+            else footerRef.value.setTemporalMessage(responseText.message, 5000);  // Only if there is a warning or and error display footer message.
         };
 
         // Update selected sensor list that will be displayed on the chart.
@@ -181,6 +209,7 @@ export default {
             }
             console.log(sensorsSelectedToChart.value);
         };
+
         // Send a request to server updating alert state to 'off'.
         let stopAlert = async (id) => {
             loading.value = true;
@@ -192,10 +221,7 @@ export default {
             const response = await fetch("http://rpi4id0.mooo.com:5000/api/updatealert", {
                 method: "PUT",
                 headers: {"Authorization": `Bearer ${token.value}`, "Content-Type": "application/json"},
-                body: JSON.stringify({
-                    alertUpdate: alerts.value[alertIndex],
-                    index: alertIndex,
-                })
+                body: JSON.stringify({ alertUpdate: alerts.value[alertIndex], index: alertIndex})
             });
             const responseJSON = await response.json();
             if(response.status == 200 || response.status == 201){
@@ -205,22 +231,34 @@ export default {
             loading.value = false;
         };
 
-        onBeforeMount(() => {
-            getAlertsAndSensorsAvailable();
+        // Set interval time at which chart is updated.
+        let setReloadingChartTime = () => {
+            clearInterval(realoadingChartInterval);
             getSensorData();
+            if(reloadingChartTime.value !== null) realoadingChartInterval = setInterval(getSensorData, reloadingChartTime.value*1000);
+        };
+
+        onBeforeMount(() => {
+            setReloadingChartTime(reloadingChartTime.value);
+            getAlertsAndSensorsAvailable();
         });
+
+        onBeforeUnmount(() => clearInterval(realoadingChartInterval));
         
         return{
             user,
             isAuthenticated,
             loading,
-            footerRef,
             timeWindow,
+            reloadingChartTime,
             alerts,
             sensorsAvailable,
             sensorData,
             stopAlert,
+            getSensorData,
+            setReloadingChartTime,
             updateSensorsSelectedToChart,
+            footerRef,
         }
     }
 }

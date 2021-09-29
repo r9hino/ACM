@@ -152,11 +152,11 @@ const minFunction = async () => {
         try{
             if(remoteMongoDB.isConnected() === false) await remoteMongoDB.connectDB();
             await remoteMongoDB.updateDevice(hostname(), {ip_public: actualPublicIP, date_update: actualDate});
-            console.log('INFO - server.js: New public IP stored locally and remotely.');
+            console.log('INFO - server.js: New IP stored locally and remotely.');
             await remoteMongoDB.close();
         }
         catch(e){
-            console.log('WANRING - server.js: Couldn\'t store new public IP in the remote MongoDB.');
+            console.log('WANRING - server.js: Couldn\'t store new IP in the remotely.');
         };
     }
 };
@@ -167,7 +167,7 @@ const tenMinFunction = async () => {
 // Coordinate data through sockets.
 function socketCoordinator(socket){
     remoteMongoDB.connectDB().catch((e) => console.log('WARNING - server.js: Couldn\'t connect to remote MongoDB at starting of socket connection.'));
-    console.log(`INFO - server.js: Client connected  -  IP ${socket.request.connection.remoteAddress.split(':')[3]}  -  Client(s) ${io.engine.clientsCount}`);
+    console.log(`INFO - server.js: IP ${socket.request.connection.remoteAddress.split(':')[3]} connected - Client(s) ${io.engine.clientsCount}`);
 
     if(dynamicDataInterval) clearInterval(dynamicDataInterval);
 
@@ -220,7 +220,7 @@ function socketCoordinator(socket){
     });
 
     socket.on('disconnect', () => {
-        console.log(`INFO - server.js: Client disconnected  -  IP ${socket.request.connection.remoteAddress.split(":")[3]}  -  Client(s) ${io.engine.clientsCount}`);
+        console.log(`INFO - server.js: IP ${socket.request.connection.remoteAddress.split(":")[3]} disconnected - Client(s) ${io.engine.clientsCount}`);
         if(io.engine.clientsCount === 0) clearInterval(dynamicDataInterval);
         remoteMongoDB.close();
     });

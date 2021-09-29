@@ -60,8 +60,7 @@ export default {
         // If alert state is 'on', start toggling background color.
         if(props.alert.state === 'on'){
             toggleActiveAlertClassInterval = setInterval(() => {
-                console.log(props.alert.state, toggleActiveAlertClass.value);
-
+                //console.log(props.alert.state, toggleActiveAlertClass.value);
                 toggleActiveAlertClass.value = !toggleActiveAlertClass.value;
                 // If alert state change to 'off', stop toggling background color.
                 if(props.alert.state === 'off'){
