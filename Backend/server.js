@@ -7,16 +7,13 @@
 
 // To-do
 // Run server on booting and check if influx docker can be reached at startup
-// API for querying data.
-// Usar bcrypt para hashear passwords.
+// Use bcrypt for hashing passwords.
 // Add only one array element when saving to local and remote DB.
-// Add index to arrays in DBs.
-// Agregar boton actualizar en alertas y validar que no hayan duplicados.
-// Agregar otro criterio para definir si existe alerta o no.
-// Run influxdb write from SensorMonitor?
-// How to avoid sending a bulk of messages if Twilio client continously keep getting errors?
+// Check there is no problem when 2 alert are duplicated.
 // Test if everything is good when two or more alert get activated.
-// Add log to AlertActivation.js when new alert is updated or added.
+// Check hysteresis, maybe is needed to enter exit point by UI.
+// Control decimation in chart. Add stacket option in case there is boolean sensors or actuators.
+// Add actuator section in Monitor.
 
 const http = require('http');
 const socketio = require('socket.io');

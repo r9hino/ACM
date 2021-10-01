@@ -190,7 +190,6 @@ let alertDeactivationInterval = setInterval(() => {
             if(lastSensorData !== undefined){
                 // If it is a number then enter here.
                 if(isNumber(lastSensorData.value)){
-                    let hysteresisValue;
                     switch(alert.criteria){
                         case 'menor':
                             if(lastSensorData.value < alert.value*(1+hysteresisPercent)) keepTriggering = true;
@@ -208,12 +207,10 @@ let alertDeactivationInterval = setInterval(() => {
                             if(lastSensorData.value > alert.value*(1-hysteresisPercent)) keepTriggering = true;
                             break;
                         case 'entre el rango':
-                            hysteresisValue = (alert.value_aux - alert.value)*hysteresisPercent;
-                            if(lastSensorData.value >= alert.value - hysteresisValue && lastSensorData.value <= alert.value_aux + hysteresisValue) keepTriggering = true;
+                            if(lastSensorData.value >= alert.value*(1 - hysteresisPercent) && lastSensorData.value <= alert.value_aux*(1 + hysteresisPercent)) keepTriggering = true;
                             break;
                         case 'fuera del rango':
-                            hysteresisValue = (alert.value_aux - alert.value)*hysteresisPercent;
-                            if(lastSensorData.value < alert.value + hysteresisValue || lastSensorData.value > alert.value_aux - hysteresisValue) keepTriggering = true;
+                            if(lastSensorData.value < alert.value*(1 + hysteresisPercent) || lastSensorData.value > alert.value_aux*(1 - hysteresisPercent)) keepTriggering = true;
                             break;
                         default:
                             // default code

@@ -16,8 +16,8 @@ const remoteMongoDB = new MongoDBHandler(MONGODB_REMOTE_URL);
 
 // Global variables.
 const ipReqMonitor = {};        // Store IPs and number of attempts.
-const maxNumberOfAttempts = 5;
-const waitTime = 10*1000;
+const maxNumberOfAttempts = 4;
+const waitTime = 30*1000;
 let timeoutInterval = null;
 let start, stop;
 

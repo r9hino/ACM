@@ -13,15 +13,13 @@
           <li class="nav-item">
             <router-link class="routerLink" to="/monitor" @click="setToolActiveClass(false)">Monitor</router-link>
           </li>
-          <li class="nav-item">
-            <router-link class="routerLink" to="/calibration" @click="setToolActiveClass(false)">Calibration</router-link>
-          </li>
           <li class="nav-item dropdown">
             <a class="dropdown-toggle routerLink" :style="{ color: isToolActive ? '#0a58ca':'#505050' }" href="#" id="dropdown" data-bs-toggle="dropdown" aria-expanded="false">Tools</a>
             <ul class="dropdown-menu" aria-labelledby="dropdown">
               <li><router-link class="routerLink" to="/systeminfo" @click="setToolActiveClass(true)">Info Sistema</router-link></li>
               <li><router-link class="routerLink" to="/guardusers" @click="setToolActiveClass(true)">Guardias</router-link></li>
               <li><router-link class="routerLink" to="/alerts" @click="setToolActiveClass(true)">Alertas</router-link></li>
+              <li><router-link class="routerLink" to="/calibration" @click="setToolActiveClass(false)">Calibracion</router-link></li>
               <li><router-link class="routerLink" to="/logs" @click="setToolActiveClass(true)">Logs</router-link></li>
             </ul>
           </li>

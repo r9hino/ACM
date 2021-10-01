@@ -242,12 +242,16 @@ export default {
 
         onBeforeMount(() => {
             // Load stored data on browser.
-            sensorsSelectedToChart.value = localStorage.getItem("sensorsSelectedToChart").split(',');
+            if(localStorage.getItem("sensorsSelectedToChart") !== null) sensorsSelectedToChart.value = localStorage.getItem("sensorsSelectedToChart").split(',');
+            
             setReloadingChartTime(reloadingChartTime.value);
             getAlertsAndSensorsAvailable();
         });
 
-        onBeforeUnmount(() => clearInterval(realoadingChartInterval));
+        onBeforeUnmount(() => {
+            clearInterval(realoadingChartInterval);
+            sensorData.value = [];
+        });
         
         return{
             user,

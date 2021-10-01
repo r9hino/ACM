@@ -16,15 +16,15 @@
             "state": false,
             "autoOn": null,
             "autoOff": null,
-            "date_update": "Sun Sep 05 2021 03:38:47 GMT-0300 (Chile Summer Time)"
+            "date_update": "Thu Sep 30 2021 23:13:38 GMT-0300 (Chile Summer Time)"
         },
         {
             "id": 1,
             "description": "Control bomba 2",
-            "state": true,
+            "state": false,
             "autoOn": null,
             "autoOff": null,
-            "date_update": "Mon Sep 27 2021 15:11:24 GMT-0300 (Chile Summer Time)"
+            "date_update": "Thu Sep 30 2021 23:13:43 GMT-0300 (Chile Summer Time)"
         },
         {
             "id": 2,
@@ -32,7 +32,7 @@
             "state": false,
             "autoOn": null,
             "autoOff": null,
-            "date_update": "Sun Sep 05 2021 03:38:50 GMT-0300 (Chile Summer Time)"
+            "date_update": "Thu Sep 30 2021 23:13:48 GMT-0300 (Chile Summer Time)"
         }
     ],
     "ip_public": "190.217.192.208",
@@ -40,7 +40,7 @@
         {
             "email": "philippe.ilharreguy@gmail.com",
             "phone": "+56999972023",
-            "date_update": "Wed Sep 29 2021 09:55:50 GMT-0300 (Chile Summer Time)"
+            "date_update": "Thu Sep 30 2021 11:54:45 GMT-0300 (Chile Summer Time)"
         }
     ],
     "alerts": [
@@ -64,7 +64,7 @@
             "settling_time": "30",
             "state": "off",
             "notified_users": [],
-            "date_update": "Wed Sep 29 2021 19:11:12 GMT-0300 (Chile Summer Time)",
+            "date_update": "Thu Sep 30 2021 16:42:15 GMT-0300 (Chile Summer Time)",
             "alert_message": null,
             "date_trigger": null
         }
@@ -108,5 +108,5 @@
             "type": "temperature"
         }
     ],
-    "date_update": "Wed Sep 29 2021 19:11:12 GMT-0300 (Chile Summer Time)"
+    "date_update": "Fri Oct 01 2021 00:05:26 GMT-0300 (Chile Summer Time)"
 }

@@ -73,19 +73,21 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
-})
+});
 
 router.beforeEach((to, from, next) => {
+  // If page require been authenticated.
   if(to.matched.some((record) => record.meta.requiresAuth)){
+    // If it is already authenticated go to next page.
     if(store.getters.getAuthenticated){
       next();
       return;
     }
+    // If not authenticated, go to login page.
     next("/login");
   }
-  else {
-    next();
-  }
+  // For pages that do not require been authenticated.
+  else next();
 });
 
 export default router
