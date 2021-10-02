@@ -5,8 +5,7 @@ module.exports = {
         port: 3000,
         https: false,
         hotOnly: false,
-        disableHostCheck:true,
-                 open: true // Configure to automatically start the browser
-     
+        disableHostCheck: true,
+        open: true // Configure to automatically start the browser.
     }
-  }
+}

@@ -46,6 +46,13 @@ export default {
       //console.log('updateClients:', relays.value.[id]);
     });
 
+    // Disconnect from server.
+    socket.on('closeSocket', () => {
+      socket.off('resRelayStates');
+      socket.off('updateClients');
+      socket.disconnect();
+    });
+
     let onChangeSwitch = (id) => {
       relays.value[id].state = !relays.value[id].state;
       //console.log(relays.value[id]);

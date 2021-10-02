@@ -56,13 +56,13 @@ export default {
 
         const user = computed(() => store.getters.getUser);
         const isAuthenticated = computed(() => store.getters.getAuthenticated);
-        const apiToken = computed(() => store.getters.getApiToken);
+        const accessToken = computed(() => store.getters.getAccessToken);
 
         async function getGuardUsers(){
             loading.value = true;
             const response = await fetch("http://rpi4id0.mooo.com:5000/api/getguardusers", {
                 method: "GET",
-                headers: {"Authorization": `Bearer ${apiToken.value}`},
+                headers: {"Authorization": `Bearer ${accessToken.value}`},
             });
             //console.log(token.value);
             if(response.status == 200){
@@ -109,7 +109,7 @@ export default {
 
             const response = await fetch("http://rpi4id0.mooo.com:5000/api/addguarduser", {
                 method: "POST",
-                headers: {"Authorization": `Bearer ${apiToken.value}`, "Content-Type": "application/json"},
+                headers: {"Authorization": `Bearer ${accessToken.value}`, "Content-Type": "application/json"},
                 body: JSON.stringify({newGuardUser: {email: newGuardUser.value.email, phone: '+56'+newGuardUser.value.phone}})
             });
             const responseJSON = await response.json();
@@ -128,7 +128,7 @@ export default {
             loading.value = true;
             const response = await fetch("http://rpi4id0.mooo.com:5000/api/removeguarduser", {
                 method: "POST",
-                headers: {"Authorization": `Bearer ${apiToken.value}`, "Content-Type": "application/json"},
+                headers: {"Authorization": `Bearer ${accessToken.value}`, "Content-Type": "application/json"},
                 body: JSON.stringify({guardUserRemove: guardUsers.value[index]})
             });
             const responseJSON = await response.json();

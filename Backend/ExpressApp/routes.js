@@ -3,13 +3,14 @@
 
 const {hostname} = require('os');
 const router = require('express').Router();
+const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const readLastLines = require('read-last-lines');
 const JSONdb = require('simple-json-db');
 
 const MongoDBHandler = require('../DB/MongoDBHandler');
-const verifyToken = require('./validateToken');
-const {MONGODB_REMOTE_URL, WEB_USERNAME, WEB_PASSWORD, WEB_JWT_SECRET, INFLUXDB_TOKEN} = require('../Helper/envExport');   // Environment variables.
+const velidateToken = require('./validateToken');
+const {MONGODB_REMOTE_URL, WEB_USERNAME, WEB_PASSWORD, WEB_JWT_ACCESS_SECRET, WEB_JWT_REFRESH_SECRET, INFLUXDB_TOKEN} = require('../Helper/envExport');   // Environment variables.
 
 // Initialize DBs
 const remoteMongoDB = new MongoDBHandler(MONGODB_REMOTE_URL);
@@ -18,27 +19,29 @@ const remoteMongoDB = new MongoDBHandler(MONGODB_REMOTE_URL);
 const ipReqMonitor = {};        // Store IPs and number of attempts.
 const maxNumberOfAttempts = 4;
 const waitTime = 30*1000;
+let refreshTokens = [];         // Store refresh tokens.
 let timeoutInterval = null;
 let start, stop;
+
 
 router.post('/login', (req, res) => {    
     const ip = req.headers['x-forwarded-for'] || req.ip.split(':')[3];// || req.connection.remoteAddress.split(":")[3];
     const {username, password} = req.body;
     
     // If is a new ip, create entry object with ip as key.
-    if((ip in ipReqMonitor == false)){
-        ipReqMonitor[ip] = {numberOfAttempts: maxNumberOfAttempts};
-    }
+    if((ip in ipReqMonitor == false)) ipReqMonitor[ip] = {numberOfAttempts: maxNumberOfAttempts};
 
     if(ipReqMonitor[ip].numberOfAttempts > 0){
         if(username === WEB_USERNAME && password === WEB_PASSWORD){
             const user = {id: 1, username: 'pi'};
-            const apiToken = jwt.sign(user, WEB_JWT_SECRET);
+            const accessToken = jwt.sign(user, WEB_JWT_ACCESS_SECRET);
+            const refreshToken = jwt.sign(user, WEB_JWT_REFRESH_SECRET, { expiresIn: '60s' });
             const influxToken = INFLUXDB_TOKEN;
 
             res.status(200);
-            res.json({user, apiToken, influxToken});
-            // Delete ip attemps information because user logged in correctly and it is no longer necessary to store it.
+            res.cookie("refreshToken", refreshToken, { httpOnly: true });
+            res.json({user, accessToken, influxToken});
+            // Delete ip attemps information, because user logged in correctly and it is no longer necessary to store it.
             delete ipReqMonitor[ip];
             console.log(`INFO: IP ${ip} logged in.`);
             return;
@@ -87,6 +90,31 @@ router.post('/login', (req, res) => {
     }
 });
 
+// Validate sended refresh token. If valid, create a new access and refresh tokens.
+router.post('/validaterefreshtoken', (req, res) => {
+    const refreshToken = req.body.refreshToken;
+    if(refreshToken == null){
+        res.status(401);
+        res.json({message: 'No refresh token received.'});
+        return;
+    }
+    if(!refreshTokens.includes(refreshToken)){
+        res.sendStatus(403)
+        res.json({message: 'Refresh token sended was not found.'});
+        return;
+    }
+    // If all test passed, verify refresh token.
+    jwt.verify(refreshToken, WEB_JWT_REFRESH_SECRET, (error, user) => {
+        if(error) return res.sendStatus(403);
+        refreshTokens.splice(refreshTokens.indexOf(refreshToken), 1);
+
+        const accessToken = jwt.sign(user, WEB_JWT_ACCESS_SECRET);    
+        const refreshToken = jwt.sign(user, WEB_JWT_REFRESH_SECRET, { expiresIn: '60s' });
+
+        res.json({ accessToken: accessToken, refreshToken: refreshToken })
+    })
+  })
+
 router.get('/logs/info', (req, res) => {
     res.status(200);
     res.contentType('application/text');
@@ -106,7 +134,7 @@ router.get('/logs/errors', (req, res) => {
 });
 
 // Guard users apis -------------------------------------------------------------------------------------------------
-router.get('/api/getguardusers', verifyToken, (req, res) => {
+router.get('/api/getguardusers', velidateToken, (req, res) => {
     let deviceMetadataDB = new JSONdb(__dirname + '/../deviceMetadataDB.json');
     let guardUsers = deviceMetadataDB.get('guard_users');
     guardUsers = guardUsers === undefined ? [] : guardUsers;    // Set array to empty if not guard users are store on the local database.
@@ -115,7 +143,7 @@ router.get('/api/getguardusers', verifyToken, (req, res) => {
     res.send(guardUsers);
 });
 
-router.post('/api/addguarduser', verifyToken, async (req, res) => {
+router.post('/api/addguarduser', velidateToken, async (req, res) => {
     let deviceMetadataDB = new JSONdb(__dirname + '/../deviceMetadataDB.json');
     let guardUsers = deviceMetadataDB.get('guard_users');       // Recover locally stored guard users.
     guardUsers = guardUsers === undefined ? [] : guardUsers;    // Check if undefined.
@@ -146,7 +174,7 @@ router.post('/api/addguarduser', verifyToken, async (req, res) => {
     }
 });
 
-router.post('/api/removeguarduser', verifyToken, async (req, res) => {
+router.post('/api/removeguarduser', velidateToken, async (req, res) => {
     let deviceMetadataDB = new JSONdb(__dirname + '/../deviceMetadataDB.json');
     let guardUsers = deviceMetadataDB.get('guard_users');       // Recover locally stored guard users.
     if(guardUsers === undefined){
@@ -185,7 +213,7 @@ router.post('/api/removeguarduser', verifyToken, async (req, res) => {
 
 // Alerts apis -------------------------------------------------------------------------------------------------
 // Retrieve alerts and sensors available connected to the system.
-router.get('/api/getalertsandsensorsavailable', verifyToken, (req, res) => {
+router.get('/api/getalertsandsensorsavailable', velidateToken, (req, res) => {
     let deviceMetadataDB = new JSONdb(__dirname + '/../deviceMetadataDB.json');
     let alerts = deviceMetadataDB.get('alerts');                // Retrieve all alerts already defined.s
     alerts = alerts === undefined ? [] : alerts;                // Set array to empty if not alerts are store on the local database.
@@ -207,7 +235,7 @@ router.get('/api/getalertsandsensorsavailable', verifyToken, (req, res) => {
     else res.json({alerts, sensorsAvailable, message: "OK: Alerts and sensors availables successfully retrieved."});
 });
 
-router.post('/api/addalert', verifyToken, async (req, res) => {
+router.post('/api/addalert', velidateToken, async (req, res) => {
     let deviceMetadataDB = new JSONdb(__dirname + '/../deviceMetadataDB.json');
     let alerts = deviceMetadataDB.get('alerts');        // Recover locally stored alerts.
     alerts = alerts === undefined ? [] : alerts;        // Check if undefined.
@@ -244,7 +272,7 @@ router.post('/api/addalert', verifyToken, async (req, res) => {
     }
 });
 
-router.post('/api/removealert', verifyToken, async (req, res) => {
+router.post('/api/removealert', velidateToken, async (req, res) => {
     let deviceMetadataDB = new JSONdb(__dirname + '/../deviceMetadataDB.json');
     let alerts = deviceMetadataDB.get('alerts');            // Recover locally stored alerts.
     if(alerts === undefined){
@@ -282,7 +310,7 @@ router.post('/api/removealert', verifyToken, async (req, res) => {
     }
 });
 
-router.put('/api/updatealert', verifyToken, async (req, res) => {
+router.put('/api/updatealert', velidateToken, async (req, res) => {
     let deviceMetadataDB = new JSONdb(__dirname + '/../deviceMetadataDB.json');
     let alerts = deviceMetadataDB.get('alerts');            // Recover locally stored alerts.
     // Send error if no alerts are found on the local DB.

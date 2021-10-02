@@ -3,7 +3,7 @@ import { createStore } from "vuex";
 export default createStore({
     state: {
         user: null,
-        apiToken: null,
+        accessToken: null,
         influxToken: null,
         authenticated: false,
     },
@@ -11,8 +11,8 @@ export default createStore({
         setUser(state, user) {
             state.user = user;
         },
-        setApiToken(state, apiToken) {
-            state.apiToken = apiToken;
+        setAccessToken(state, accessToken) {
+            state.accessToken = accessToken;
         },
         setInfluxToken(state, influxToken) {
             state.influxToken = influxToken;
@@ -24,7 +24,7 @@ export default createStore({
     actions: {},
     getters: {
         getUser: (state) => state.user,
-        getApiToken: (state) => state.apiToken,
+        getAccessToken: (state) => state.accessToken,
         getInfluxToken: (state) => state.influxToken,
         getAuthenticated: (state) => state.authenticated,
     },

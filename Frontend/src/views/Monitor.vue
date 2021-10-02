@@ -1,61 +1,60 @@
 <template>
-  <Spinner v-if="loading"></Spinner>
-  <div class="container-fluid d-flex flex-column justify-content-center">
-    <div class="d-flex justify-content-around align-items-center mt-3">
-      <h5 class="mt-2">Sensores</h5>
+    <Spinner v-if="loading"></Spinner>
+    <div class="container-fluid d-flex flex-column justify-content-center">
+        <!-- Title and time buttons -->
+        <div class="d-flex justify-content-around align-items-center mt-3">
+            <h5 class="mt-2">Sensores</h5>
+            <div class="d-flex justify-content-between align-items-center">
+                <button class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex justify-content-between align-items-center me-3" type="button" data-bs-toggle="dropdown"
+                    :id="`reloading-chart-time`" style="width: 110px">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+                        <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
+                        <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>
+                    </svg>{{ reloadingChartTime === null ? 'Pausado' : reloadingChartTime + 's' }}
+                </button>
+                <ul class="dropdown-menu" :aria-labelledby="`reloading-chart-time`">
+                    <li><a class="dropdown-item" href="#" @click.prevent="reloadingChartTime=null; setReloadingChartTime();">Pausado</a></li>
+                    <li><a class="dropdown-item" href="#" @click.prevent="reloadingChartTime=5; setReloadingChartTime();">5s</a></li>
+                    <li><a class="dropdown-item" href="#" @click.prevent="reloadingChartTime=10; setReloadingChartTime();">10s</a></li>
+                    <li><a class="dropdown-item" href="#" @click.prevent="reloadingChartTime=60; setReloadingChartTime();">60s</a></li>
+                </ul>
+                <button class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex justify-content-between align-items-center" type="button" data-bs-toggle="dropdown"
+                    :id="`time-windows`" style="width: 125px">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock me-2" viewBox="0 0 16 16">
+                        <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+                        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
+                    </svg>{{ timeWindow }}
+                </button>
+                <ul class="dropdown-menu" :aria-labelledby="`time-window`">
+                    <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`5 minutos`; getSensorData();">5 minutos</a></li>
+                    <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`15 minutos`; getSensorData();">15 minutos</a></li>
+                    <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`1 hora`; getSensorData();">1 hora</a></li>
+                    <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`3 horas`; getSensorData();">3 horas</a></li>
+                    <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`12 horas`; getSensorData();">12 horas</a></li>
+                    <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`1 dia`; getSensorData();">1 dia</a></li>
+                    <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`3 dias`; getSensorData();">3 dias</a></li>
+                    <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`7 dias`; getSensorData();">7 dias</a></li>
+                    <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`15 dias`; getSensorData();">15 dias</a></li>
+                    <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`30 dias`; getSensorData();">30 dias</a></li>
+                </ul>
+            </div>
+        </div>
 
-      <!-- Botones de tiempo -->
-      <div class="d-flex justify-content-between align-items-center">
-        <button class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex justify-content-between align-items-center me-3" type="button" data-bs-toggle="dropdown"
-          :id="`reloading-chart-time`" style="width: 110px">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
-            <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
-            <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>
-          </svg>{{ reloadingChartTime === null ? 'Pausado' : reloadingChartTime + 's' }}
-        </button>
-        <ul class="dropdown-menu" :aria-labelledby="`reloading-chart-time`">
-          <li><a class="dropdown-item" href="#" @click.prevent="reloadingChartTime=null; setReloadingChartTime();">Pausado</a></li>
-          <li><a class="dropdown-item" href="#" @click.prevent="reloadingChartTime=5; setReloadingChartTime();">5s</a></li>
-          <li><a class="dropdown-item" href="#" @click.prevent="reloadingChartTime=10; setReloadingChartTime();">10s</a></li>
-          <li><a class="dropdown-item" href="#" @click.prevent="reloadingChartTime=60; setReloadingChartTime();">60s</a></li>
-        </ul>
-        <button class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex justify-content-between align-items-center" type="button" data-bs-toggle="dropdown"
-          :id="`time-windows`" style="width: 125px">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock me-2" viewBox="0 0 16 16">
-            <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
-            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
-          </svg>{{ timeWindow }}
-        </button>
-        <ul class="dropdown-menu" :aria-labelledby="`time-window`">
-          <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`5 minutos`; getSensorData();">5 minutos</a></li>
-          <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`15 minutos`; getSensorData();">15 minutos</a></li>
-          <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`1 hora`; getSensorData();">1 hora</a></li>
-          <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`3 horas`; getSensorData();">3 horas</a></li>
-          <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`12 horas`; getSensorData();">12 horas</a></li>
-          <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`1 dia`; getSensorData();">1 dia</a></li>
-          <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`3 dias`; getSensorData();">3 dias</a></li>
-          <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`7 dias`; getSensorData();">7 dias</a></li>
-          <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`15 dias`; getSensorData();">15 dias</a></li>
-          <li><a class="dropdown-item" href="#" @click.prevent="timeWindow=`30 dias`; getSensorData();">30 dias</a></li>
-        </ul>
-      </div>
-    </div>
+        <!-- Chart -->
+        <div>
+            <Chart :sensorData="sensorData"></Chart>
+        </div>
 
-    <!-- Graficos -->
-    <div>
-      <Chart :sensorData="sensorData"></Chart>
+        <!-- Sensors available -->
+        <div class="" style="width: 370px; margin: 0 auto">
+            <CheckboxSensorAlert v-for="(sensor, index) in sensorsAvailable" :key="index"
+                :sensor="sensor" :alert="alerts.find(alert => alert.sensor_name === sensor.sensor_name)"
+                :checked="sensorsSelectedToChart.includes(sensor.sensor_name)"
+                :stopAlertFunction="stopAlert" @emitCheckboxStatus="updateSensorsSelectedToChart">
+            </CheckboxSensorAlert>
+        </div>
     </div>
-
-    <!-- Sensor disponibles -->
-    <div class="" style="width: 370px; margin: 0 auto">
-      <CheckboxSensorAlert v-for="(sensor, index) in sensorsAvailable" :key="index"
-        :sensor="sensor" :alert="alerts.find(alert => alert.sensor_name === sensor.sensor_name)"
-        :checked="sensorsSelectedToChart.includes(sensor.sensor_name)"
-        :stopAlertFunction="stopAlert" @emitCheckboxStatus="updateSensorsSelectedToChart">
-      </CheckboxSensorAlert>
-    </div>
-  </div>
-  <Footer ref="footerRef"></Footer>
+    <Footer ref="footerRef"></Footer>
 </template>
 
 <script>
@@ -85,15 +84,16 @@ export default {
 
         const user = computed(() => store.getters.getUser);
         const isAuthenticated = computed(() => store.getters.getAuthenticated);
-        const apiToken = computed(() => store.getters.getApiToken);
+        const accessToken = computed(() => store.getters.getAccessToken);
         const influxToken = computed(() => store.getters.getInfluxToken);
 
         // Return array with all alerts and an array with all sensors available on system.
         let getAlertsAndSensorsAvailable = async () => {
             loading.value = true;
+            console.log(accessToken.value)
             const response = await fetch(`http://rpi4id0.mooo.com:5000/api/getalertsandsensorsavailable`, {
                 method: "GET",
-                headers: {"Authorization": `Bearer ${apiToken.value}`, "Content-Type": "application/json"},
+                headers: {"Authorization": `Bearer ${accessToken.value}`, "Content-Type": "application/json"},
             });
             const responseJSON = await response.json();
 
@@ -222,7 +222,7 @@ export default {
 
             const response = await fetch("http://rpi4id0.mooo.com:5000/api/updatealert", {
                 method: "PUT",
-                headers: {"Authorization": `Bearer ${token.value}`, "Content-Type": "application/json"},
+                headers: {"Authorization": `Bearer ${accessToken.value}`, "Content-Type": "application/json"},
                 body: JSON.stringify({ alertUpdate: alerts.value[alertIndex], index: alertIndex})
             });
             const responseJSON = await response.json();
@@ -241,7 +241,7 @@ export default {
         };
 
         onBeforeMount(() => {
-            // Load stored data on browser.
+            // Load stored data from browser.
             if(localStorage.getItem("sensorsSelectedToChart") !== null) sensorsSelectedToChart.value = localStorage.getItem("sensorsSelectedToChart").split(',');
             
             setReloadingChartTime(reloadingChartTime.value);

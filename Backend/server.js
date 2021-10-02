@@ -230,6 +230,8 @@ async function shutdownServer(){
     clearInterval(tenMinInterval);
     clearInterval(dynamicDataInterval);
 
+    io.emit('closeSocket');
+
     try {
         await i2c.close();
         await localInfluxDB.close([env.INFLUXDB_SENSORS_BUCKET, env.INFLUXDB_SYSTEM_BUCKET]);
