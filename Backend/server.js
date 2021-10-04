@@ -1,4 +1,6 @@
 // Links:
+// Routes express: https://github.com/scalablescripts/node-auth/blob/main/routes/routes.js   https://www.youtube.com/watch?v=IxcKMcsBGE8&list=PLlameCF3cMEsjpIRxfB9Rjici3aMCaQVo&index=2&ab_channel=ScalableScripts
+// JWT security: https://www.netsparker.com/blog/web-security/json-web-token-jwt-attacks-vulnerabilities/
 // Microservices patterns: https://blog.bitsrc.io/my-favorite-microservice-design-patterns-for-node-js-fe048c635d83
 // Promise - async/await: https://blog.risingstack.com/mastering-async-await-in-nodejs/ https://dmitripavlutin.com/what-is-javascript-promise/
 // Class: https://javascript.info/class#not-just-a-syntactic-sugar

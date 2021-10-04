@@ -1,6 +1,3 @@
-// Links:
-// https://github.com/scalablescripts/node-auth/blob/main/routes/routes.js   https://www.youtube.com/watch?v=IxcKMcsBGE8&list=PLlameCF3cMEsjpIRxfB9Rjici3aMCaQVo&index=2&ab_channel=ScalableScripts
-
 const {hostname} = require('os');
 const router = require('express').Router();
 const cookieParser = require("cookie-parser");
@@ -9,20 +6,20 @@ const readLastLines = require('read-last-lines');
 const JSONdb = require('simple-json-db');
 
 const MongoDBHandler = require('../DB/MongoDBHandler');
-const velidateToken = require('./validateToken');
+const validateAccessToken = require('./validateToken');
 const {MONGODB_REMOTE_URL, WEB_USERNAME, WEB_PASSWORD, WEB_JWT_ACCESS_SECRET, WEB_JWT_REFRESH_SECRET, INFLUXDB_TOKEN} = require('../Helper/envExport');   // Environment variables.
 
 // Initialize DBs
 const remoteMongoDB = new MongoDBHandler(MONGODB_REMOTE_URL);
 
 // Global variables.
-const ipReqMonitor = {};        // Store IPs and number of attempts.
+const ipReqMonitor = {};                    // Store IPs and number of attempts.
 const maxNumberOfAttempts = 4;
 const waitTime = 30*1000;
-let refreshTokens = [];         // Store refresh tokens.
+let refreshTokens = [];                     // Store refresh tokens.
+const refreshTokenExpirationTime = 30;      // Seconds.
 let timeoutInterval = null;
 let start, stop;
-
 
 router.post('/login', (req, res) => {    
     const ip = req.headers['x-forwarded-for'] || req.ip.split(':')[3];// || req.connection.remoteAddress.split(":")[3];
@@ -35,12 +32,12 @@ router.post('/login', (req, res) => {
         if(username === WEB_USERNAME && password === WEB_PASSWORD){
             const user = {id: 1, username: 'pi'};
             const accessToken = jwt.sign(user, WEB_JWT_ACCESS_SECRET);
-            const refreshToken = jwt.sign(user, WEB_JWT_REFRESH_SECRET, { expiresIn: '60s' });
-            const influxToken = INFLUXDB_TOKEN;
+            const refreshToken = jwt.sign(user, WEB_JWT_REFRESH_SECRET, { expiresIn: `${refreshTokenExpirationTime}s` });
+            refreshTokens.push(refreshToken);
 
             res.status(200);
-            res.cookie("refreshToken", refreshToken, { httpOnly: true });
-            res.json({user, accessToken, influxToken});
+            res.cookie("refreshToken", refreshToken, { httpOnly: true, sameSite: 'strict' });
+            res.json({user: user, accessToken: accessToken, influxToken: INFLUXDB_TOKEN});
             // Delete ip attemps information, because user logged in correctly and it is no longer necessary to store it.
             delete ipReqMonitor[ip];
             console.log(`INFO: IP ${ip} logged in.`);
@@ -90,30 +87,48 @@ router.post('/login', (req, res) => {
     }
 });
 
-// Validate sended refresh token. If valid, create a new access and refresh tokens.
-router.post('/validaterefreshtoken', (req, res) => {
-    const refreshToken = req.body.refreshToken;
-    if(refreshToken == null){
+// Validate sended refresh token in cookie. If valid, create a new access and refresh token.
+router.get('/validaterefreshtoken', (req, res) => {
+    const reqRefreshToken = req.cookies === undefined ? undefined : req.cookies.refreshToken;
+
+    if(reqRefreshToken === null || reqRefreshToken === undefined){
+        console.error('ERROR - routes.js: No refresh token received.');
         res.status(401);
         res.json({message: 'No refresh token received.'});
         return;
     }
-    if(!refreshTokens.includes(refreshToken)){
-        res.sendStatus(403)
-        res.json({message: 'Refresh token sended was not found.'});
+    if(refreshTokens.indexOf(reqRefreshToken) < 0){
+        console.error('ERROR - routes.js: Refresh token not found on server.');
+        res.status(403)
+        res.clearCookie("refreshToken");
+        res.json({message: 'Refresh token not found on server.'});
         return;
     }
+
     // If all test passed, verify refresh token.
-    jwt.verify(refreshToken, WEB_JWT_REFRESH_SECRET, (error, user) => {
-        if(error) return res.sendStatus(403);
-        refreshTokens.splice(refreshTokens.indexOf(refreshToken), 1);
+    jwt.verify(reqRefreshToken, WEB_JWT_REFRESH_SECRET, (error, tokenPayload) => {
+        if(error){
+            console.error(error);
+            res.status(403);
+            res.clearCookie("refreshToken");
+            res.json({message: 'Non valid refresh token.'});
+            return;
+        }
 
+        refreshTokens.splice(refreshTokens.indexOf(reqRefreshToken), 1);
+        console.log(tokenPayload);
+        const user = {id: tokenPayload.id, username: tokenPayload.username};
         const accessToken = jwt.sign(user, WEB_JWT_ACCESS_SECRET);    
-        const refreshToken = jwt.sign(user, WEB_JWT_REFRESH_SECRET, { expiresIn: '60s' });
+        const refreshToken = jwt.sign(user, WEB_JWT_REFRESH_SECRET, { expiresIn: `${refreshTokenExpirationTime}s` });
 
-        res.json({ accessToken: accessToken, refreshToken: refreshToken })
+        refreshTokens.push(refreshToken);
+
+        res.status(200);
+        res.cookie("refreshToken", refreshToken, { httpOnly: true, sameSite: 'strict' });
+        res.json({ accessToken: accessToken, influxToken: INFLUXDB_TOKEN});
+        return;
     })
-  })
+});
 
 router.get('/logs/info', (req, res) => {
     res.status(200);
@@ -134,7 +149,7 @@ router.get('/logs/errors', (req, res) => {
 });
 
 // Guard users apis -------------------------------------------------------------------------------------------------
-router.get('/api/getguardusers', velidateToken, (req, res) => {
+router.get('/api/getguardusers', validateAccessToken, (req, res) => {
     let deviceMetadataDB = new JSONdb(__dirname + '/../deviceMetadataDB.json');
     let guardUsers = deviceMetadataDB.get('guard_users');
     guardUsers = guardUsers === undefined ? [] : guardUsers;    // Set array to empty if not guard users are store on the local database.
@@ -143,7 +158,7 @@ router.get('/api/getguardusers', velidateToken, (req, res) => {
     res.send(guardUsers);
 });
 
-router.post('/api/addguarduser', velidateToken, async (req, res) => {
+router.post('/api/addguarduser', validateAccessToken, async (req, res) => {
     let deviceMetadataDB = new JSONdb(__dirname + '/../deviceMetadataDB.json');
     let guardUsers = deviceMetadataDB.get('guard_users');       // Recover locally stored guard users.
     guardUsers = guardUsers === undefined ? [] : guardUsers;    // Check if undefined.
@@ -174,7 +189,7 @@ router.post('/api/addguarduser', velidateToken, async (req, res) => {
     }
 });
 
-router.post('/api/removeguarduser', velidateToken, async (req, res) => {
+router.post('/api/removeguarduser', validateAccessToken, async (req, res) => {
     let deviceMetadataDB = new JSONdb(__dirname + '/../deviceMetadataDB.json');
     let guardUsers = deviceMetadataDB.get('guard_users');       // Recover locally stored guard users.
     if(guardUsers === undefined){
@@ -213,7 +228,7 @@ router.post('/api/removeguarduser', velidateToken, async (req, res) => {
 
 // Alerts apis -------------------------------------------------------------------------------------------------
 // Retrieve alerts and sensors available connected to the system.
-router.get('/api/getalertsandsensorsavailable', velidateToken, (req, res) => {
+router.get('/api/getalertsandsensorsavailable', validateAccessToken, (req, res) => {
     let deviceMetadataDB = new JSONdb(__dirname + '/../deviceMetadataDB.json');
     let alerts = deviceMetadataDB.get('alerts');                // Retrieve all alerts already defined.s
     alerts = alerts === undefined ? [] : alerts;                // Set array to empty if not alerts are store on the local database.
@@ -235,7 +250,7 @@ router.get('/api/getalertsandsensorsavailable', velidateToken, (req, res) => {
     else res.json({alerts, sensorsAvailable, message: "OK: Alerts and sensors availables successfully retrieved."});
 });
 
-router.post('/api/addalert', velidateToken, async (req, res) => {
+router.post('/api/addalert', validateAccessToken, async (req, res) => {
     let deviceMetadataDB = new JSONdb(__dirname + '/../deviceMetadataDB.json');
     let alerts = deviceMetadataDB.get('alerts');        // Recover locally stored alerts.
     alerts = alerts === undefined ? [] : alerts;        // Check if undefined.
@@ -272,7 +287,7 @@ router.post('/api/addalert', velidateToken, async (req, res) => {
     }
 });
 
-router.post('/api/removealert', velidateToken, async (req, res) => {
+router.post('/api/removealert', validateAccessToken, async (req, res) => {
     let deviceMetadataDB = new JSONdb(__dirname + '/../deviceMetadataDB.json');
     let alerts = deviceMetadataDB.get('alerts');            // Recover locally stored alerts.
     if(alerts === undefined){
@@ -310,7 +325,7 @@ router.post('/api/removealert', velidateToken, async (req, res) => {
     }
 });
 
-router.put('/api/updatealert', velidateToken, async (req, res) => {
+router.put('/api/updatealert', validateAccessToken, async (req, res) => {
     let deviceMetadataDB = new JSONdb(__dirname + '/../deviceMetadataDB.json');
     let alerts = deviceMetadataDB.get('alerts');            // Recover locally stored alerts.
     // Send error if no alerts are found on the local DB.

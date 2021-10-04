@@ -90,7 +90,7 @@ export default {
         // Return array with all alerts and an array with all sensors available on system.
         let getAlertsAndSensorsAvailable = async () => {
             loading.value = true;
-            console.log(accessToken.value)
+
             const response = await fetch(`http://rpi4id0.mooo.com:5000/api/getalertsandsensorsavailable`, {
                 method: "GET",
                 headers: {"Authorization": `Bearer ${accessToken.value}`, "Content-Type": "application/json"},

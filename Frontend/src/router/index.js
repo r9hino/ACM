@@ -75,7 +75,7 @@ const router = createRouter({
     routes
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
     // If page require been authenticated.
     if(to.matched.some((record) => record.meta.requiresAuth)){
         // If it is already authenticated go to next page.
@@ -84,8 +84,25 @@ router.beforeEach((to, from, next) => {
             return;
         }
 
+        // Send request for new refresh token if and only if the actual refresh token is valid.
+        const response = await fetch("http://rpi4id0.mooo.com:5000/validaterefreshtoken", {
+            method: "GET",
+            headers: {"Content-Type": "application/json"},
+            credentials: 'include',		// Necessary to receive cookies from server (and send cookies to server).
+        });
 
-        // If is not authenticated and have not a valid token, go to login page.
+        // If the refresh token is still valid, a new access and refresh token are returned.
+        if(response.status == 200){
+            const {user, accessToken, influxToken} = await response.json();
+            store.commit('setUser', user);
+            store.commit('setAccessToken', accessToken);
+            store.commit('setInfluxToken', influxToken);
+            store.commit('setAuthenticated', true);
+            next();
+            return;
+        }
+
+        // If is not authenticated and have not a valid refresh token, go to login page.
         next("/login");
     }
     // For pages that do not require been authenticated.

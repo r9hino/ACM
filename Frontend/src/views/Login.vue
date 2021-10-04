@@ -48,7 +48,7 @@ export default {
             const response = await fetch("http://rpi4id0.mooo.com:5000/login", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
-				credentials: 'include',
+				credentials: 'include',		// Necessary to receive cookies from server (and send cookies to server).
                 body: JSON.stringify({ username: this.username, password: this.password }),
             });
 
@@ -60,10 +60,6 @@ export default {
                 this.setAccessToken(accessToken);
                 this.setInfluxToken(influxToken);
                 this.setAuthenticated(true);
-
-				//localStorage.setItem('accessToken', accessToken);
-				//localStorage.setItem('refreshToken', refreshToken);
-				console.log(accessToken);
 
                 //console.log(user, accessToken, influxToken);
                 await this.$router.push("/");
