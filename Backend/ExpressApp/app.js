@@ -1,3 +1,5 @@
+const {SESSION_SECRET} = require('../Helper/envExport');   // Environment variables.
+
 const {hostname} = require('os');
 const express = require('express');
 const sessions = require('express-session');
@@ -33,7 +35,7 @@ app.use(cookieParser);
 
 // Session middleware with x milliseconds of duration.
 app.use(sessions({
-    secret: "thisismysecrctekeyfhrgfgrfrty84fwir767",
+    secret: SESSION_SECRET,
     saveUninitialized: false,
     cookie: { httpOnly: true, maxAge: 1000*15 },
     resave: true

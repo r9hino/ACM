@@ -19,7 +19,6 @@
     "express-rate-limit": "^5.3.0",
     "express-session": "^1.17.2",
     "i2c-bus": "^5.2.2",
-    "jsonwebtoken": "^8.5.1",
     "md5": "^2.3.0",
     "mongodb": "^4.1.2",
     "node-cron": "^3.0.0",

@@ -1,3 +1,5 @@
+const {MONGODB_REMOTE_URL, WEB_USERNAME, WEB_PASSWORD, WEB_JWT_ACCESS_SECRET, WEB_JWT_REFRESH_SECRET, INFLUXDB_TOKEN} = require('../Helper/envExport');   // Environment variables.
+
 const {hostname} = require('os');
 const router = require('express').Router();
 const cookieParser = require("cookie-parser");
@@ -5,8 +7,6 @@ const readLastLines = require('read-last-lines');
 const JSONdb = require('simple-json-db');
 
 const MongoDBHandler = require('../DB/MongoDBHandler');
-const validateAccessToken = require('./validateToken');
-const {MONGODB_REMOTE_URL, WEB_USERNAME, WEB_PASSWORD, WEB_JWT_ACCESS_SECRET, WEB_JWT_REFRESH_SECRET, INFLUXDB_TOKEN} = require('../Helper/envExport');   // Environment variables.
 
 // Initialize DBs
 const remoteMongoDB = new MongoDBHandler(MONGODB_REMOTE_URL);

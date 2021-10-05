@@ -1,7 +1,7 @@
 require('dotenv').config({ path: __dirname + `/.env` });
 
 module.exports = {
-    MONGODB_REMOTE_URL: process.env.MONGODB_REMOTE_URL,
+    SESSION_SECRET: process.env.SESSION_SECRET,
 
     INFLUXDB_LOCAL_URL: process.env.INFLUXDB_LOCAL_URL,
     INFLUXDB_TOKEN: process.env.INFLUXDB_TOKEN,
@@ -9,6 +9,8 @@ module.exports = {
     INFLUXDB_ORG: process.env.INFLUXDB_ORG,
     INFLUXDB_SENSORS_BUCKET: process.env.INFLUXDB_SENSORS_BUCKET,
     INFLUXDB_SYSTEM_BUCKET: process.env.INFLUXDB_SYSTEM_BUCKET,
+
+    MONGODB_REMOTE_URL: process.env.MONGODB_REMOTE_URL,
 
     SOCKETIO_PORT: process.env.SOCKETIO_PORT,
 
