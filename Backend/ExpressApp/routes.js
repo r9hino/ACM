@@ -1,8 +1,7 @@
-const {MONGODB_REMOTE_URL, WEB_USERNAME, WEB_PASSWORD, WEB_JWT_ACCESS_SECRET, WEB_JWT_REFRESH_SECRET, INFLUXDB_TOKEN} = require('../Helper/envExport');   // Environment variables.
+const {MONGODB_REMOTE_URL, WEB_USERNAME, WEB_PASSWORD, INFLUXDB_TOKEN} = require('../Helper/envExport');   // Environment variables.
 
 const {hostname} = require('os');
 const router = require('express').Router();
-const cookieParser = require("cookie-parser");
 const readLastLines = require('read-last-lines');
 const JSONdb = require('simple-json-db');
 
@@ -15,14 +14,13 @@ const remoteMongoDB = new MongoDBHandler(MONGODB_REMOTE_URL);
 const ipReqMonitor = {};                    // Store IPs and number of attempts.
 const maxNumberOfAttempts = 4;
 const waitTime = 30*1000;
-
 let storeSessions = [];
 let timeoutInterval = null;
 let start, stop;
 
 // Authorization Middleware
 const authValidation = function(req, res, next){
-    console.log(storeSessions, req.session);
+    //console.log(storeSessions, req.session);
     if(req.session && storeSessions.findIndex(session => session.user === req.session.user) >= 0)
         return next();
     else
@@ -96,7 +94,7 @@ router.post('/login', (req, res) => {
 
 // Validate session.
 router.get('/validatesession', (req, res) => {
-    console.log("Validate session:", req.session);
+    //console.log("Validate session:", storeSessions);
     // If session has a user.
     if(req.session.user !== undefined){
         // If session has the user stored.

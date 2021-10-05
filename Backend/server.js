@@ -1,11 +1,13 @@
 // Links:
 // Routes express: https://github.com/scalablescripts/node-auth/blob/main/routes/routes.js   https://www.youtube.com/watch?v=IxcKMcsBGE8&list=PLlameCF3cMEsjpIRxfB9Rjici3aMCaQVo&index=2&ab_channel=ScalableScripts
+// Express session: https://ull-esit-dsi-1617.github.io/estudiar-cookies-y-sessions-en-expressjs-alejandro-raul-35l2-p4/sessionsexpress.html
 // JWT security: https://www.netsparker.com/blog/web-security/json-web-token-jwt-attacks-vulnerabilities/
 // Microservices patterns: https://blog.bitsrc.io/my-favorite-microservice-design-patterns-for-node-js-fe048c635d83
 // Promise - async/await: https://blog.risingstack.com/mastering-async-await-in-nodejs/ https://dmitripavlutin.com/what-is-javascript-promise/
 // Class: https://javascript.info/class#not-just-a-syntactic-sugar
 // Vue basics: https://github.com/iamshaunjp/Vue-3-Firebase/tree/master  https://www.vuemastery.com/pdf/Vue-3-Cheat-Sheet.pdf
 // Vue authentication: https://www.smashingmagazine.com/2020/10/authentication-in-vue-js/        https://github.com/firebase007/JWT_VUE_APP
+// Change values of the vue app from browser console: document.getElementsByTagName('div')[0].__vue_app__._context.provides.store._state.data.authenticated = false
 
 // To-do
 // Run server on booting and check if influx docker can be reached at startup

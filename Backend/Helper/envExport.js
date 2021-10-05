@@ -16,8 +16,6 @@ module.exports = {
 
     WEB_USERNAME: process.env.WEB_USERNAME,
     WEB_PASSWORD: process.env.WEB_PASSWORD,
-    WEB_JWT_ACCESS_SECRET: process.env.WEB_JWT_ACCESS_SECRET,
-    WEB_JWT_REFRESH_SECRET: process.env.WEB_JWT_REFRESH_SECRET,
 
     TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
     TWILIO_TOKEN: process.env.TWILIO_TOKEN,
