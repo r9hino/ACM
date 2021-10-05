@@ -26,10 +26,13 @@
 <script>
 import { useStore } from 'vuex';
 import { ref, computed, onBeforeMount, onBeforeUnmount } from 'vue';
+import { useRouter } from 'vue-router';
 
 export default {
     setup(){
         const store = useStore();
+        const router = useRouter();
+
         let serverLogs = ref([]);
         let typeLog = ref('Info');
 
@@ -37,14 +40,19 @@ export default {
             const response = await fetch(`http://rpi4id0.mooo.com:5000/logs/${path.toLowerCase()}`, {
                 method: "GET",
                 headers: {"Content-Type": "application/text"},
+                credentials: 'include',
             });
             if(response.status == 200){
                 const logText = await response.text();
                 serverLogs.value = logText.toString().replace(/\r\n/g,'\n').split('\n').reverse();
             }
+            else if(response.status == 401 || response.status == 403){
+                store.commit('setAuthenticated', false);
+                await router.push({ path: "/login"});
+                return;
+            }
             else{
                 const {message} = await response.text();
-                console.log(message);
             }
         };
 

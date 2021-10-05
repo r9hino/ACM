@@ -17,18 +17,6 @@ const limiter = rateLimit({
 });
 //app.use(limiter);
 
-// CORS middleware.
-const middlewareCORS = function(req, res, next){
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Authorization, Content-type'); // 'Authorization, X-Requested-With, Content-type, Accept, X-Access-Token, X-Key'
-    res.header('Access-Control-Allow-Origin', `http://${hostname()}.mooo.com:3000`);
-    res.header('Access-Control-Allow-Credentials', true);
-
-    //console.log("Before routes");
-    next();
-}
-app.use(middlewareCORS);
-
 // Cookie parser.
 function cookieParser(req, res, next) {
     let cookies = req.headers.cookie;
@@ -43,14 +31,25 @@ function cookieParser(req, res, next) {
 }
 app.use(cookieParser);
 
-
 // Session middleware with x milliseconds of duration.
 app.use(sessions({
     secret: "thisismysecrctekeyfhrgfgrfrty84fwir767",
-    saveUninitialized:true,
-    cookie: { maxAge: 1000 * 60 * 60 * 24 },
-    resave: false
+    saveUninitialized: false,
+    cookie: { httpOnly: true, maxAge: 1000*15 },
+    resave: true
 }));
+
+// CORS middleware.
+const middlewareCORS = function(req, res, next){
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Authorization, Content-type'); // 'Authorization, X-Requested-With, Content-type, Accept, X-Access-Token, X-Key'
+    res.header('Access-Control-Allow-Origin', `http://${hostname()}.mooo.com:3000`);
+    res.header('Access-Control-Allow-Credentials', true);
+
+    //console.log("Before routes");
+    next();
+}
+app.use(middlewareCORS);
 
 app.use(routes);
 

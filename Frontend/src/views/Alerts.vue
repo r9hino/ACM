@@ -24,6 +24,7 @@
 <script>
 import { useStore } from 'vuex';
 import { ref, computed, onBeforeMount, onBeforeUnmount} from 'vue';
+import { useRouter } from 'vue-router';
 import Spinner from '../components/Spinner.vue';
 import InputAlertGroup from '../components/InputAlertGroup.vue';
 import Footer from '../components/Footer.vue';
@@ -33,6 +34,8 @@ export default {
     components: { Spinner, InputAlertGroup, Footer },
     setup(){
         const store = useStore();
+        const router = useRouter();
+
         let loading = ref(false);
         let footerRef = ref();
         let alerts = ref([]);
@@ -42,13 +45,13 @@ export default {
 
         const user = computed(() => store.getters.getUser);
         const isAuthenticated = computed(() => store.getters.getAuthenticated);
-        const accessToken = computed(() => store.getters.getAccessToken);
 
         let getAlertsAndSensorsAvailable = async () => {
             loading.value = true;
             const response = await fetch("http://rpi4id0.mooo.com:5000/api/getalertsandsensorsavailable", {
                 method: "GET",
-                headers: {"Authorization": `Bearer ${accessToken.value}`, "Content-Type": "application/json"},
+                headers: {"Content-Type": "application/json"},
+                credentials: 'include',
             });
             const responseJSON = await response.json();
 
@@ -56,6 +59,11 @@ export default {
                 // Return array of all alerts and sensors available on system.
                 alerts.value = responseJSON.alerts;
                 sensorsAvailable.value = responseJSON.sensorsAvailable;
+            }
+            else if(response.status == 401 || response.status == 403){
+                store.commit('setAuthenticated', false);
+                await router.push({ path: "/login"});
+                return;
             }
             else{
                 // Only if there is a warning or and error display footer message.
@@ -105,7 +113,8 @@ export default {
             loading.value = true;
             const response = await fetch("http://rpi4id0.mooo.com:5000/api/addalert", {
                 method: "POST",
-                headers: {"Authorization": `Bearer ${accessToken.value}`, "Content-Type": "application/json"},
+                headers: {"Content-Type": "application/json"},
+                credentials: 'include',
                 body: JSON.stringify({newAlert: newAlert.value})
             });
             const responseJSON = await response.json();
@@ -113,6 +122,11 @@ export default {
                 alerts.value.push({id: responseJSON.id, sensor_name: newAlert.value.sensor_name, criteria: newAlert.value.criteria, value: newAlert.value.value,
                     value_aux: newAlert.value.value_aux, unit: newAlert.value.unit, settling_time: newAlert.value.settling_time,
                     state: 'off', notified_users: [], alert_message: []});
+            }
+            else if(response.status == 401 || response.status == 403){
+                store.commit('setAuthenticated', false);
+                await router.push({ path: "/login"});
+                return;
             }
             footerRef.value.setTemporalMessage(responseJSON.message,5000);
             loading.value = false;
@@ -122,12 +136,18 @@ export default {
             loading.value = true;
             const response = await fetch("http://rpi4id0.mooo.com:5000/api/removealert", {
                 method: "POST",
-                headers: {"Authorization": `Bearer ${accessToken.value}`, "Content-Type": "application/json"},
+                headers: {"Content-Type": "application/json"},
+                credentials: 'include',
                 body: JSON.stringify({alertRemove: alerts.value[index]})
             });
             const responseJSON = await response.json();
             if(response.status == 200 || response.status == 201){
                 alerts.value.splice(index, 1);
+            }
+            else if(response.status == 401 || response.status == 403){
+                store.commit('setAuthenticated', false);
+                await router.push({ path: "/login"});
+                return;
             }
             else{
                 footerRef.value.setTemporalMessage(responseJSON.message, 5000);
@@ -146,7 +166,8 @@ export default {
 
             const response = await fetch("http://rpi4id0.mooo.com:5000/api/updatealert", {
                 method: "PUT",
-                headers: {"Authorization": `Bearer ${accessToken.value}`, "Content-Type": "application/json"},
+                headers: {"Content-Type": "application/json"},
+                credentials: 'include',
                 body: JSON.stringify({
                     alertUpdate: alerts.value[index],
                     index: index,
@@ -155,6 +176,11 @@ export default {
             const responseJSON = await response.json();
             if(response.status == 200 || response.status == 201){
 
+            }
+            else if(response.status == 401 || response.status == 403){
+                store.commit('setAuthenticated', false);
+                await router.push({ path: "/login"});
+                return;
             }
             footerRef.value.setTemporalMessage(responseJSON.message, 5000);
             loading.value = false;

@@ -68,7 +68,7 @@ const routes = [
         props: true,
         meta: { requiresAuth: true },
     },
-]
+];
 
 const router = createRouter({
     history: createWebHistory(process.env.BASE_URL),
@@ -84,18 +84,17 @@ router.beforeEach(async (to, from, next) => {
             return;
         }
 
-        // Send request for new refresh token if and only if the actual refresh token is valid.
-        const response = await fetch("http://rpi4id0.mooo.com:5000/validaterefreshtoken", {
+        // Send request for session validation.
+        const response = await fetch("http://rpi4id0.mooo.com:5000/validatesession", {
             method: "GET",
             headers: {"Content-Type": "application/json"},
             credentials: 'include',		// Necessary to receive cookies from server (and send cookies to server).
         });
 
-        // If the refresh token is still valid, a new access and refresh token are returned.
+        // If session is valid restore session state on client.
         if(response.status == 200){
-            const {user, accessToken, influxToken} = await response.json();
+            const {user, influxToken} = await response.json();
             store.commit('setUser', user);
-            store.commit('setAccessToken', accessToken);
             store.commit('setInfluxToken', influxToken);
             store.commit('setAuthenticated', true);
             next();

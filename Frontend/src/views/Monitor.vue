@@ -60,6 +60,7 @@
 <script>
 import { useStore } from 'vuex';
 import { ref, computed, onBeforeMount, onBeforeUnmount } from 'vue';
+import { useRouter } from 'vue-router';
 
 import Spinner from '../components/Spinner.vue';
 import Chart from '../components/Chart.vue';
@@ -72,6 +73,8 @@ export default {
     props: [],
     setup(){
         const store = useStore();
+        const router = useRouter();
+
         let loading = ref(false);
         let timeWindow = ref('15 minutos');     // Time window used for the x-axis in chart.
         let reloadingChartTime = ref(null);     // Reloading time for updating chart.
@@ -84,7 +87,6 @@ export default {
 
         const user = computed(() => store.getters.getUser);
         const isAuthenticated = computed(() => store.getters.getAuthenticated);
-        const accessToken = computed(() => store.getters.getAccessToken);
         const influxToken = computed(() => store.getters.getInfluxToken);
 
         // Return array with all alerts and an array with all sensors available on system.
@@ -93,13 +95,19 @@ export default {
 
             const response = await fetch(`http://rpi4id0.mooo.com:5000/api/getalertsandsensorsavailable`, {
                 method: "GET",
-                headers: {"Authorization": `Bearer ${accessToken.value}`, "Content-Type": "application/json"},
+                headers: {"Content-Type": "application/json"},
+                credentials: 'include',
             });
             const responseJSON = await response.json();
 
             if(response.status == 200){
                 alerts.value = responseJSON.alerts;
                 sensorsAvailable.value = responseJSON.sensorsAvailable;
+            }
+            else if(response.status == 401 || response.status == 403){
+                store.commit('setAuthenticated', false);
+                await router.push({ path: "/login"});
+                return;
             }
             else footerRef.value.setTemporalMessage(responseJSON.message, 5000); // Only if there is a warning or and error display footer message.
             loading.value = false;
@@ -222,12 +230,18 @@ export default {
 
             const response = await fetch("http://rpi4id0.mooo.com:5000/api/updatealert", {
                 method: "PUT",
-                headers: {"Authorization": `Bearer ${accessToken.value}`, "Content-Type": "application/json"},
+                headers: {"Content-Type": "application/json"},
+                credentials: 'include',
                 body: JSON.stringify({ alertUpdate: alerts.value[alertIndex], index: alertIndex})
             });
             const responseJSON = await response.json();
             if(response.status == 200 || response.status == 201){
 
+            }
+            else if(response.status == 401 || response.status == 403){
+                store.commit('setAuthenticated', false);
+                await router.push({ path: "/login"});
+                return;
             }
             footerRef.value.setTemporalMessage(responseJSON.message, 5000);
             loading.value = false;

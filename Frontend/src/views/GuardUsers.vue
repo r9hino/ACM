@@ -42,6 +42,7 @@
 <script>
 import { useStore } from 'vuex';
 import { ref, computed, onBeforeMount, onBeforeUnmount } from 'vue';
+import { useRouter } from 'vue-router';
 import Spinner from '../components/Spinner.vue';
 import Footer from '../components/Footer.vue';
 
@@ -49,6 +50,8 @@ export default {
     components: { Spinner, Footer },
     setup(){
         const store = useStore();
+        const router = useRouter();
+
         let loading = ref(false);
         let footerRef = ref();
         let guardUsers = ref([]);
@@ -56,18 +59,22 @@ export default {
 
         const user = computed(() => store.getters.getUser);
         const isAuthenticated = computed(() => store.getters.getAuthenticated);
-        const accessToken = computed(() => store.getters.getAccessToken);
 
         async function getGuardUsers(){
             loading.value = true;
             const response = await fetch("http://rpi4id0.mooo.com:5000/api/getguardusers", {
                 method: "GET",
-                headers: {"Authorization": `Bearer ${accessToken.value}`},
+                headers: {"Content-Type": "application/json"},
+                credentials: 'include',
             });
-            //console.log(token.value);
             if(response.status == 200){
                 // Return array of all guard users stored on server.
                 guardUsers.value = await response.json();
+            }
+            else if(response.status == 401 || response.status == 403){
+                store.commit('setAuthenticated', false);
+                await router.push({ path: "/login"});
+                return;
             }
             else{
                 footerRef.value.setTemporalMessage('Usuarios guardias no recuperados del servidor.', 5000);
@@ -109,7 +116,8 @@ export default {
 
             const response = await fetch("http://rpi4id0.mooo.com:5000/api/addguarduser", {
                 method: "POST",
-                headers: {"Authorization": `Bearer ${accessToken.value}`, "Content-Type": "application/json"},
+                headers: {"Content-Type": "application/json"},
+                credentials: 'include',
                 body: JSON.stringify({newGuardUser: {email: newGuardUser.value.email, phone: '+56'+newGuardUser.value.phone}})
             });
             const responseJSON = await response.json();
@@ -117,6 +125,11 @@ export default {
                 guardUsers.value.push({email: newGuardUser.value.email, phone: '+56'+newGuardUser.value.phone});
                 newGuardUser.value.email = '';
                 newGuardUser.value.phone = '';
+            }
+            else if(response.status == 401 || response.status == 403){
+                store.commit('setAuthenticated', false);
+                await router.push({ path: "/login"});
+                return;
             }
             else{
                 footerRef.value.setTemporalMessage(responseJSON, 5000);
@@ -128,12 +141,18 @@ export default {
             loading.value = true;
             const response = await fetch("http://rpi4id0.mooo.com:5000/api/removeguarduser", {
                 method: "POST",
-                headers: {"Authorization": `Bearer ${accessToken.value}`, "Content-Type": "application/json"},
+                headers: {"Content-Type": "application/json"},
+                credentials: 'include',
                 body: JSON.stringify({guardUserRemove: guardUsers.value[index]})
             });
             const responseJSON = await response.json();
             if(response.status == 200 || response.status == 201){
                 guardUsers.value.splice(index, 1);
+            }
+            else if(response.status == 401 || response.status == 403){
+                store.commit('setAuthenticated', false);
+                await router.push({ path: "/login"});
+                return;
             }
             else{
                 footerRef.value.setTemporalMessage(responseJSON, 5000);
