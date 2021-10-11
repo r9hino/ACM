@@ -33,7 +33,7 @@ function cookieParser(req, res, next) {
 app.use(cookieParser);
 
 // Session middleware with x milliseconds of duration.
-const sessionDuration = 1000*60*30;
+const sessionDuration = 1000*60*60*72;
 app.use(sessions({
     secret: SESSION_SECRET,
     saveUninitialized: false,

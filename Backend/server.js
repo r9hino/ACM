@@ -13,11 +13,10 @@
 // Run server on booting and check if influx docker can be reached at startup
 // Use bcrypt for hashing passwords.
 // Add only one array element when saving to local and remote DB.
-// Check there is no problem when 2 alert are duplicated.
-// Test if everything is good when two or more alert get activated.
-// Check hysteresis, maybe is needed to enter exit point by UI.
+// Check there is no problem when 2 alert are duplicated, or when two or more alert get activated.
 // Control decimation in chart. Add stacket option in case there is boolean sensors or actuators.
 // Add actuator section in Monitor.
+// Add environment variables backend and frontend.
 
 const http = require('http');
 const socketio = require('socket.io');
@@ -197,9 +196,11 @@ function socketCoordinator(socket){
         socket.broadcast.emit('updateClients', relay);
         let idRelay = relay.id;
         let relayState = relay.state;
+        let relayTriggerType = relay.trigger_type;
         let dateUpdate = new Date().toString();
         let relays = deviceMetadataDB.get('relays');
         relays[idRelay].state = relayState;
+        relays[idRelay].trigger_type = relayTriggerType;
         relays[idRelay].date_update = dateUpdate;
 
         // Store new state on the local DB.

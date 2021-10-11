@@ -1,23 +1,23 @@
 <template>
     <main class="form-login">
-        <form @submit="login">
+        <form @submit="login" autocomplete="on">
             <img class="mb-4" src="../assets/logo128.png" alt="" width="72" height="90">
             <h1 class="h3 mb-3 fw-normal">Identificacion</h1>
 
             <div class="form-floating">
-                <input v-model="username" type="user" class="form-control" id="floatingInput" placeholder="User">
-                <label for="floatingInput">Usuario</label>
+                <input v-model="username" type="user" class="form-control" name="username" id="username" placeholder="username">
+                <label for="username">Usuario</label>
             </div>
             <div class="form-floating">
-                <input v-model="password" type="password" class="form-control" id="floatingPassword" placeholder="Password">
-                <label for="floatingPassword">Contraseña</label>
+                <input v-model="password" type="password" class="form-control" name="password" id="password" placeholder="password">
+                <label for="password">Contraseña</label>
             </div>
-            <div class="checkbox mb-3">
+            <!--<div class="checkbox mb-3">
                 <label>
                     <input type="checkbox" v-model="checkedRemember" @change="localStorage.setItem('checkedRemember', checkedRemember)" value="remember-me"> Recordar
                 </label>
-            </div>
-            <button class="w-100 btn btn-lg btn-primary" type="submit">Log in</button>
+            </div>-->
+            <button class="w-100 btn btn-lg btn-primary mt-3" type="submit">Log in</button>
             <div class="warning" v-if="!!error" >
                 <p class='warning'>{{ error }}</p>
                 <p class='warning'>Intentos disponibles: {{ attemptsAvailable }}</p>

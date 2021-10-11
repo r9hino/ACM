@@ -102,16 +102,16 @@ router.get('/validatesession', (req, res) => {
             res.status(200);
             res.json({user: req.session.user, influxToken: INFLUXDB_TOKEN});
         }
-        else res.sendStatus(403);
+        else res.sendStatus(401);
     }
-    else res.sendStatus(403);
+    else res.sendStatus(401);
     return;
 });
 
 router.get('/logs/info', authValidation, (req, res) => {
     res.status(200);
     res.contentType('application/text');
-    readLastLines.read('/home, pi/Code/ACM/Backend/Logs/info.log', 100)
+    readLastLines.read('/home/pi/Code/ACM/Backend/Logs/info.log', 100)
 	    .then((lines) => res.send(lines));
 });
 
@@ -209,7 +209,7 @@ router.get('/api/getalertsandsensorsavailable', authValidation, (req, res) => {
     
     let sensorsAvailable = deviceMetadataDB.get('sensors');     // Retrieve all sensors connected in the system.
     if(sensorsAvailable === undefined){
-        res.status(401);
+        res.status(406);
         res.contentType('application/json');
         res.json({message: 'ERROR: No sensors found on DB.'});
         return;
@@ -265,7 +265,7 @@ router.post('/api/removealert', authValidation, async (req, res) => {
     let deviceMetadataDB = new JSONdb(__dirname + '/../deviceMetadataDB.json');
     let alerts = deviceMetadataDB.get('alerts');            // Recover locally stored alerts.
     if(alerts === undefined){
-        res.status(400);
+        res.status(406);
         res.json({message: 'ERROR: No alert to remove.'});
         return;
     }
@@ -273,7 +273,7 @@ router.post('/api/removealert', authValidation, async (req, res) => {
 
     const index = alerts.findIndex(({sensor_name, criteria}) => sensor_name === alertRemove.sensor_name && criteria === alertRemove.criteria);
     if(index < 0){
-        res.status(400);
+        res.status(406);
         res.json({message: 'ERROR: Alert not found.'});
         return;
     }
@@ -304,7 +304,7 @@ router.put('/api/updatealert', authValidation, async (req, res) => {
     let alerts = deviceMetadataDB.get('alerts');            // Recover locally stored alerts.
     // Send error if no alerts are found on the local DB.
     if(alerts === undefined){
-        res.status(400);
+        res.status(406);
         res.json({message: 'ERROR - routes.js: There are no alerts defined on server to update.'});
         return;
     }
@@ -312,7 +312,7 @@ router.put('/api/updatealert', authValidation, async (req, res) => {
 
     // Send error if alert with index is not found.
     if(alerts[index] === undefined){
-        res.status(400);
+        res.status(406);
         res.json({message: 'ERROR: Alert not found.'});
         return;
     }
@@ -331,7 +331,7 @@ router.put('/api/updatealert', authValidation, async (req, res) => {
         await remoteMongoDB.close();
         res.status(200);
         res.json({message: 'OK: Alert updated on local and remote DBs.'});
-    }                            
+    }
     catch(err){
         console.error('ERROR:', err);
         res.status(201);
