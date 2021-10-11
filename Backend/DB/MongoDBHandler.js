@@ -51,13 +51,14 @@ class MongoDBHandler {
     }
 
     // Update device relay values.   https://docs.mongodb.com/manual/reference/method/db.collection.update/
-    updateRelayState = async (hostname, idRelay, state, dateUpdate) => {
+    updateRelayState = async (hostname, idRelay, state, triggerType, dateUpdate) => {
         try{
             const id = await this.dbClient.db('iot').collection('iot_manager')
                 .updateOne({hostname: hostname, 'relays.id': idRelay}, {
                     $set: {
                         date_update: dateUpdate,
                         'relays.$.state': state,
+                        'relays.$.trigger_type': triggerType,
                         'relays.$.date_update': dateUpdate,
                     }});
             return id;

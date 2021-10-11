@@ -16,15 +16,15 @@
             "state": false,
             "trigger_type": "Custom",
             "schedule": null,
-            "date_update": "Mon Oct 11 2021 14:23:55 GMT-0300 (Chile Summer Time)"
+            "date_update": "Mon Oct 11 2021 14:52:30 GMT-0300 (Chile Summer Time)"
         },
         {
             "id": 1,
             "description": "Control bomba 2",
             "state": false,
-            "trigger_type": "Horario",
+            "trigger_type": "Custom",
             "schedule": null,
-            "date_update": "Sun Oct 10 2021 22:56:41 GMT-0300 (Chile Summer Time)"
+            "date_update": "Mon Oct 11 2021 14:58:52 GMT-0300 (Chile Summer Time)"
         },
         {
             "id": 2,
@@ -40,7 +40,7 @@
         {
             "email": "philippe.ilharreguy@gmail.com",
             "phone": "+56999972023",
-            "date_update": "Fri Oct 08 2021 18:01:03 GMT-0300 (Chile Summer Time)"
+            "date_update": "Mon Oct 11 2021 15:48:02 GMT-0300 (Chile Summer Time)"
         }
     ],
     "alerts": [
@@ -62,11 +62,13 @@
             "value": "23.5",
             "unit": "°C",
             "settling_time": "60",
-            "state": "off",
-            "notified_users": [],
-            "date_update": "Sat Oct 09 2021 03:28:54 GMT-0300 (Chile Summer Time)",
-            "alert_message": null,
-            "date_trigger": null
+            "state": "on",
+            "notified_users": [
+                "philippe.ilharreguy@gmail.com"
+            ],
+            "date_update": "Mon Oct 11 2021 15:48:02 GMT-0300 (Chile Summer Time)",
+            "alert_message": "Alerta: \"Temperatura estacion\" es mayor o igual que 23.5 °C.",
+            "date_trigger": "Mon Oct 11 2021 20:11:55 GMT-0300 (Chile Summer Time)"
         }
     ],
     "sensors": [
@@ -108,5 +110,5 @@
             "type": "temperature"
         }
     ],
-    "date_update": "Mon Oct 11 2021 14:23:55 GMT-0300 (Chile Summer Time)"
+    "date_update": "Mon Oct 11 2021 20:11:55 GMT-0300 (Chile Summer Time)"
 }

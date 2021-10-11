@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import store from '../store/index';
 
 import Login from '../views/Login.vue';
-import Home from '../views/Home.vue';
+import Control from '../views/Control.vue';
 import Monitor from '../views/Monitor.vue';
 import Process from '../views/Process.vue';
 import Calibration from '../views/Calibration.vue';
@@ -20,8 +20,8 @@ const routes = [
     },
     {
         path: '/',
-        name: 'home',
-        component: Home,
+        name: 'control',
+        component: Control,
         meta: { requiresAuth: true },
     },
     {

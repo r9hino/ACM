@@ -7,7 +7,7 @@
       <div class="navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <router-link class="routerLink" to="/" @click="setToolActiveClass(false)">Home</router-link>
+            <router-link class="routerLink" to="/" @click="setToolActiveClass(false)">Control</router-link>
           </li>
           <!--<router-link class="routerLink" to="/process">Process</router-link>-->
           <li class="nav-item">

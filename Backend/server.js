@@ -218,7 +218,7 @@ function socketCoordinator(socket){
                 remoteMongoDB.updateDevice(hostname(), deviceMetadata).catch(e => console.log('WARNING: Couldn\'t update relay state on remote MongoDB'))
             });
         }
-        else remoteMongoDB.updateRelayState(hostname(), idRelay, relayState, dateUpdate).catch(e => console.log('WARNING: Couldn\'t update relay state on remote MongoDB'));
+        else remoteMongoDB.updateRelayState(hostname(), idRelay, relayState, relayTriggerType, dateUpdate).catch(e => console.log('WARNING: Couldn\'t update relay state on remote MongoDB'));
     });
 
     socket.on('disconnect', () => {
