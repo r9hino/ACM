@@ -14,25 +14,175 @@
             "id": 0,
             "description": "Control bomba 1",
             "state": false,
-            "trigger_type": "Custom",
-            "schedule": null,
-            "date_update": "Mon Oct 11 2021 14:52:30 GMT-0300 (Chile Summer Time)"
+            "trigger_type": "Horario",
+            "schedule": [
+                {
+                    "weekDay": "lunes",
+                    "dayLetter": "L",
+                    "checked": true,
+                    "on": "12:15",
+                    "off": "12:17"
+                },
+                {
+                    "weekDay": "martes",
+                    "dayLetter": "M",
+                    "checked": true,
+                    "on": "12:15",
+                    "off": "12:17"
+                },
+                {
+                    "weekDay": "miercoles",
+                    "dayLetter": "M",
+                    "checked": true,
+                    "on": "12:15",
+                    "off": "12:17"
+                },
+                {
+                    "weekDay": "jueves",
+                    "dayLetter": "J",
+                    "checked": true,
+                    "on": null,
+                    "off": null
+                },
+                {
+                    "weekDay": "viernes",
+                    "dayLetter": "V",
+                    "checked": true,
+                    "on": "12:15",
+                    "off": "12:17"
+                },
+                {
+                    "weekDay": "sabado",
+                    "dayLetter": "S",
+                    "checked": false,
+                    "on": "12:15",
+                    "off": "12:17"
+                },
+                {
+                    "weekDay": "domingo",
+                    "dayLetter": "D",
+                    "checked": false,
+                    "on": "12:15",
+                    "off": "12:17"
+                }
+            ],
+            "date_update": "Tue Oct 12 2021 17:42:24 GMT-0300 (Chile Summer Time)"
         },
         {
             "id": 1,
             "description": "Control bomba 2",
             "state": false,
             "trigger_type": "Custom",
-            "schedule": null,
-            "date_update": "Mon Oct 11 2021 14:58:52 GMT-0300 (Chile Summer Time)"
+            "schedule": [
+                {
+                    "weekDay": "lunes",
+                    "dayLetter": "L",
+                    "checked": true,
+                    "on": "12:15",
+                    "off": "12:17"
+                },
+                {
+                    "weekDay": "martes",
+                    "dayLetter": "M",
+                    "checked": true,
+                    "on": "12:15",
+                    "off": "12:17"
+                },
+                {
+                    "weekDay": "miercoles",
+                    "dayLetter": "M",
+                    "checked": false,
+                    "on": "12:15",
+                    "off": "12:17"
+                },
+                {
+                    "weekDay": "jueves",
+                    "dayLetter": "J",
+                    "checked": false,
+                    "on": null,
+                    "off": null
+                },
+                {
+                    "weekDay": "viernes",
+                    "dayLetter": "V",
+                    "checked": false,
+                    "on": "12:15",
+                    "off": "12:17"
+                },
+                {
+                    "weekDay": "sabado",
+                    "dayLetter": "S",
+                    "checked": false,
+                    "on": "12:15",
+                    "off": "12:17"
+                },
+                {
+                    "weekDay": "domingo",
+                    "dayLetter": "D",
+                    "checked": false,
+                    "on": "12:15",
+                    "off": "12:17"
+                }
+            ],
+            "date_update": "Tue Oct 12 2021 17:33:56 GMT-0300 (Chile Summer Time)"
         },
         {
             "id": 2,
             "description": "Electrovalvula principal",
-            "state": false,
+            "state": true,
             "trigger_type": "Horario",
-            "schedule": null,
-            "date_update": "Sun Oct 10 2021 15:38:18 GMT-0300 (Chile Summer Time)"
+            "schedule": [
+                {
+                    "weekDay": "lunes",
+                    "dayLetter": "L",
+                    "checked": false,
+                    "on": null,
+                    "off": null
+                },
+                {
+                    "weekDay": "martes",
+                    "dayLetter": "M",
+                    "checked": true,
+                    "on": "17:31",
+                    "off": "19:33"
+                },
+                {
+                    "weekDay": "miercoles",
+                    "dayLetter": "M",
+                    "checked": false,
+                    "on": null,
+                    "off": null
+                },
+                {
+                    "weekDay": "jueves",
+                    "dayLetter": "J",
+                    "checked": false,
+                    "on": null,
+                    "off": null
+                },
+                {
+                    "weekDay": "viernes",
+                    "dayLetter": "V",
+                    "checked": false,
+                    "on": null,
+                    "off": null
+                },
+                {
+                    "weekDay": "sabado",
+                    "dayLetter": "S",
+                    "checked": false,
+                    "on": null,
+                    "off": null
+                },
+                {
+                    "weekDay": "domingo",
+                    "dayLetter": "D",
+                    "checked": true,
+                    "on": null,
+                    "off": null
+                }
+            ],
+            "date_update": "Tue Oct 12 2021 17:33:30 GMT-0300 (Chile Summer Time)"
         }
     ],
     "ip_public": "190.217.193.251",
@@ -40,7 +190,7 @@
         {
             "email": "philippe.ilharreguy@gmail.com",
             "phone": "+56999972023",
-            "date_update": "Mon Oct 11 2021 15:48:02 GMT-0300 (Chile Summer Time)"
+            "date_update": "Tue Oct 12 2021 14:23:35 GMT-0300 (Chile Summer Time)"
         }
     ],
     "alerts": [
@@ -66,9 +216,9 @@
             "notified_users": [
                 "philippe.ilharreguy@gmail.com"
             ],
-            "date_update": "Mon Oct 11 2021 15:48:02 GMT-0300 (Chile Summer Time)",
+            "date_update": "Tue Oct 12 2021 14:23:35 GMT-0300 (Chile Summer Time)",
             "alert_message": "Alerta: \"Temperatura estacion\" es mayor o igual que 23.5 °C.",
-            "date_trigger": "Mon Oct 11 2021 20:11:55 GMT-0300 (Chile Summer Time)"
+            "date_trigger": "Tue Oct 12 2021 17:57:14 GMT-0300 (Chile Summer Time)"
         }
     ],
     "sensors": [
@@ -110,5 +260,5 @@
             "type": "temperature"
         }
     ],
-    "date_update": "Mon Oct 11 2021 20:11:55 GMT-0300 (Chile Summer Time)"
+    "date_update": "Tue Oct 12 2021 17:57:14 GMT-0300 (Chile Summer Time)"
 }

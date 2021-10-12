@@ -197,10 +197,12 @@ function socketCoordinator(socket){
         let idRelay = relay.id;
         let relayState = relay.state;
         let relayTriggerType = relay.trigger_type;
+        let relaySchedule = relay.schedule;
         let dateUpdate = new Date().toString();
         let relays = deviceMetadataDB.get('relays');
         relays[idRelay].state = relayState;
         relays[idRelay].trigger_type = relayTriggerType;
+        relays[idRelay].schedule = relaySchedule;
         relays[idRelay].date_update = dateUpdate;
 
         // Store new state on the local DB.
@@ -218,7 +220,7 @@ function socketCoordinator(socket){
                 remoteMongoDB.updateDevice(hostname(), deviceMetadata).catch(e => console.log('WARNING: Couldn\'t update relay state on remote MongoDB'))
             });
         }
-        else remoteMongoDB.updateRelayState(hostname(), idRelay, relayState, relayTriggerType, dateUpdate).catch(e => console.log('WARNING: Couldn\'t update relay state on remote MongoDB'));
+        else remoteMongoDB.updateRelayState(hostname(), idRelay, relayState, relayTriggerType, relaySchedule, dateUpdate).catch(e => console.log('WARNING: Couldn\'t update relay state on remote MongoDB'));
     });
 
     socket.on('disconnect', () => {
