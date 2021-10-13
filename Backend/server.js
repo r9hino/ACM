@@ -17,9 +17,11 @@
 // Control decimation in chart. Add stacket option in case there is boolean sensors or actuators.
 // Add actuator section in Monitor.
 // Add environment variables backend and frontend.
+// Eliminar letras de dias y dejar solo numero del dia de la semana.
 
 const http = require('http');
 const socketio = require('socket.io');
+const cron = require('node-cron');
 const {hostname} = require('os');
 const JSONdb = require('simple-json-db');
 const ifaces = require('os').networkInterfaces();
@@ -42,6 +44,7 @@ const localInfluxDB = new InfluxDBHandler(env.INFLUXDB_LOCAL_URL, env.INFLUXDB_P
 // Global variables initialization.
 let httpServer, io, 
     monitoredSensors = [],
+    relayScheduler = [],
     dynamicDataInterval, tenSecInterval, minInterval, tenMinInterval;
 
 // Sequential initialization functions.
@@ -99,9 +102,44 @@ const initializationFunctionList = [
             // Define retriever function depending on sensor protocol and type.
             if(sensor.protocol === 'i2c'){
                 monitoredSensors.push(new SensorMonitor(sensor.sensor_name, sensor.type, sensor.unit, sensor.sample_time_s,
-                    sensor.samples_number, async () => await i2c.readSensor(sensor.type)));
+                    sensor.samples_number, async () => await i2c.readSensor(sensor.type))
+                );
             }
             else if(sensor.protocol === 'mqtt'){
+            }
+        }
+    },
+    // Initialize all relays crons according to their schedule.
+    async () => {
+        // Load local storage for system state if any.
+        let relays = deviceMetadataDB.get('relays');
+
+        // Iterate over all relays.
+        for(let relay of relays){
+            // Iterate over days in schedule.
+            for(let day of relay.schedule){
+                if(day.checked === true){
+                    if(day.on !== '' && day.on !== null && day.on !== undefined){
+                        let hours = day.on.split(":")[0];
+                        let minutes = day.on.split(":")[1];
+
+                        relayScheduler['id' + relay.id + '-on-' + day.weekDay] = cron.schedule(`0 ${minutes} ${hours} * * ${day.weekDayNumber}`, async () =>  {
+                            relay.state = true;
+                            deviceMetadataDB.set('relays', relays);
+                            deviceMetadataDB.sync();
+                        });
+                    }
+                    if(day.off !== '' && day.off !== null && day.off !== undefined){
+                        let hours = day.off.split(":")[0];
+                        let minutes = day.off.split(":")[1];
+
+                        relayScheduler['id' + relay.id + '-off-' + day.weekDay] = cron.schedule(`0 ${minutes} ${hours} * * ${day.weekDayNumber}`, async () =>  {
+                            relay.state = false;
+                            deviceMetadataDB.set('relays', relays);
+                            deviceMetadataDB.sync();
+                        });
+                    }
+                }
             }
         }
     },

@@ -2,7 +2,7 @@ const env = require('../Helper/envExport.js');   // Environment variables.
 
 const fs = require('fs');
 const {hostname} = require('os');
-var cron = require('node-cron');
+const cron = require('node-cron');
 const JSONdb = require('simple-json-db');
 const client = require('twilio')(env.TWILIO_ACCOUNT_SID, env.TWILIO_TOKEN);//TWILIO_TOKEN
 const MongoDBHandler = require('../DB/MongoDBHandler');

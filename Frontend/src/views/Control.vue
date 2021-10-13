@@ -62,7 +62,7 @@ export default {
 
         // Socket code------------------------------------------------------------------------------------------------------
         socket.on('resRelayStates', resRelays => {
-            //console.log(resRelays);
+            console.log(resRelays);
             relays.value.push(...resRelays);
             loading.value = false;
         });

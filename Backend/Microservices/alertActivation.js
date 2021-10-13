@@ -1,6 +1,6 @@
 // Handle all alerts defined at startup or on UI.
 // For this, it retrieve sensor values from InfluxDB and compare them with defined alerts.
-// If an alerts is triggered, the alert is activeted setting it state to 'on' and adding an alert message.
+// If an alerts is triggered, the alert is activeted, setting it state to 'on' and adding an alert message.
 // If an alert value is no longer on the trigger limits, the program will change its state to 'off' after x amount of time.
 
 const env = require('../Helper/envExport.js');              // Environment variables.
