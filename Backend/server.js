@@ -21,7 +21,6 @@
 
 const http = require('http');
 const socketio = require('socket.io');
-const cron = require('node-cron');
 const {hostname} = require('os');
 const JSONdb = require('simple-json-db');
 const ifaces = require('os').networkInterfaces();
@@ -29,6 +28,7 @@ const ifaces = require('os').networkInterfaces();
 const I2CHandler = require('./Controller/I2CHandler');
 const osData = require('./Controller/osData');
 const SensorMonitor = require('./Controller/SensorMonitor');
+const RelayControl = require('./Controller/relayControl');
 const MongoDBHandler = require('./DB/MongoDBHandler');
 const InfluxDBHandler = require('./DB/InfluxDBHandler');
 const app = require('./ExpressApp/app');
@@ -37,13 +37,14 @@ const env = require('./Helper/envExport');   // Environment variables.
 
 // Objects initialization.
 const i2c = new I2CHandler();
-const deviceMetadataDB = new JSONdb('deviceMetadataDB.json');
+let deviceMetadataDB = new JSONdb('deviceMetadataDB.json');
 const remoteMongoDB = new MongoDBHandler(env.MONGODB_REMOTE_URL);
 const localInfluxDB = new InfluxDBHandler(env.INFLUXDB_LOCAL_URL, env.INFLUXDB_PORT, env.INFLUXDB_TOKEN, env.INFLUXDB_ORG, [env.INFLUXDB_SENSORS_BUCKET, env.INFLUXDB_SYSTEM_BUCKET]);
 
 // Global variables initialization.
 let httpServer, io, 
     monitoredSensors = [],
+    controlledRelays = {},
     relayScheduler = [],
     dynamicDataInterval, tenSecInterval, minInterval, tenMinInterval;
 
@@ -92,7 +93,13 @@ const initializationFunctionList = [
             console.log('WANRING - server.js: Couldn\'t store new OS and system values in the remote MongoDB.');
         };
     },
-    // Initialize sensors available.
+    // Initialize http server and socket.io.
+    async () => {
+        httpServer = http.createServer(app).listen(env.SOCKETIO_PORT, () => console.log(`INFO - server.js: HTTP server for socket.io is listening on port ${env.SOCKETIO_PORT}`));
+        io = socketio(httpServer, {cors: true});
+        io.on("connection", socketCoordinator);
+    },
+    // Initialize sensors available and relays cron jobs.
     async () => {
         // Load local storage for system state if any.
         let deviceMetadata = deviceMetadataDB.JSON();
@@ -102,52 +109,19 @@ const initializationFunctionList = [
             // Define retriever function depending on sensor protocol and type.
             if(sensor.protocol === 'i2c'){
                 monitoredSensors.push(new SensorMonitor(sensor.sensor_name, sensor.type, sensor.unit, sensor.sample_time_s,
-                    sensor.samples_number, async () => await i2c.readSensor(sensor.type))
-                );
+                    sensor.samples_number, async () => await i2c.readSensor(sensor.type)));
             }
             else if(sensor.protocol === 'mqtt'){
             }
         }
-    },
-    // Initialize all relays crons according to their schedule.
-    async () => {
-        // Load local storage for system state if any.
-        let relays = deviceMetadataDB.get('relays');
 
-        // Iterate over all relays.
-        for(let relay of relays){
-            // Iterate over days in schedule.
-            for(let day of relay.schedule){
-                if(day.checked === true){
-                    if(day.on !== '' && day.on !== null && day.on !== undefined){
-                        let hours = day.on.split(":")[0];
-                        let minutes = day.on.split(":")[1];
-
-                        relayScheduler['id' + relay.id + '-on-' + day.weekDay] = cron.schedule(`0 ${minutes} ${hours} * * ${day.weekDayNumber}`, async () =>  {
-                            relay.state = true;
-                            deviceMetadataDB.set('relays', relays);
-                            deviceMetadataDB.sync();
-                        });
-                    }
-                    if(day.off !== '' && day.off !== null && day.off !== undefined){
-                        let hours = day.off.split(":")[0];
-                        let minutes = day.off.split(":")[1];
-
-                        relayScheduler['id' + relay.id + '-off-' + day.weekDay] = cron.schedule(`0 ${minutes} ${hours} * * ${day.weekDayNumber}`, async () =>  {
-                            relay.state = false;
-                            deviceMetadataDB.set('relays', relays);
-                            deviceMetadataDB.sync();
-                        });
-                    }
-                }
+        // Iterate over all relays defined in DB, initializing each cron job.
+        for(const relay of deviceMetadata.relays){
+            if(relay.protocol === 'i2c'){
+                controlledRelays[relay.description] = new RelayControl(relay.id, relay.description,
+                    relay.state, relay.schedule, io, async () => 0); //await i2c.setRelay(sensor.type));
             }
         }
-    },
-    // Initialize http server and socket.io.
-    async () => {
-        httpServer = http.createServer(app).listen(env.SOCKETIO_PORT, () => console.log(`INFO - server.js: HTTP server for socket.io is listening on port ${env.SOCKETIO_PORT}`));
-        io = socketio(httpServer, {cors: true});
-        io.on("connection", socketCoordinator);
     },
     // Initialize intervals.
     async () => {
@@ -159,7 +133,10 @@ const initializationFunctionList = [
 
 async function initializer(){
     for(const task of initializationFunctionList){
-        await task().catch(e => process.exit(1));
+        await task().catch(error => {
+            console.log(error);
+            process.exit(1);
+        });
     }
 }
 initializer();
@@ -186,6 +163,7 @@ const minFunction = async () => {
         // Store locally new public ip.
         deviceMetadataDB.set('ip_public', actualPublicIP);
         deviceMetadataDB.set('date_update', actualDate);
+        deviceMetadataDB.sync();
         // Store remotely new values retrieved from the OS and system.
         try{
             if(remoteMongoDB.isConnected() === false) await remoteMongoDB.connectDB();
@@ -193,8 +171,8 @@ const minFunction = async () => {
             console.log('INFO - server.js: New IP stored locally and remotely.');
             await remoteMongoDB.close();
         }
-        catch(e){
-            console.log('WANRING - server.js: Couldn\'t store new IP in the remotely.');
+        catch(error){
+            console.log('WANRING - server.js: Couldn\'t store new IP in remote DB.');
         };
     }
 };
@@ -224,6 +202,7 @@ function socketCoordinator(socket){
 
     // Home page: client request for device states only when mounting the page.
     socket.on('reqRelayStates', () => {
+        deviceMetadataDB = new JSONdb('deviceMetadataDB.json');
         let relays = deviceMetadataDB.get('relays');
         socket.emit('resRelayStates', relays);  // Send device state only to socket requesting it.
     });
@@ -237,11 +216,18 @@ function socketCoordinator(socket){
         let relayTriggerType = relay.trigger_type;
         let relaySchedule = relay.schedule;
         let dateUpdate = new Date().toString();
+
+        deviceMetadataDB = new JSONdb('deviceMetadataDB.json');
         let relays = deviceMetadataDB.get('relays');
-        relays[idRelay].state = relayState;
-        relays[idRelay].trigger_type = relayTriggerType;
-        relays[idRelay].schedule = relaySchedule;
-        relays[idRelay].date_update = dateUpdate;
+        let indexRelay = relays.findIndex(r => r.id === idRelay);
+        relays[indexRelay].state = relayState;
+        relays[indexRelay].trigger_type = relayTriggerType;
+        // If new relay state has different schedule than it previous state, then reset all on/off cron jobs.
+        if(JSON.stringify(relaySchedule) !== JSON.stringify(relays[indexRelay].schedule)){
+            relays[indexRelay].schedule = relaySchedule;
+            controlledRelays[relays[indexRelay].description].setAllRelayCronJobs(relaySchedule, io);
+        }            
+        relays[indexRelay].date_update = dateUpdate;
 
         // Store new state on the local DB.
         deviceMetadataDB.set('relays', relays);
