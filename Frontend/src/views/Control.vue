@@ -70,7 +70,7 @@ export default {
         // Listener in charge of updating element when other clients change it state.
         socket.on('updateClients', relay => {
             let id = relay.id;
-            relays.value.[id] = relay;
+            relays.value[id] = relay;
             //console.log('updateClients:', relays.value.[id]);
         });
 

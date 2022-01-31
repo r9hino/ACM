@@ -14,7 +14,7 @@
             "id": 0,
             "description": "Control bomba 1",
             "protocol": "i2c",
-            "state": true,
+            "state": false,
             "trigger_type": "Horario",
             "schedule": [
                 {
@@ -23,7 +23,7 @@
                     "dayLetter": "L",
                     "checked": true,
                     "on": "23:05",
-                    "off": "23:55"
+                    "off": "23:51"
                 },
                 {
                     "weekDay": "martes",
@@ -71,10 +71,10 @@
                     "dayLetter": "D",
                     "checked": true,
                     "on": "21:59",
-                    "off": "23:55"
+                    "off": "22:51"
                 }
             ],
-            "date_update": "Sun Jan 30 2022 21:58:05 GMT-0300 (Chile Summer Time)"
+            "date_update": "Sun Jan 30 2022 22:50:27 GMT-0300 (Chile Summer Time)"
         },
         {
             "id": 1,
@@ -242,7 +242,7 @@
             ],
             "date_update": "Mon Jan 17 2022 17:11:43 GMT-0300 (Chile Summer Time)",
             "alert_message": "Alerta: \"Temperatura estacion\" es mayor o igual que 23.5 °C.",
-            "date_trigger": "Sun Jan 30 2022 22:11:19 GMT-0300 (Chile Summer Time)"
+            "date_trigger": "Sun Jan 30 2022 23:02:22 GMT-0300 (Chile Summer Time)"
         }
     ],
     "sensors": [
@@ -284,5 +284,5 @@
             "type": "temperature"
         }
     ],
-    "date_update": "Sun Jan 30 2022 22:11:19 GMT-0300 (Chile Summer Time)"
+    "date_update": "Sun Jan 30 2022 23:02:22 GMT-0300 (Chile Summer Time)"
 }
