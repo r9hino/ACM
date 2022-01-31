@@ -18,6 +18,8 @@
 // Add actuator section in Monitor.
 // Add environment variables backend and frontend.
 // Eliminar letras de dias y dejar solo numero del dia de la semana.
+// Validar tiempo horarios reles.
+// Agregar escaner QR para sensores, que permite configurar en Red-Node sus propiedades?
 
 const http = require('http');
 const socketio = require('socket.io');

@@ -30,6 +30,7 @@ const authValidation = function(req, res, next){
 router.post('/login', (req, res) => {    
     const ip = req.headers['x-forwarded-for'] || req.ip.split(':')[3];// || req.connection.remoteAddress.split(":")[3];
     const {username, password} = req.body;
+    console.log(`INFO: IP ${ip} enter log front page.`);
     
     // If is a new ip, create entry object with ip as key.
     if((ip in ipReqMonitor == false)) ipReqMonitor[ip] = {numberOfAttempts: maxNumberOfAttempts};
@@ -70,6 +71,7 @@ router.post('/login', (req, res) => {
                 });
             }
             else{
+                console.log(`WARNING: IP ${ip} unsuccessfully try it to connect.`);
                 res.status(403);
                 res.json({
                     message: "Wrong credentials, try again.",
