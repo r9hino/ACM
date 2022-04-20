@@ -92,7 +92,7 @@ export default {
 
         onBeforeMount(() => {
             socket.connect();
-            loading.value = true;;
+            loading.value = true;
             socket.emit('reqRelayStates');  // Request to server relay states.
         });
 

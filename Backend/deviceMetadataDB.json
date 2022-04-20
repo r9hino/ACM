@@ -74,7 +74,7 @@
                     "off": "22:51"
                 }
             ],
-            "date_update": "Sun Jan 30 2022 22:50:27 GMT-0300 (Chile Summer Time)"
+            "date_update": "Tue Apr 19 2022 18:34:35 GMT-0400 (Chile Standard Time)"
         },
         {
             "id": 1,
@@ -209,12 +209,12 @@
             "date_update": "Thu Oct 14 2021 12:39:14 GMT-0300 (Chile Summer Time)"
         }
     ],
-    "ip_public": "179.56.212.104",
+    "ip_public": "190.217.195.6",
     "guard_users": [
         {
             "email": "philippe.ilharreguy@gmail.com",
             "phone": "+56999972023",
-            "date_update": "Mon Jan 17 2022 17:11:43 GMT-0300 (Chile Summer Time)"
+            "date_update": "Tue Apr 19 2022 11:51:07 GMT-0400 (Chile Standard Time)"
         }
     ],
     "alerts": [
@@ -236,13 +236,11 @@
             "value": "23.5",
             "unit": "°C",
             "settling_time": "60",
-            "state": "on",
-            "notified_users": [
-                "philippe.ilharreguy@gmail.com"
-            ],
-            "date_update": "Mon Jan 17 2022 17:11:43 GMT-0300 (Chile Summer Time)",
-            "alert_message": "Alerta: \"Temperatura estacion\" es mayor o igual que 23.5 °C.",
-            "date_trigger": "Sun Jan 30 2022 23:02:22 GMT-0300 (Chile Summer Time)"
+            "state": "off",
+            "notified_users": [],
+            "date_update": "Wed Apr 20 2022 01:00:10 GMT-0400 (Chile Standard Time)",
+            "alert_message": null,
+            "date_trigger": null
         }
     ],
     "sensors": [
@@ -284,5 +282,5 @@
             "type": "temperature"
         }
     ],
-    "date_update": "Sun Jan 30 2022 23:02:22 GMT-0300 (Chile Summer Time)"
+    "date_update": "Wed Apr 20 2022 16:54:40 GMT-0400 (Chile Standard Time)"
 }

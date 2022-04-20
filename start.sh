@@ -14,13 +14,17 @@
 # 7. npm i -g pm2
 # 8. Add new path for pm2 in this script
 
-# To run each services at startup use pm2 commands and not CRON:
+# To run each services at startup use pm2 commands and not CRON
+# Link: https://www.tecmint.com/enable-pm2-to-auto-start-node-js-app/
+#       https://pm2.keymetrics.io/docs/usage/startup/
 # Generate Startup Script
 # $ pm2 startup
 # Freeze your process list across server restart
 # $ pm2 save
 # Remove Startup Script
 # $ pm2 unstartup
+# For checking the satus of the PM2 service on system
+# systemctl status pm2-pi.service
 
 cd /home/pi/Code/ACM/Backend
 /home/pi/.nvm/versions/node/v16.13.2/bin/pm2 start server.js --output ./Logs/info.log --error ./Logs/error.log --time --restart-delay 3000

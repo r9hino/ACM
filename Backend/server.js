@@ -10,7 +10,7 @@
 // Change values of the vue app from browser console: document.getElementsByTagName('div')[0].__vue_app__._context.provides.store._state.data.authenticated = false
 
 // To-do
-// Run server on booting and check if influx docker can be reached at startup
+// Run server on booting and check if influx docker can be reached at startup.
 // Use bcrypt for hashing passwords.
 // Add only one array element when saving to local and remote DB.
 // Check there is no problem when 2 alert are duplicated, or when two or more alert get activated.
@@ -18,7 +18,6 @@
 // Add actuator section in Monitor.
 // Add environment variables backend and frontend.
 // Eliminar letras de dias y dejar solo numero del dia de la semana.
-// Validar tiempo horarios reles.
 // Agregar escaner QR para sensores, que permite configurar en Red-Node sus propiedades?
 
 const http = require('http');

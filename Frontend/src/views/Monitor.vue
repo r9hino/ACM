@@ -113,7 +113,7 @@ export default {
             loading.value = false;
         };
 
-        // Convert CSV table to array of series fot highcharts standard.
+        // Convert CSV table returned from the Influx query to array of series fot highcharts standard.
         // , , time, field, value -> {name: sensorName, data: [[], [], ... []]}
         const csvParser = csvText => {
             const timeZone = (new Date()).getTimezoneOffset()*60000;
@@ -165,7 +165,7 @@ export default {
                 case '30 dias': localTimeWindow = '30d'; break;
             }
 
-            // Query construction.
+            // Construction of the Influx DB query for sensor data.
             let querySensorNames = '';
             // If no sensor is selected, clean chart.
             if(sensorsSelectedToChart.value.length === 0){
