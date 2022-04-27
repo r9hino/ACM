@@ -32,6 +32,7 @@ docker restart "ID container" // Start an already created container.
 
 // Explore containers
 docker exec -it "ID container" /bin/bash
+docker cp 
 
 // Remove containers.
 docker rm -v "NAMES"  // -v is for removing volumes of that container.
