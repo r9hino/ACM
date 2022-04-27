@@ -25,8 +25,13 @@ docker logs "Id container or NAMES"
 
 docker network create mongo-network
 
+// Start stop containers
 docker stop "ID container"
-docker star "ID container" // Start an already created container.
+docker start "ID container" // Start an already created container.
+docker restart "ID container" // Start an already created container.
+
+// Explore containers
+docker exec -it "ID container" /bin/bash
 
 // Remove containers.
 docker rm -v "NAMES"  // -v is for removing volumes of that container.
