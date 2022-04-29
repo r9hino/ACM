@@ -1,11 +1,11 @@
 ################################################################################
 # Node-RED Stack or Compose
 ################################################################################
-# Docker commands:
-# Daemon pigpiod:
-# docker run -it -p 8888:8888 --privileged zinen2/alpine-pigpiod:arm64v8
-# Daemon node-red:
-# docker run -p 51880:1880 -v /home/pi/Code/ACM/Docker/node-red/data:/data --name mynodered nodered/node-red
+# Docker commands
+#   Daemon pigpiod - Link: https://hub.docker.com/r/zinen2/alpine-pigpiod
+#     docker run -it -p 8888:8888 --privileged zinen2/alpine-pigpiod:arm64v8
+#   Daemon node-red
+#     docker run -p 51880:1880 -v /home/pi/Code/ACM/Docker/node-red/data:/data --name mynodered nodered/node-red
 #
 # docker stack deploy node-red --compose-file docker-compose-node-red.yml
 # docker-compose -f docker-compose-node-red.yml -p myNoderedProject up
