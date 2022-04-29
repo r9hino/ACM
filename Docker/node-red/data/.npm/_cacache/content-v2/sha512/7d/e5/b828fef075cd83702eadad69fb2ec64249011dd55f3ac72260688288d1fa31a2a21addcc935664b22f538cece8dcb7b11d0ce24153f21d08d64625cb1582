@@ -1,0 +1,1 @@
+{"name":"node-constants","dist-tags":{"latest":"0.0.2"},"versions":{"0.0.2":{"name":"node-constants","version":"0.0.2","devDependencies":{"mocha":"~1.9.0"},"dist":{"shasum":"db676f714082c1a233fe19f57c0243d0077c38bd","tarball":"https://registry.npmjs.org/node-constants/-/node-constants-0.0.2.tgz"},"engines":{"node":">= 0.4"}}},"modified":"2017-05-22T11:45:36.599Z"}

@@ -405,25 +405,23 @@
             }
         }
     },
-    "node-red-node-pi-gpio": {
-        "name": "node-red-node-pi-gpio",
-        "version": "2.0.1",
+    "node-red-node-pi-gpiod": {
+        "name": "node-red-node-pi-gpiod",
+        "version": "0.4.0",
         "local": true,
         "user": true,
         "nodes": {
-            "rpi-gpio": {
-                "name": "rpi-gpio",
+            "pi-gpiod": {
+                "name": "pi-gpiod",
                 "types": [
-                    "rpi-gpio in",
-                    "rpi-gpio out",
-                    "rpi-mouse",
-                    "rpi-keyboard"
+                    "pi-gpiod in",
+                    "pi-gpiod out"
                 ],
                 "enabled": true,
                 "local": true,
                 "user": false,
-                "module": "node-red-node-pi-gpio",
-                "file": "/data/node_modules/node-red-node-pi-gpio/36-rpi-gpio.js"
+                "module": "node-red-node-pi-gpiod",
+                "file": "/data/node_modules/node-red-node-pi-gpiod/pi-gpiod.js"
             }
         }
     }

@@ -1,22 +1,38 @@
 ################################################################################
 # Node-RED Stack or Compose
 ################################################################################
+# Docker commands:
+# Daemon pigpiod:
+# docker run -it -p 8888:8888 --privileged zinen2/alpine-pigpiod:arm64v8
+# Daemon node-red:
+# docker run -p 51880:1880 -v /home/pi/Code/ACM/Docker/node-red/data:/data --name mynodered nodered/node-red
+#
 # docker stack deploy node-red --compose-file docker-compose-node-red.yml
 # docker-compose -f docker-compose-node-red.yml -p myNoderedProject up
 ################################################################################
 version: "3.7"
 
 services:
-  node-red:
+  nodered:
     image: nodered/node-red:latest
     container_name: nodered
-    restart: always
+    restart: unless-stopped
     ports:
       - "51880:1880"
     networks:
       - docker-iot-net
     volumes:
       - /home/pi/Code/ACM/Docker/node-red/data:/data
+    depends_on:
+      - pigpiod
+
+  pigpiod:
+    image: zinen2/alpine-pigpiod:arm64v8
+    container_name: pigpiod
+    privileged: true
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
 
 networks:
   docker-iot-net:

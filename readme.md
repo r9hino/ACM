@@ -22,16 +22,17 @@
 Getting node-red docker - Link: https://nodered.org/docs/getting-started/docker:
 1. Create volume to persist data: ```docker volume create --name node_red_data```
 2. Check volume: ```docker volume ls```
-3. Get docker: ```docker run -p 51880:1880 -v node_red_data:/data --name mynodered nodered/node-red```
+3. Get docker: ```docker run -p 51880:1880 -v node_red_data:/data --name nodered nodered/node-red```
 4. Add login to node-red - Link https://nodered.org/docs/user-guide/runtime/securing-node-red 
-    - Enter node-red cointainer: ```docker exec -it mynodered /bin/bash```
+    - Enter node-red cointainer: ```docker exec -it nodered /bin/bash```
     - Edit /data/settings.js file: ```nano /data/settings.js```
-5. Backup file from container to external folder: ```docker cp mynodered:/data /your/backup/directory```
+5. Backup file from container to external folder: ```docker cp nodered:/data /your/backup/directory```
+6. Get host ip (physical device) from container: ```docker exec -it nodered ip route show default | awk '/default/ {print $3}'```
 ### Using docker-compose
-1. sudo docker-compose -f docker-node-red-influxdb.yml up
+1. ```sudo docker-compose -f docker-node-red-influxdb.yml up -d```
 2. Change user uid to 1000: ```sudo chown -R 1000:1000 path/to/your/node-red/data```
 3. Add login to node-red - Link https://nodered.org/docs/user-guide/runtime/securing-node-red 
-    - Enter node-red cointainer: ```docker exec -it mynodered /bin/bash```
+    - Enter node-red cointainer: ```docker exec -it nodered /bin/bash```
     - Edit /data/settings.js file: ```nano /data/settings.js```
 
 ## Github commands:

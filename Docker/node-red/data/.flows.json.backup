@@ -17,7 +17,45 @@
         "wires": []
     },
     {
-        "id": "a07c40703be58c84",
+        "id": "92a859694cc1db1a",
+        "type": "pi-gpiod out",
+        "z": "f6f2187d.f17ca8",
+        "name": "LED",
+        "host": "172.28.0.1",
+        "port": "8888",
+        "pin": "21",
+        "set": "",
+        "level": "0",
+        "out": "out",
+        "sermin": "1000",
+        "sermax": "2000",
+        "freq": "800",
+        "x": 730,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "aab621fa420fe2ef",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "Toggler",
+        "func": "\nlet toggle = flow.get('toggle') || 0;\n\nflow.set(\"toggle\", !toggle);\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 240,
+        "wires": [
+            [
+                "f78fb4f172602a93",
+                "c190843782b82857"
+            ]
+        ]
+    },
+    {
+        "id": "b83b28f1b6461f32",
         "type": "inject",
         "z": "f6f2187d.f17ca8",
         "name": "",
@@ -30,23 +68,23 @@
                 "vt": "str"
             }
         ],
-        "repeat": "",
+        "repeat": "1",
         "crontab": "",
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 140,
-        "y": 320,
+        "x": 170,
+        "y": 240,
         "wires": [
             [
-                "b393ec15f917eb33"
+                "aab621fa420fe2ef"
             ]
         ]
     },
     {
-        "id": "a9c094f14f832325",
+        "id": "c190843782b82857",
         "type": "debug",
         "z": "f6f2187d.f17ca8",
         "name": "",
@@ -54,80 +92,64 @@
         "tosidebar": true,
         "console": false,
         "tostatus": false,
-        "complete": "false",
+        "complete": "payload",
+        "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 470,
+        "x": 530,
         "y": 320,
         "wires": []
     },
     {
-        "id": "b393ec15f917eb33",
-        "type": "function",
+        "id": "ccc832d0da93012c",
+        "type": "inject",
+        "z": "f6f2187d.f17ca8",
+        "name": "ToggleInput",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "toggle",
+        "payloadType": "flow",
+        "x": 170,
+        "y": 320,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f78fb4f172602a93",
+        "type": "trigger",
         "z": "f6f2187d.f17ca8",
         "name": "",
-        "func": "let date = new Date(msg.payload);\nmsg.payload = date.toString();\nreturn msg;",
+        "op1": "toggle",
+        "op2": "toggle",
+        "op1type": "flow",
+        "op2type": "flow",
+        "duration": "-1",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "s",
+        "reset": "",
+        "bytopic": "all",
+        "topic": "topic",
         "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 300,
-        "y": 320,
+        "x": 540,
+        "y": 240,
         "wires": [
             [
-                "a9c094f14f832325"
+                "92a859694cc1db1a"
             ]
         ]
-    },
-    {
-        "id": "62559454efd625e7",
-        "type": "rpi-gpio in",
-        "z": "f6f2187d.f17ca8",
-        "name": "Pulse_24V_3.3V",
-        "pin": "5",
-        "intype": "tri",
-        "debounce": "25",
-        "read": false,
-        "bcm": true,
-        "x": 160,
-        "y": 420,
-        "wires": [
-            [
-                "7dcce8a760f91a9f",
-                "e3253697a5f858cc"
-            ]
-        ]
-    },
-    {
-        "id": "7dcce8a760f91a9f",
-        "type": "debug",
-        "z": "f6f2187d.f17ca8",
-        "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 450,
-        "y": 420,
-        "wires": []
-    },
-    {
-        "id": "e3253697a5f858cc",
-        "type": "rpi-gpio out",
-        "z": "f6f2187d.f17ca8",
-        "name": "",
-        "pin": "12",
-        "set": "",
-        "level": "0",
-        "freq": "",
-        "out": "out",
-        "bcm": true,
-        "x": 460,
-        "y": 480,
-        "wires": []
     }
 ]
