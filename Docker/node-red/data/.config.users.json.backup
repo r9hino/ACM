@@ -16,8 +16,9 @@
                 "welcome": "2.2.2"
             },
             "context": {
-                "flowRefresh": true
+                "flowRefresh": false
             }
-        }
+        },
+        "menu-menu-item-sidebar": false
     }
 }

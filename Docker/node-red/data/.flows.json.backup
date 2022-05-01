@@ -10,10 +10,10 @@
         "id": "3cc11d24.ff01a2",
         "type": "comment",
         "z": "f6f2187d.f17ca8",
-        "name": "WARNING: please check you have started this container with a volume that is mounted to /data\\n otherwise any flow changes are lost when you redeploy or upgrade the container\\n (e.g. upgrade to a more recent node-red docker image).\\n  If you are using named volumes you can ignore this warning.\\n Double click or see info side panel to learn how to start Node-RED in Docker to save your work",
-        "info": "\nTo start docker with a bind mount volume (-v option), for example:\n\n```\ndocker run -it -p 1880:1880 -v /home/user/node_red_data:/data --name mynodered nodered/node-red\n```\n\nwhere `/home/user/node_red_data` is a directory on your host machine where you want to store your flows.\n\nIf you do not do this then you can experiment and redploy flows, but if you restart or upgrade the container the flows will be disconnected and lost. \n\nThey will still exist in a hidden data volume, which can be recovered using standard docker techniques, but that is much more complex than just starting with a named volume as described above.",
-        "x": 350,
-        "y": 80,
+        "name": "Links",
+        "info": "Functions:\n1. https://stevesnoderedguide.com/node-red-functions#:~:text=The%20function%20node%20is%20used,have%20a%20payload%20property%20(msg.\n2. https://nodered.org/docs/user-guide/writing-functions",
+        "x": 110,
+        "y": 140,
         "wires": []
     },
     {
@@ -30,7 +30,7 @@
         "sermin": "1000",
         "sermax": "2000",
         "freq": "800",
-        "x": 730,
+        "x": 610,
         "y": 240,
         "wires": []
     },
@@ -39,18 +39,17 @@
         "type": "function",
         "z": "f6f2187d.f17ca8",
         "name": "Toggler",
-        "func": "\nlet toggle = flow.get('toggle') || 0;\n\nflow.set(\"toggle\", !toggle);\n\n\nreturn msg;",
+        "func": "\nlet toggle = context.get('toggle') || 0;\n\ncontext.set(\"toggle\", !toggle);\n\nmsg.payload = !toggle;\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 340,
+        "x": 400,
         "y": 240,
         "wires": [
             [
-                "f78fb4f172602a93",
-                "c190843782b82857"
+                "92a859694cc1db1a"
             ]
         ]
     },
@@ -75,7 +74,7 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 170,
+        "x": 150,
         "y": 240,
         "wires": [
             [
@@ -84,7 +83,7 @@
         ]
     },
     {
-        "id": "c190843782b82857",
+        "id": "071f897460c86381",
         "type": "debug",
         "z": "f6f2187d.f17ca8",
         "name": "",
@@ -96,59 +95,26 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 530,
-        "y": 320,
+        "x": 630,
+        "y": 340,
         "wires": []
     },
     {
-        "id": "ccc832d0da93012c",
-        "type": "inject",
+        "id": "b10b49ac048018bd",
+        "type": "pi-gpiod in",
         "z": "f6f2187d.f17ca8",
-        "name": "ToggleInput",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "1",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "toggle",
-        "payloadType": "flow",
-        "x": 170,
-        "y": 320,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "f78fb4f172602a93",
-        "type": "trigger",
-        "z": "f6f2187d.f17ca8",
-        "name": "",
-        "op1": "toggle",
-        "op2": "toggle",
-        "op1type": "flow",
-        "op2type": "flow",
-        "duration": "-1",
-        "extend": false,
-        "overrideDelay": false,
-        "units": "s",
-        "reset": "",
-        "bytopic": "all",
-        "topic": "topic",
-        "outputs": 1,
-        "x": 540,
-        "y": 240,
+        "name": "Input P38",
+        "host": "172.28.0.1",
+        "port": 8888,
+        "pin": "20",
+        "intype": "PUD_DOWN",
+        "debounce": "100",
+        "read": false,
+        "x": 140,
+        "y": 340,
         "wires": [
             [
-                "92a859694cc1db1a"
+                "071f897460c86381"
             ]
         ]
     }

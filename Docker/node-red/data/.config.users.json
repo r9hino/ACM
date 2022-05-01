@@ -18,6 +18,7 @@
             "context": {
                 "flowRefresh": false
             }
-        }
+        },
+        "menu-menu-item-sidebar": true
     }
 }
