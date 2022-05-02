@@ -110,7 +110,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 750,
-        "y": 420,
+        "y": 320,
         "wires": []
     },
     {
@@ -125,7 +125,7 @@
         "debounce": "100",
         "read": false,
         "x": 80,
-        "y": 420,
+        "y": 320,
         "wires": [
             [
                 "3f7c1a25b716e9c1"
@@ -144,7 +144,7 @@
         "finalize": "",
         "libs": [],
         "x": 280,
-        "y": 420,
+        "y": 320,
         "wires": [
             [
                 "d9189ce081a17725",
@@ -157,7 +157,7 @@
         "type": "influxdb out",
         "z": "f6f2187d.f17ca8",
         "influxdb": "664f6501d56f25d2",
-        "name": "",
+        "name": "Influxdb",
         "measurement": "flow",
         "precision": "",
         "retentionPolicy": "",
@@ -166,8 +166,8 @@
         "retentionPolicyV18Flux": "",
         "org": "SET",
         "bucket": "rpi-sensors",
-        "x": 810,
-        "y": 500,
+        "x": 740,
+        "y": 400,
         "wires": []
     },
     {
@@ -182,7 +182,7 @@
         "finalize": "",
         "libs": [],
         "x": 520,
-        "y": 420,
+        "y": 320,
         "wires": [
             [
                 "071f897460c86381"
@@ -194,14 +194,14 @@
         "type": "function",
         "z": "f6f2187d.f17ca8",
         "name": "Caudal - m3/hr",
-        "func": "msg.payload = msg.payload*flow.get(\"kCaudal\");\nreturn msg;",
+        "func": "let caudal = msg.payload*flow.get(\"kCaudal\");\n\nmsg.payload = [{\n    m3hr: caudal\n},\n{\n    sensor_name:\"Caudal manifold\"\n    \n}];\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "// Code added here will be run once\n// whenever the node is started.\nflow.set(\"kCaudal\", 0.2);",
         "finalize": "",
         "libs": [],
         "x": 520,
-        "y": 500,
+        "y": 400,
         "wires": [
             [
                 "14e42e59bb7fd722"

@@ -204,7 +204,11 @@ export default {
             });
             const responseText = await response.text();
 
-            if(response.status == 200) sensorData.value = csvParser(responseText);
+            if(response.status == 200){
+                sensorData.value = csvParser(responseText);
+                console.log(fluxQuery);
+                console.log(sensorData.value);
+            }
             else footerRef.value.setTemporalMessage(responseText.message, 5000);  // Only if there is a warning or and error display footer message.
         };
 

@@ -102,6 +102,8 @@ const initializationFunctionList = [
                 monitoredSensors.push(new SensorMonitor(sensor.sensor_name, sensor.type, sensor.unit, sensor.sample_time_s,
                     sensor.samples_number, async () => await i2c.readSensor(sensor.type)));
             }
+            else if(sensor.protocol === '24V pulse'){
+            }
             else if(sensor.protocol === 'mqtt'){
             }
         }

@@ -14,7 +14,7 @@
             "id": 0,
             "description": "Control bomba 1",
             "protocol": "i2c",
-            "state": true,
+            "state": false,
             "trigger_type": "Horario",
             "schedule": [
                 {
@@ -282,5 +282,5 @@
             "type": "temperature"
         }
     ],
-    "date_update": "Sun May 01 2022 22:13:41 GMT-0400 (Chile Standard Time)"
+    "date_update": "Mon May 02 2022 16:20:51 GMT-0400 (Chile Standard Time)"
 }
