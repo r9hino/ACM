@@ -8,7 +8,7 @@
 #     docker run -p 51880:1880 -v /home/pi/Code/ACM/Docker/node-red/data:/data --name mynodered nodered/node-red
 #
 # docker stack deploy node-red --compose-file docker-compose-node-red.yml
-# docker-compose -f docker-compose-node-red.yml up
+# docker-compose -f docker-compose-nodered-influxdb-pigpiod.yml up
 ################################################################################
 version: "3.7"
 
