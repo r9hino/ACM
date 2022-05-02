@@ -8,7 +8,7 @@
 #     docker run -p 51880:1880 -v /home/pi/Code/ACM/Docker/node-red/data:/data --name mynodered nodered/node-red
 #
 # docker stack deploy node-red --compose-file docker-compose-node-red.yml
-# docker-compose -f docker-compose-node-red.yml -p myNoderedProject up
+# docker-compose -f docker-compose-node-red.yml up
 ################################################################################
 version: "3.7"
 
@@ -20,11 +20,34 @@ services:
     ports:
       - "51880:1880"
     networks:
-      - docker-iot-net
+      - iot-net
     volumes:
       - /home/pi/Code/ACM/Docker/node-red/data:/data
     depends_on:
       - pigpiod
+      - influxdb2
+
+  influxdb2:
+    image: influxdb:latest
+    container_name: influxdb2
+    restart: always
+    ports:
+      - 8086:8086
+    networks:
+      - iot-net
+    volumes:
+      - type: bind
+        source: /home/pi/Code/ACM/Docker/influxdb2/data
+        target: /var/lib/influxdb2
+      - type: bind
+        source: /home/pi/Code/ACM/Docker/influxdb2/config
+        target: /etc/influxdb2
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUXDBUSER}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDBPASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=SET 
+      - DOCKER_INFLUXDB_INIT_BUCKET=rpi-os
 
   pigpiod:
     image: zinen2/alpine-pigpiod:arm64v8
@@ -33,6 +56,14 @@ services:
     restart: unless-stopped
     ports:
       - "8888:8888"
+    networks:
+      - iot-net
 
 networks:
-  docker-iot-net:
+  iot-net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        # This will assign ip 172.30.0.1 to host.
+        - subnet: "172.30.0.0/24"

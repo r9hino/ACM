@@ -7,6 +7,20 @@
         "info": ""
     },
     {
+        "id": "664f6501d56f25d2",
+        "type": "influxdb",
+        "hostname": "127.0.0.1",
+        "port": "8086",
+        "protocol": "http",
+        "database": "database",
+        "name": "",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "2.0",
+        "url": "http://172.30.0.1:8086",
+        "rejectUnauthorized": true
+    },
+    {
         "id": "3cc11d24.ff01a2",
         "type": "comment",
         "z": "f6f2187d.f17ca8",
@@ -21,7 +35,7 @@
         "type": "pi-gpiod out",
         "z": "f6f2187d.f17ca8",
         "name": "LED",
-        "host": "172.28.0.1",
+        "host": "172.30.0.1",
         "port": "8888",
         "pin": "21",
         "set": "",
@@ -30,8 +44,8 @@
         "sermin": "1000",
         "sermax": "2000",
         "freq": "800",
-        "x": 610,
-        "y": 240,
+        "x": 570,
+        "y": 220,
         "wires": []
     },
     {
@@ -45,8 +59,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 400,
-        "y": 240,
+        "x": 360,
+        "y": 220,
         "wires": [
             [
                 "92a859694cc1db1a"
@@ -74,8 +88,8 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 150,
-        "y": 240,
+        "x": 110,
+        "y": 220,
         "wires": [
             [
                 "aab621fa420fe2ef"
@@ -95,8 +109,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 630,
-        "y": 340,
+        "x": 750,
+        "y": 420,
         "wires": []
     },
     {
@@ -104,17 +118,93 @@
         "type": "pi-gpiod in",
         "z": "f6f2187d.f17ca8",
         "name": "Input P38",
-        "host": "172.28.0.1",
+        "host": "172.30.0.1",
         "port": 8888,
         "pin": "20",
-        "intype": "PUD_DOWN",
+        "intype": "PUD_OFF",
         "debounce": "100",
         "read": false,
-        "x": 140,
-        "y": 340,
+        "x": 80,
+        "y": 420,
+        "wires": [
+            [
+                "3f7c1a25b716e9c1"
+            ]
+        ]
+    },
+    {
+        "id": "3f7c1a25b716e9c1",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "Pulse Counter",
+        "func": "let pulseCounter = flow.get(\"pulseCounter\") || 0;\n\n// Only when pulse is set to 1 count.\nif(msg.payload == 1){\n    pulseCounter = pulseCounter + 1;\n    flow.set(\"pulseCounter\", pulseCounter);   \n    msg.payload = pulseCounter;\n    return msg;\n}\n\nreturn null;\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 280,
+        "y": 420,
+        "wires": [
+            [
+                "d9189ce081a17725",
+                "69886e26dadbe679"
+            ]
+        ]
+    },
+    {
+        "id": "14e42e59bb7fd722",
+        "type": "influxdb out",
+        "z": "f6f2187d.f17ca8",
+        "influxdb": "664f6501d56f25d2",
+        "name": "",
+        "measurement": "flow",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "SET",
+        "bucket": "rpi-sensors",
+        "x": 810,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "d9189ce081a17725",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "Volumen - m3",
+        "func": "msg.payload = msg.payload*flow.get(\"kVolumen\");\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\nflow.set(\"kVolumen\", 0.2);",
+        "finalize": "",
+        "libs": [],
+        "x": 520,
+        "y": 420,
         "wires": [
             [
                 "071f897460c86381"
+            ]
+        ]
+    },
+    {
+        "id": "69886e26dadbe679",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "Caudal - m3/hr",
+        "func": "msg.payload = msg.payload*flow.get(\"kCaudal\");\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\nflow.set(\"kCaudal\", 0.2);",
+        "finalize": "",
+        "libs": [],
+        "x": 520,
+        "y": 500,
+        "wires": [
+            [
+                "14e42e59bb7fd722"
             ]
         ]
     }
