@@ -206,8 +206,8 @@ export default {
 
             if(response.status == 200){
                 sensorData.value = csvParser(responseText);
-                console.log(fluxQuery);
-                console.log(sensorData.value);
+                //console.log(fluxQuery);
+                //console.log(sensorData.value);
             }
             else footerRef.value.setTemporalMessage(responseText.message, 5000);  // Only if there is a warning or and error display footer message.
         };

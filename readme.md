@@ -9,15 +9,27 @@
 9. Add QR scanner for adding new devices to node-red.
 10. Make node-red work only locally using vpn. Probably need to modify iptables.
 
+## Managing SSH key
+### Generating keys
+1. Generate public and private key using ecdsa: ```ssh-keygen -t ecdsa -b 521```
+2. Change name id_ecdsa.pub to authorized_keys: ```mv id_ecdsa.pub authorized_keys```
+### Downloading keys
+1. Enable ssh with password: ```sudo nano /etc/ssh/ssh_config```
+2. Set PasswordAuthentication yes
+3. Restart ssh service: ```sudo systemctl restart ssh.service```
+4. Login with SCP and download id_ecdsa to local computer.
+5. Disable ssh with password: ```sudo nano /etc/ssh/ssh_config```
+6. Unset PasswordAuthentication no
+7. Restart ssh service: ```sudo systemctl restart ssh.service```
 
-## Managing npm packages:
+## Managing npm packages
 ### Updating npm packages:
 1. Go to Backend folder
-2. check for outdated packages: ```npm outdated```
+2. Check for outdated packages: ```npm outdated```
 3. Install packages with small changes: ```npm install package-name```
 4. Install packages with big changes: ```npm install package-name@2.0.0```
 
-## Mounting node-red with docker:
+## Mounting node-red with docker
 ### Using docker
 Getting node-red docker - Link: https://nodered.org/docs/getting-started/docker:
 1. Create volume to persist data: ```docker volume create --name node_red_data```
