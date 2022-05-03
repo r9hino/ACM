@@ -109,7 +109,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 750,
+        "x": 590,
         "y": 320,
         "wires": []
     },
@@ -128,27 +128,7 @@
         "y": 320,
         "wires": [
             [
-                "3f7c1a25b716e9c1"
-            ]
-        ]
-    },
-    {
-        "id": "3f7c1a25b716e9c1",
-        "type": "function",
-        "z": "f6f2187d.f17ca8",
-        "name": "Pulse Counter",
-        "func": "let pulseCounter = flow.get(\"pulseCounter\") || 0;\n\n// Only when pulse is set to 1 count.\nif(msg.payload == 1){\n    pulseCounter = pulseCounter + 1;\n    flow.set(\"pulseCounter\", pulseCounter);   \n    msg.payload = pulseCounter;\n    return msg;\n}\n\nreturn null;\n\n",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 280,
-        "y": 320,
-        "wires": [
-            [
-                "d9189ce081a17725",
-                "69886e26dadbe679"
+                "59ef1bf3df7e6da1"
             ]
         ]
     },
@@ -166,44 +146,26 @@
         "retentionPolicyV18Flux": "",
         "org": "SET",
         "bucket": "rpi-sensors",
-        "x": 740,
+        "x": 580,
         "y": 400,
         "wires": []
     },
     {
-        "id": "d9189ce081a17725",
+        "id": "59ef1bf3df7e6da1",
         "type": "function",
         "z": "f6f2187d.f17ca8",
-        "name": "Volumen - m3",
-        "func": "msg.payload = msg.payload*flow.get(\"kVolumen\");\nreturn msg;",
+        "name": "Flowmeter - m3/hr",
+        "func": "// Only if pulse is positive continue.\nif(msg.payload == 0) return null;\n\n// Set times\nlet actualTime = new Date();\nlet arrTime = flow.get(\"arrTime\") || [];\nlet kCaudal = flow.get(\"kCaudal\");\nlet avgFlow = null;\n\n// Set actual time at the begining of array.\narrTime.unshift(actualTime);\n\n// Keep array length in 10.\nif(arrTime.length > 1){\n    if(arrTime.length > 10) arrTime.pop();\n    \n    // Store time array.\n    flow.set(\"arrTime\", arrTime);\n\n    // Get average flow.\n    // Average flow = N° of pulses * K / Time\n    let msPerSecond = 1000;\n    avgFlow = 3600*msPerSecond*(arrTime.length - 1)*kCaudal/(arrTime[0] - arrTime[arrTime.length - 1]);\n    \n    msg.payload = [\n        {\"m3/hr\": avgFlow},\n        {\"sensor_name\": \"Caudal manifold\"}\n    ];\n\n    return msg;\n}\nelse{\n    // Store time array.\n    flow.set(\"arrTime\", arrTime);\n    // Not enough data.\n    return null;\n}\n\n",
         "outputs": 1,
         "noerr": 0,
-        "initialize": "// Code added here will be run once\n// whenever the node is started.\nflow.set(\"kVolumen\", 0.2);",
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\nflow.set(\"kCaudal\", 0.002);",
         "finalize": "",
         "libs": [],
-        "x": 520,
+        "x": 310,
         "y": 320,
         "wires": [
             [
-                "071f897460c86381"
-            ]
-        ]
-    },
-    {
-        "id": "69886e26dadbe679",
-        "type": "function",
-        "z": "f6f2187d.f17ca8",
-        "name": "Caudal - m3/hr",
-        "func": "let caudal = msg.payload*flow.get(\"kCaudal\");\n\nmsg.payload = [{\n    \"m3/hr\": caudal\n},\n{\n    \"sensor_name\": \"Caudal manifold\"\n    \n}];\n\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "// Code added here will be run once\n// whenever the node is started.\nflow.set(\"kCaudal\", 0.2);",
-        "finalize": "",
-        "libs": [],
-        "x": 520,
-        "y": 400,
-        "wires": [
-            [
+                "071f897460c86381",
                 "14e42e59bb7fd722"
             ]
         ]
