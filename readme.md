@@ -8,6 +8,7 @@
 7. Add environment variables backend and frontend.
 9. Add QR scanner for adding new devices to node-red.
 10. Make node-red work only locally using vpn. Probably need to modify iptables.
+11. Use environment variables for dns and port on front-end.
 
 ## Managing SSH key
 ### Generating keys

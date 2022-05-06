@@ -214,7 +214,7 @@
         {
             "email": "philippe.ilharreguy@gmail.com",
             "phone": "+56999972023",
-            "date_update": "Fri Apr 22 2022 15:26:10 GMT-0400 (Chile Standard Time)"
+            "date_update": "Wed May 04 2022 15:58:46 GMT-0400 (Chile Standard Time)"
         }
     ],
     "alerts": [
@@ -236,11 +236,13 @@
             "value": "23.5",
             "unit": "°C",
             "settling_time": "60",
-            "state": "off",
-            "notified_users": [],
-            "date_update": "Sat Apr 23 2022 02:12:22 GMT-0400 (Chile Standard Time)",
-            "alert_message": null,
-            "date_trigger": null
+            "state": "on",
+            "notified_users": [
+                "philippe.ilharreguy@gmail.com"
+            ],
+            "date_update": "Wed May 04 2022 15:58:46 GMT-0400 (Chile Standard Time)",
+            "alert_message": "Alerta: \"Temperatura estacion\" es mayor o igual que 23.5 °C.",
+            "date_trigger": "Fri May 06 2022 18:05:01 GMT-0400 (Chile Standard Time)"
         }
     ],
     "sensors": [
@@ -282,5 +284,5 @@
             "type": "temperature"
         }
     ],
-    "date_update": "Tue May 03 2022 10:52:31 GMT-0400 (Chile Standard Time)"
+    "date_update": "Fri May 06 2022 18:05:01 GMT-0400 (Chile Standard Time)"
 }

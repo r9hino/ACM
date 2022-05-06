@@ -31,7 +31,7 @@ router.post('/login', (req, res) => {
     const ip = req.headers['x-forwarded-for'] || req.ip.split(':')[3];// || req.connection.remoteAddress.split(":")[3];
     const {username, password} = req.body;
     console.log(`INFO: IP ${ip} enter log front page.`);
-    
+
     // If is a new ip, create entry object with ip as key.
     if((ip in ipReqMonitor == false)) ipReqMonitor[ip] = {numberOfAttempts: maxNumberOfAttempts};
 

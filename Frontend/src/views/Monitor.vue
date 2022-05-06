@@ -113,41 +113,54 @@ export default {
             loading.value = false;
         };
 
-        // Convert CSV table returned from the Influx query to array of series fot highcharts standard.
+        // Convert CSV table returned from the Influx query to array of series for highcharts standard.
         // , , time, field, value -> {name: sensorName, data: [[], [], ... []]}
         const csvParser = csvText => {
             const timeZone = (new Date()).getTimezoneOffset()*60000;
             let lines = csvText.split('\r\n');        // Create string array.
 
             const titles = lines.shift().split(',');  // Recover titles from first row.
-
             const sensorNameIndex = titles.findIndex(title => title === 'sensor_name');
             const timeIndex = titles.findIndex(title => title === '_time');
             const valueIndex = titles.findIndex(title => title === '_value');
             const unitIndex = titles.findIndex(title => title === '_field');
 
             //let start = Date.now();
-            let sensorSeries = {};
+            let sensorSeries = [];
+            let sensorCounter = 0;
             // Create array of array for each column.
             lines.forEach((line, index) => {
                 line = line.split(',');
                 let sensorName = line[sensorNameIndex];
-                // Do not process a line when there is not sensor name.
-                if(sensorName === undefined) return;
-                // Push (x,y) values to array.
-                if(sensorSeries[sensorName] !== undefined) sensorSeries[sensorName].push([Date.parse(line[timeIndex]) - timeZone, parseFloat(line[valueIndex])]);
-                else sensorSeries[sensorName] = [[Date.parse(line[timeIndex]) - timeZone, parseFloat(line[valueIndex])]];
-            });
-            //let end = Date.now();
-            //console.log('Milliseconds:', (end-start));
+                let dataTime = line[timeIndex];
+                let dataUnit = line[unitIndex];
+                let dataValue = line[valueIndex];
 
-            // Set Highcharts series format [{name: xx, data: [[], [], ... []]}, {name: yy, data: [[], [], ... []]}].
-            let series = [];
-            for(const [key, value] of Object.entries(sensorSeries)) {
-                series.push({name: key, data: value});
-            }
-            //console.log(series); 
-            return series;
+                // Do not process a line when there is not sensor name.
+                if(sensorName === undefined || sensorName === null || sensorName === '') return;
+
+                // Detect line with different sensor to increase sensorCounter by 1.
+                if(sensorSeries[sensorCounter] !== undefined){
+                    if(sensorSeries[sensorCounter].name !== sensorName) sensorCounter++;
+                }
+
+                // Create array of object:
+                // [{name: 'Caudal manifold [m3/hr]', unit: 'm3/hr', data: Array(450)},
+                //  {name: 'Temperatura estacion [°C]', unit: '°C', data: Array(89)}]
+                if(sensorSeries[sensorCounter] !== undefined && sensorSeries[sensorCounter].name === sensorName)
+                    sensorSeries[sensorCounter].data.push([Date.parse(dataTime) - timeZone, parseFloat(dataValue)]);
+                else{
+                    // First it will enter here to defined object, then it will enter to if.
+                    sensorSeries[sensorCounter] = {
+                        name: sensorName,
+                        unit: dataUnit, 
+                        data: [[Date.parse(dataTime) - timeZone, parseFloat(dataValue)]]
+                    };
+                }
+            });
+            console.log(sensorSeries);
+
+            return sensorSeries;
         }
 
         let getSensorData = async () => {
@@ -202,6 +215,10 @@ export default {
                 },
                 body: fluxQuery
             });
+
+            // Response get text : time   value   unit   type                      name
+            //                        x       x     C°      x      Temperatura estacion
+            //                        x       x  m3/hr      x            Caudal manifol
             const responseText = await response.text();
 
             if(response.status == 200){
