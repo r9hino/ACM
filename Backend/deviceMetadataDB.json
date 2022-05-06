@@ -74,7 +74,7 @@
                     "off": "22:51"
                 }
             ],
-            "date_update": "Sun May 01 2022 22:13:41 GMT-0400 (Chile Standard Time)"
+            "date_update": "Fri May 06 2022 19:45:26 GMT-0400 (Chile Standard Time)"
         },
         {
             "id": 1,
@@ -140,7 +140,7 @@
                     "off": "14:15"
                 }
             ],
-            "date_update": "Tue Nov 09 2021 16:49:37 GMT-0300 (Chile Summer Time)"
+            "date_update": "Fri May 06 2022 19:45:27 GMT-0400 (Chile Standard Time)"
         },
         {
             "id": 2,
@@ -206,7 +206,7 @@
                     "off": "16:00"
                 }
             ],
-            "date_update": "Thu Oct 14 2021 12:39:14 GMT-0300 (Chile Summer Time)"
+            "date_update": "Fri May 06 2022 19:20:30 GMT-0400 (Chile Standard Time)"
         }
     ],
     "ip_public": "190.217.195.6",
@@ -242,7 +242,7 @@
             ],
             "date_update": "Wed May 04 2022 15:58:46 GMT-0400 (Chile Standard Time)",
             "alert_message": "Alerta: \"Temperatura estacion\" es mayor o igual que 23.5 °C.",
-            "date_trigger": "Fri May 06 2022 18:05:01 GMT-0400 (Chile Standard Time)"
+            "date_trigger": "Fri May 06 2022 19:45:55 GMT-0400 (Chile Standard Time)"
         }
     ],
     "sensors": [
@@ -284,5 +284,5 @@
             "type": "temperature"
         }
     ],
-    "date_update": "Fri May 06 2022 18:05:01 GMT-0400 (Chile Standard Time)"
+    "date_update": "Fri May 06 2022 19:45:55 GMT-0400 (Chile Standard Time)"
 }

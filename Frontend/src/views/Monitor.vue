@@ -158,7 +158,7 @@ export default {
                     };
                 }
             });
-            console.log(sensorSeries);
+            //console.log(sensorSeries);
 
             return sensorSeries;
         }

@@ -9,9 +9,11 @@ import { computed } from 'vue';
 import Highcharts from 'highcharts';
 import exporting from 'highcharts/modules/exporting';
 import boost from 'highcharts/modules/boost';
+import accessibility from "highcharts/modules/accessibility";
 
 exporting(Highcharts);
 boost(Highcharts);
+accessibility(Highcharts);
 
 export default {
     name: 'Chart',
