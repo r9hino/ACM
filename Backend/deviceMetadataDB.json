@@ -8,13 +8,13 @@
     "name_place": "Huite Pozo Profundo 1",
     "geo_coordinate": "",
     "architecture": "arm64",
-    "node_version": "v16.13.2",
+    "node_version": "v16.15.0",
     "relays": [
         {
             "id": 0,
             "description": "Control bomba 1",
             "protocol": "i2c",
-            "state": false,
+            "state": true,
             "trigger_type": "Horario",
             "schedule": [
                 {
@@ -74,7 +74,7 @@
                     "off": "22:51"
                 }
             ],
-            "date_update": "Fri May 06 2022 19:45:26 GMT-0400 (Chile Standard Time)"
+            "date_update": "Sat May 07 2022 18:32:34 GMT-0400 (Chile Standard Time)"
         },
         {
             "id": 1,
@@ -140,13 +140,13 @@
                     "off": "14:15"
                 }
             ],
-            "date_update": "Fri May 06 2022 19:45:27 GMT-0400 (Chile Standard Time)"
+            "date_update": "Sat May 07 2022 18:32:35 GMT-0400 (Chile Standard Time)"
         },
         {
             "id": 2,
             "description": "Electrovalvula principal",
             "protocol": "i2c",
-            "state": false,
+            "state": true,
             "trigger_type": "Horario",
             "schedule": [
                 {
@@ -206,7 +206,7 @@
                     "off": "16:00"
                 }
             ],
-            "date_update": "Fri May 06 2022 19:20:30 GMT-0400 (Chile Standard Time)"
+            "date_update": "Sat May 07 2022 10:14:55 GMT-0400 (Chile Standard Time)"
         }
     ],
     "ip_public": "190.217.195.6",
@@ -236,13 +236,11 @@
             "value": "23.5",
             "unit": "°C",
             "settling_time": "60",
-            "state": "on",
-            "notified_users": [
-                "philippe.ilharreguy@gmail.com"
-            ],
-            "date_update": "Wed May 04 2022 15:58:46 GMT-0400 (Chile Standard Time)",
-            "alert_message": "Alerta: \"Temperatura estacion\" es mayor o igual que 23.5 °C.",
-            "date_trigger": "Fri May 06 2022 19:45:55 GMT-0400 (Chile Standard Time)"
+            "state": "off",
+            "notified_users": [],
+            "date_update": "Mon May 09 2022 06:26:55 GMT-0400 (Chile Standard Time)",
+            "alert_message": null,
+            "date_trigger": null
         }
     ],
     "sensors": [
@@ -284,5 +282,5 @@
             "type": "temperature"
         }
     ],
-    "date_update": "Fri May 06 2022 19:45:55 GMT-0400 (Chile Standard Time)"
+    "date_update": "Mon May 09 2022 18:16:09 GMT-0400 (Chile Standard Time)"
 }

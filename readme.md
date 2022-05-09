@@ -10,6 +10,25 @@
 10. Make node-red work only locally using vpn. Probably need to modify iptables.
 11. Use environment variables for dns and port on front-end.
 
+## Installing a new node version
+### Cancel server start on boot
+1. Remove PM2 booter: ```pm2 unstartup```
+2. Follow instructions...
+3. Stop running server and vue: ```pm2 delete all```
+4. Stop pm2 daemon: ```ps aux | grep pm2 & kill -9 PID```
+### Install new version of node and pm2:
+1. Install new node: 
+    - ```nvm install v16.15.0```
+    - ```nvm use v16.15.0 & nvm current```
+2. Optional, remove previous node version: ```nvm uninstall v16.13.2```
+3. Install new pm2:
+    - npm i -g pm2
+### Start server on boot:
+1. Run services: ```/home/pi/Code/ACM/start.sh```
+2. Generate startup script: ```pm2 startup```
+3. Follow instructions...
+4. Freeze your process list across server restart: ```pm2 save```
+
 ## Managing SSH key
 ### Generating keys
 1. Generate public and private key using ecdsa: ```ssh-keygen -t ecdsa -b 521```
