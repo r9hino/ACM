@@ -21,8 +21,8 @@ export default {
     props: ['sensorData'],
     setup(props){
         let chartOptions = computed(() => {
-            let yAxisArr = [];      // Store multi y-axis structure.
             let unitArr = [];       // Store units, only one for each, no duplication.
+            let yAxisArr = [];      // Store multi y-axis structure.
 
             // Check that sensorData is not null or empty.
             if(props.sensorData.length > 0){
@@ -33,14 +33,14 @@ export default {
                     if(unitArr.indexOf(sensor.unit) === -1){
                         unitArr.push(sensor.unit);      // [°C, m3/hr]
 
-                        yAxisArr[unitArr.length-1] = {
+                        yAxisArr[unitArr.indexOf(props.sensorData[idx].unit)] = {
                             labels: {
                                 format: '{value}',
-                                style: { color: Highcharts.getOptions().colors[unitArr.length-1] }
+                                style: { color: Highcharts.getOptions().colors[unitArr.indexOf(props.sensorData[idx].unit)] }
                             },
                             title: {
                                 text: sensor.unit,
-                                style: { color: Highcharts.getOptions().colors[unitArr.length-1] }
+                                style: { color: Highcharts.getOptions().colors[unitArr.indexOf(props.sensorData[idx].unit)] }
                             }
                         };
                     }
@@ -50,7 +50,7 @@ export default {
                     props.sensorData[idx].yAxis = unitArr.indexOf(props.sensorData[idx].unit);
                 };
             };
-
+            //console.log(yAxisArr, props.sensorData);
             return{
                 title: { text: '' },
                 chart: {
@@ -58,7 +58,7 @@ export default {
                     redraw: true,
                     animation: false,
                     zoomType: "x",
-                    panning: true,
+                    panning: false,
                     panKey: "shift"
                 },
                 boost: { enabled: true },
@@ -67,7 +67,7 @@ export default {
                     title: { text: '' }
                 },
                 yAxis: yAxisArr,
-                tooltip: {},
+                tooltip: {shared: true},
                 legend: {
                     layout: 'horizontal',
                     align: 'center',
@@ -76,7 +76,7 @@ export default {
                 series: props.sensorData,
             }
         });
-        //console.log(props.sensorData);
+
         return{
             chartOptions
         }

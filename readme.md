@@ -11,19 +11,19 @@
 11. Use environment variables for dns and port on front-end.
 
 ## Installing a new node version
-### Cancel server start on boot
+### Cancel start of server on boot
 1. Remove PM2 booter: ```pm2 unstartup```
 2. Follow instructions...
 3. Stop running server and vue: ```pm2 delete all```
 4. Stop pm2 daemon: ```ps aux | grep pm2 & kill -9 PID```
-### Install new version of node and pm2:
+### Install new version of node and pm2
 1. Install new node: 
     - ```nvm install v16.15.0```
     - ```nvm use v16.15.0 & nvm current```
 2. Optional, remove previous node version: ```nvm uninstall v16.13.2```
 3. Install new pm2:
     - npm i -g pm2
-### Start server on boot:
+### Start server on boot
 1. Run services: ```/home/pi/Code/ACM/start.sh```
 2. Generate startup script: ```pm2 startup```
 3. Follow instructions...
@@ -43,7 +43,7 @@
 7. Restart ssh service: ```sudo systemctl restart ssh.service```
 
 ## Managing npm packages
-### Updating npm packages:
+### Updating npm packages
 1. Go to Backend folder
 2. Check for outdated packages: ```npm outdated```
 3. Install packages with small changes: ```npm install package-name```
@@ -61,15 +61,38 @@ Getting node-red docker - Link: https://nodered.org/docs/getting-started/docker:
 5. Backup file from container to external folder: ```docker cp nodered:/data /your/backup/directory```
 6. Get host ip (physical device) from container: ```docker exec -it nodered ip route show default | awk '/default/ {print $3}'```
 ### Using docker-compose
-1. ```sudo docker-compose -f docker-node-red-influxdb.yml up -d```
-2. Change user uid to 1000: ```sudo chown -R 1000:1000 path/to/your/node-red/data```
-3. Add login to node-red - Link https://nodered.org/docs/user-guide/runtime/securing-node-red 
+1. Go to project docker folder: ```cd /home/pi/Code/ACM/Docker```
+2. ```sudo docker-compose -f docker-node-red-influxdb.yml up -d```
+3. Change user uid to 1000: ```sudo chown -R 1000:1000 path/to/your/node-red/data```
+4. Add login to node-red - Link https://nodered.org/docs/user-guide/runtime/securing-node-red 
     - Enter node-red cointainer: ```docker exec -it nodered /bin/bash```
     - Edit /data/settings.js file: ```nano /data/settings.js```
 
-## Github commands:
-### Commit changes:
-1. Go to ACM folder
-2. ```git add .```
-3. ```git commit -m "Description"```
-4. ```git push origin master```
+## Github commands
+### Commit changes
+1. Go to ACM folder:
+    - ```git add .```
+    - ```git commit -m "Description"```
+    - ```git push origin master```
+
+## Backup Ubuntu OS while running
+### Mount storage device
+1. Create mounting point: ```mkdir /mnt/SD```
+2. Check if device was detected and what is it partition: ```lsblk```
+3. Mount the device: ```sudo mount /dev/sda1 /mnt/SD```
+4. Check if device was correctly mounted: ```lsblk```
+### Make an Ubuntu image and store it on the mounted device
+1. Download PiSafe https://github.com/RichardMidnight/pi-safe:
+    - ```wget https://raw.githubusercontent.com/RichardMidnight/pi-safe/main/pisafe -O pisafe```
+    - ```bash pisafe install```
+2. Stop all processes:
+    - ```pm2 stop all```
+    - ```cd /home/pi/Code/ACM/Docker```
+    - ```doker-compose -f docker-nodered-influxdb-pigpiod.yml stop```
+3. Run PiSafe: ```pisafe```
+4. On Settings turn off "hide root device"
+5. Go to Backup
+6. Choose Ubuntu partition
+7. Set destination path to /mnt/SD
+8. After finishing the image creation, unmount device: ```sudo umount /mnt/SD```
+9. Chech unmounting: ```lsblk```

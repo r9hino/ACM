@@ -14,7 +14,7 @@
             "id": 0,
             "description": "Control bomba 1",
             "protocol": "i2c",
-            "state": true,
+            "state": false,
             "trigger_type": "Horario",
             "schedule": [
                 {
@@ -209,12 +209,12 @@
             "date_update": "Sat May 07 2022 10:14:55 GMT-0400 (Chile Standard Time)"
         }
     ],
-    "ip_public": "190.217.195.6",
+    "ip_public": "190.217.206.250",
     "guard_users": [
         {
             "email": "philippe.ilharreguy@gmail.com",
             "phone": "+56999972023",
-            "date_update": "Wed May 04 2022 15:58:46 GMT-0400 (Chile Standard Time)"
+            "date_update": "Tue May 10 2022 13:22:32 GMT-0400 (Chile Standard Time)"
         }
     ],
     "alerts": [
@@ -238,7 +238,7 @@
             "settling_time": "60",
             "state": "off",
             "notified_users": [],
-            "date_update": "Mon May 09 2022 06:26:55 GMT-0400 (Chile Standard Time)",
+            "date_update": "Tue May 10 2022 18:13:24 GMT-0400 (Chile Standard Time)",
             "alert_message": null,
             "date_trigger": null
         }
@@ -282,5 +282,5 @@
             "type": "temperature"
         }
     ],
-    "date_update": "Mon May 09 2022 18:16:09 GMT-0400 (Chile Standard Time)"
+    "date_update": "Tue May 10 2022 18:13:24 GMT-0400 (Chile Standard Time)"
 }

@@ -128,7 +128,7 @@ export default {
             //let start = Date.now();
             let sensorSeries = [];
             let sensorCounter = 0;
-            // Create array of array for each column.
+            // Create array of array.
             lines.forEach((line, index) => {
                 line = line.split(',');
                 let sensorName = line[sensorNameIndex];
@@ -145,8 +145,8 @@ export default {
                 }
 
                 // Create array of object:
-                // [{name: 'Caudal manifold [m3/hr]', unit: 'm3/hr', data: Array(450)},
-                //  {name: 'Temperatura estacion [°C]', unit: '°C', data: Array(89)}]
+                // [{name: 'Caudal manifold', unit: 'm3/hr', data: Array(450)},
+                //  {name: 'Temperatura estacion', unit: '°C', data: Array(89)}]
                 if(sensorSeries[sensorCounter] !== undefined && sensorSeries[sensorCounter].name === sensorName)
                     sensorSeries[sensorCounter].data.push([Date.parse(dataTime) - timeZone, parseFloat(dataValue)]);
                 else{
@@ -216,9 +216,11 @@ export default {
                 body: fluxQuery
             });
 
-            // Response get text : time   value   unit   type                      name
-            //                        x       x     C°      x      Temperatura estacion
-            //                        x       x  m3/hr      x            Caudal manifol
+            // response format is like : time   value   unit   type                      name
+            //                              x       x     C°      x      Temperatura estacion
+            //                            x+1       x     C°      x      Temperatura estacion
+            //                              x       x  m3/hr      x            Caudal manifol
+            //                            x+1       x  m3/hr      x            Caudal manifol
             const responseText = await response.text();
 
             if(response.status == 200){

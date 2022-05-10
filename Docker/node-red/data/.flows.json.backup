@@ -158,7 +158,7 @@
         "func": "// Only if pulse is positive continue.\nif(msg.payload == 0) return null;\n\n// Set times\nlet actualTime = new Date();\nlet arrTime = flow.get(\"arrTime\") || [];\nlet kCaudal = flow.get(\"kCaudal\");\nlet avgFlow = null;\n\n// Set actual time at the begining of array.\narrTime.unshift(actualTime);\n\n// Keep array length in 10.\nif(arrTime.length > 1){\n    if(arrTime.length > 10) arrTime.pop();\n    \n    // Store time array.\n    flow.set(\"arrTime\", arrTime);\n\n    // Get average flow.\n    // Average flow = N° of pulses * K / Time\n    let msPerSecond = 1000;\n    avgFlow = 3600*msPerSecond*(arrTime.length - 1)*kCaudal/(arrTime[0] - arrTime[arrTime.length - 1]);\n    \n    msg.payload = [\n        {\"m3/hr\": avgFlow},\n        {\"sensor_name\": \"Caudal manifold\"}\n    ];\n\n    return msg;\n}\nelse{\n    // Store time array.\n    flow.set(\"arrTime\", arrTime);\n    // Not enough data.\n    return null;\n}\n\n",
         "outputs": 1,
         "noerr": 0,
-        "initialize": "// Code added here will be run once\n// whenever the node is started.\nflow.set(\"kCaudal\", 0.01);",
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\nflow.set(\"kCaudal\", 0.002);",
         "finalize": "",
         "libs": [],
         "x": 310,
