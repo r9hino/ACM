@@ -18,11 +18,10 @@
 4. Stop pm2 daemon: ```ps aux | grep pm2 & kill -9 PID```
 ### Install new version of node and pm2
 1. Install new node: 
-    - ```nvm install v16.15.0```
-    - ```nvm use v16.15.0 & nvm current```
+    * ```nvm install v16.15.0```
+    * ```nvm use v16.15.0 & nvm current```
 2. Optional, remove previous node version: ```nvm uninstall v16.13.2```
-3. Install new pm2:
-    - npm i -g pm2
+3. Install new pm2: ```npm i -g pm2```
 ### Start server on boot
 1. Run services: ```/home/pi/Code/ACM/start.sh```
 2. Generate startup script: ```pm2 startup```
@@ -51,29 +50,29 @@
 
 ## Mounting node-red with docker
 ### Using docker
-Getting node-red docker - Link: https://nodered.org/docs/getting-started/docker:
+[Getting node-red docker](https://nodered.org/docs/getting-started/docker):
 1. Create volume to persist data: ```docker volume create --name node_red_data```
 2. Check volume: ```docker volume ls```
 3. Get docker: ```docker run -p 51880:1880 -v node_red_data:/data --name nodered nodered/node-red```
-4. Add login to node-red - Link https://nodered.org/docs/user-guide/runtime/securing-node-red 
-    - Enter node-red cointainer: ```docker exec -it nodered /bin/bash```
-    - Edit /data/settings.js file: ```nano /data/settings.js```
+4. [Add login to node-red](https://nodered.org/docs/user-guide/runtime/securing-node-red):
+    * Enter node-red cointainer: ```docker exec -it nodered /bin/bash```
+    * Edit /data/settings.js file: ```nano /data/settings.js```
 5. Backup file from container to external folder: ```docker cp nodered:/data /your/backup/directory```
 6. Get host ip (physical device) from container: ```docker exec -it nodered ip route show default | awk '/default/ {print $3}'```
 ### Using docker-compose
 1. Go to project docker folder: ```cd /home/pi/Code/ACM/Docker```
 2. ```sudo docker-compose -f docker-node-red-influxdb.yml up -d```
 3. Change user uid to 1000: ```sudo chown -R 1000:1000 path/to/your/node-red/data```
-4. Add login to node-red - Link https://nodered.org/docs/user-guide/runtime/securing-node-red 
-    - Enter node-red cointainer: ```docker exec -it nodered /bin/bash```
-    - Edit /data/settings.js file: ```nano /data/settings.js```
+4. [Add login to node-red](https://nodered.org/docs/user-guide/runtime/securing-node-red):
+    * Enter node-red cointainer: ```docker exec -it nodered /bin/bash```
+    * Edit /data/settings.js file: ```nano /data/settings.js```
 
 ## Github commands
 ### Commit changes
 1. Go to ACM folder:
-    - ```git add .```
-    - ```git commit -m "Description"```
-    - ```git push origin master```
+    * ```git add .```
+    * ```git commit -m "Description"```
+    * ```git push origin master```
 
 ## Backup Ubuntu OS while running
 ### Mount storage device
@@ -82,13 +81,13 @@ Getting node-red docker - Link: https://nodered.org/docs/getting-started/docker:
 3. Mount the device: ```sudo mount /dev/sda1 /mnt/SD```
 4. Check if device was correctly mounted: ```lsblk```
 ### Make an Ubuntu image and store it on the mounted device
-1. Download PiSafe https://github.com/RichardMidnight/pi-safe:
-    - ```wget https://raw.githubusercontent.com/RichardMidnight/pi-safe/main/pisafe -O pisafe```
-    - ```bash pisafe install```
+1. Download [PiSafe](https://github.com/RichardMidnight/pi-safe):
+    * ```wget https://raw.githubusercontent.com/RichardMidnight/pi-safe/main/pisafe -O pisafe```
+    * ```bash pisafe install```
 2. Stop all processes:
-    - ```pm2 stop all```
-    - ```cd /home/pi/Code/ACM/Docker```
-    - ```doker-compose -f docker-nodered-influxdb-pigpiod.yml stop```
+    * ```pm2 stop all```
+    * ```cd /home/pi/Code/ACM/Docker```
+    * ```doker-compose -f docker-nodered-influxdb-pigpiod.yml stop```
 3. Run PiSafe: ```pisafe```
 4. On Settings turn off "hide root device"
 5. Go to Backup
