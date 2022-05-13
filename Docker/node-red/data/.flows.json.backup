@@ -7,6 +7,14 @@
         "info": ""
     },
     {
+        "id": "d9a37cb13fb749b8",
+        "type": "tab",
+        "label": "Flow 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "664f6501d56f25d2",
         "type": "influxdb",
         "hostname": "127.0.0.1",
@@ -19,6 +27,67 @@
         "influxdbVersion": "2.0",
         "url": "http://172.30.0.1:8086",
         "rejectUnauthorized": true
+    },
+    {
+        "id": "178bc6ee.e87439",
+        "type": "soap-config",
+        "z": "d9a37cb13fb749b8",
+        "wsdl": "http://www.webservicex.net/globalweather.asmx?WSDL",
+        "auth": "0",
+        "user": "",
+        "pass": "",
+        "cert": "",
+        "token": ""
+    },
+    {
+        "id": "1d0b9627.18e18a",
+        "type": "soap-config",
+        "z": "d9a37cb13fb749b8",
+        "wsdl": "https://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl",
+        "auth": "0",
+        "user": "",
+        "pass": "",
+        "key": "",
+        "cert": "",
+        "token": ""
+    },
+    {
+        "id": "9b0f6def921530a2",
+        "type": "soap-config",
+        "wsdl": "https://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl",
+        "auth": "0",
+        "user": "",
+        "pass": "",
+        "key": "",
+        "cert": "",
+        "token": ""
+    },
+    {
+        "id": "2ff2a476.a6d2ec",
+        "type": "influxdb",
+        "hostname": "127.0.0.1",
+        "port": "8086",
+        "protocol": "http",
+        "database": "database",
+        "name": "test 1.8 flux",
+        "usetls": false,
+        "tls": "d50d0c9f.31e858",
+        "influxdbVersion": "1.8-flux",
+        "url": "https://localhost:8086",
+        "rejectUnauthorized": false
+    },
+    {
+        "id": "d50d0c9f.31e858",
+        "type": "tls-config",
+        "name": "",
+        "cert": "",
+        "key": "",
+        "ca": "",
+        "certname": "",
+        "keyname": "",
+        "caname": "",
+        "servername": "",
+        "verifyservercert": false
     },
     {
         "id": "3cc11d24.ff01a2",
@@ -44,7 +113,7 @@
         "sermin": "1000",
         "sermax": "2000",
         "freq": "800",
-        "x": 570,
+        "x": 590,
         "y": 220,
         "wires": []
     },
@@ -59,7 +128,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 360,
+        "x": 340,
         "y": 220,
         "wires": [
             [
@@ -101,7 +170,7 @@
         "type": "debug",
         "z": "f6f2187d.f17ca8",
         "name": "",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -109,7 +178,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 590,
+        "x": 610,
         "y": 320,
         "wires": []
     },
@@ -146,8 +215,8 @@
         "retentionPolicyV18Flux": "",
         "org": "SET",
         "bucket": "rpi-sensors",
-        "x": 580,
-        "y": 400,
+        "x": 600,
+        "y": 380,
         "wires": []
     },
     {
@@ -155,10 +224,10 @@
         "type": "function",
         "z": "f6f2187d.f17ca8",
         "name": "Flowmeter - m3/hr",
-        "func": "// Only if pulse is positive continue.\nif(msg.payload == 0) return null;\n\n// Set times\nlet actualTime = new Date();\nlet arrTime = flow.get(\"arrTime\") || [];\nlet kCaudal = flow.get(\"kCaudal\");\nlet avgFlow = null;\n\n// Set actual time at the begining of array.\narrTime.unshift(actualTime);\n\n// Keep array length in 10.\nif(arrTime.length > 1){\n    if(arrTime.length > 10) arrTime.pop();\n    \n    // Store time array.\n    flow.set(\"arrTime\", arrTime);\n\n    // Get average flow.\n    // Average flow = N° of pulses * K / Time\n    let msPerSecond = 1000;\n    avgFlow = 3600*msPerSecond*(arrTime.length - 1)*kCaudal/(arrTime[0] - arrTime[arrTime.length - 1]);\n    \n    msg.payload = [\n        {\"m3/hr\": avgFlow},\n        {\"sensor_name\": \"Caudal manifold\"}\n    ];\n\n    return msg;\n}\nelse{\n    // Store time array.\n    flow.set(\"arrTime\", arrTime);\n    // Not enough data.\n    return null;\n}\n\n",
+        "func": "// Only if pulse is positive continue.\nif(msg.payload == 0) return null;\n\n// Set times\nlet actualTime = new Date();\nlet arrTime = flow.get(\"arrTime\") || [];\nlet counter = flow.get(\"counter\", \"file\") || 0;\nlet volume = flow.get(\"volume\");\nlet kVolume = flow.get(\"kVolume\");\nlet avgFlow = null;\n\ncounter = counter + 1;\nflow.set(\"counter\", counter, \"file\");\n\n// Set actual time at the begining of array.\narrTime.unshift(actualTime);\n\n// Keep array length in 10.\nif(arrTime.length > 1){\n    if(arrTime.length > 10) arrTime.pop();\n    \n    // Store time array.\n    flow.set(\"arrTime\", arrTime);\n\n    // Get average flow.\n    // Average flow = N° of pulses * K [m3/pulse] / Time[]\n    let msPerSecond = 1000;     // How many miliseconds per seconds.\n    volume = kVolume*counter;\n    avgFlow = 3600*msPerSecond*(arrTime.length - 1)*kVolume/(arrTime[0] - arrTime[arrTime.length - 1]);\n    \n    msg.payload = [\n        [{\"m3\": volume},\n        {\"sensor_name\": \"Volumen\"}],\n        [{\"m3/hr\": avgFlow},\n        {\"sensor_name\": \"Caudal manifold\"}],\n    ];\n\n    return msg;\n}\nelse{\n    // Store time array.\n    flow.set(\"arrTime\", arrTime);\n    // Not enough data.\n    return null;\n}\n\n",
         "outputs": 1,
         "noerr": 0,
-        "initialize": "// Code added here will be run once\n// whenever the node is started.\nflow.set(\"kCaudal\", 0.002);",
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\nflow.set(\"volume\", 0);         // volumen -> [m3]\nflow.set(\"kVolume\", 0.002);    // k -> [m3/pulse]",
         "finalize": "",
         "libs": [],
         "x": 310,
@@ -169,5 +238,198 @@
                 "14e42e59bb7fd722"
             ]
         ]
+    },
+    {
+        "id": "b956486a93ef56b8",
+        "type": "soap request",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "topic": "",
+        "wsdl": "9b0f6def921530a2",
+        "method": "LatLonListZipCode",
+        "x": 450,
+        "y": 540,
+        "wires": [
+            [
+                "2260a9e3b1ca0715"
+            ]
+        ]
+    },
+    {
+        "id": "9e0e25759742e5e9",
+        "type": "inject",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 100,
+        "y": 540,
+        "wires": [
+            [
+                "eb18b9c45bf5059b"
+            ]
+        ]
+    },
+    {
+        "id": "2260a9e3b1ca0715",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 610,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "eb18b9c45bf5059b",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "func": "var newmsg={\n  server:\"https://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl\",\n  options:{},\n  headers:{},\n  payload:{\n      zipCodeList:\"75001\"\n  }\n  \n};\nreturn newmsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 280,
+        "y": 540,
+        "wires": [
+            [
+                "b956486a93ef56b8"
+            ]
+        ]
+    },
+    {
+        "id": "0a29abf187a7e08c",
+        "type": "influxdb in",
+        "z": "f6f2187d.f17ca8",
+        "influxdb": "664f6501d56f25d2",
+        "name": "QueryVolume",
+        "query": "from(bucket: \"rpi-sensors\")\n    |> range(start: -15d)\n    |> filter(fn: (r) => r[\"sensor_name\"] == \"Temperatura estacion\" or\n                         r[\"sensor_name\"] == \"Caudal manifold\" or\n                         r[\"sensor_name\"] == \"Volumen\")\n    |> last()\n    |> drop(columns:[\"_start\", \"_stop\", \"host\"])",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "SET",
+        "x": 300,
+        "y": 440,
+        "wires": [
+            [
+                "ada92d4d479c4a1c"
+            ]
+        ]
+    },
+    {
+        "id": "4b5c0df93cf83947",
+        "type": "inject",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 100,
+        "y": 440,
+        "wires": [
+            [
+                "0a29abf187a7e08c"
+            ]
+        ]
+    },
+    {
+        "id": "ada92d4d479c4a1c",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 610,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "79cd5c104efe0581",
+        "type": "influxdb in",
+        "z": "f6f2187d.f17ca8",
+        "influxdb": "664f6501d56f25d2",
+        "name": "",
+        "query": "from(bucket: \"rpi-sensors\")\n    |> range(start: -7d)\n    |> last()",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "SET",
+        "x": 340,
+        "y": 660,
+        "wires": [
+            [
+                "f09876aeeca69d70"
+            ]
+        ]
+    },
+    {
+        "id": "1256632af093cee6",
+        "type": "inject",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 100,
+        "y": 660,
+        "wires": [
+            [
+                "79cd5c104efe0581"
+            ]
+        ]
+    },
+    {
+        "id": "f09876aeeca69d70",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 610,
+        "y": 660,
+        "wires": []
     }
 ]
