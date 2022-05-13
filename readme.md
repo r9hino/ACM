@@ -57,7 +57,7 @@
 4. [Add login to node-red](https://nodered.org/docs/user-guide/runtime/securing-node-red):
     * Enter node-red cointainer: ```docker exec -it nodered /bin/bash```
     * Edit /data/settings.js file: ```nano /data/settings.js```
-5. [Allow to store context to localFileSystem](https://nodered.org/docs/api/context/).
+5. [Enable to store context to localFileSystem](https://nodered.org/docs/api/context/).
 6. Backup file from container to external folder: ```docker cp nodered:/data /your/backup/directory```
 7. Get host ip (physical device) from container: ```docker exec -it nodered ip route show default | awk '/default/ {print $3}'```
 ### Using docker-compose
