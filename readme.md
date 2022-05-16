@@ -69,8 +69,8 @@
     * Edit /data/settings.js file: ```nano /data/settings.js```
 
 ## Github commands
-### Commit changes
-1. Go to ACM folder:
+1. Clone repository: ```git clone -b master https://github.com/r9hino/ACM.git```
+2. Github commit:
     * ```git add .```
     * ```git commit -m "Description"```
     * ```git push origin master```
@@ -95,4 +95,21 @@
 6. Choose Ubuntu partition
 7. Set destination path to /mnt/SD
 8. After finishing the image creation, unmount device: ```sudo umount /mnt/SD```
-9. Chech unmounting: ```lsblk```
+9. Check unmounting: ```lsblk```
+
+## Bring up server after cloning Github project repository
+1. Backup ACM: ```mv ACM ACM-backup```
+2. Clone Github repository.
+3. Copy .env files:
+    * ```cp ACM-backup/Backend/Helper/.env ACM/Backend/Helper/.env```
+    * ```cp ACM-backup/Docker/.env ACM/Docker/.env```
+4. Install npm modules:
+    * ```cd Backend & npm install```
+    * ```cd Frontend & npm install```
+5. Start docker containers:
+    * ```cd ACM/Docker```
+    * Make InfluxDB folders: ```mkdir influxdb2/data influxdb2/config```
+    * Change user id for node-red/data folder to 1000: ```sudo chown -R 1000:1000 ACM/Docker/node-red/data```
+    * Start containers: ```docker-compose -f docker-nodered-influxdb-pigpiod.yml start```
+6. If necesary copy new token from influxdb page to .env files and nodered nodes.
+7. In nodered, install npm packages: node-red-node-pi-gpiod, node-red-contrib-influxdb, node-red-contrib-soap.

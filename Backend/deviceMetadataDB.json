@@ -74,7 +74,7 @@
                     "off": "22:51"
                 }
             ],
-            "date_update": "Sat May 07 2022 18:32:34 GMT-0400 (Chile Standard Time)"
+            "date_update": "Mon May 16 2022 17:58:31 GMT-0400 (Chile Standard Time)"
         },
         {
             "id": 1,
@@ -209,7 +209,7 @@
             "date_update": "Sat May 07 2022 10:14:55 GMT-0400 (Chile Standard Time)"
         }
     ],
-    "ip_public": "190.217.206.250",
+    "ip_public": "190.217.202.252",
     "guard_users": [
         {
             "email": "philippe.ilharreguy@gmail.com",
@@ -282,5 +282,5 @@
             "type": "temperature"
         }
     ],
-    "date_update": "Wed May 11 2022 02:38:25 GMT-0400 (Chile Standard Time)"
+    "date_update": "Mon May 16 2022 18:30:15 GMT-0400 (Chile Standard Time)"
 }

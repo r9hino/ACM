@@ -124,7 +124,7 @@
         "sermin": "1000",
         "sermax": "2000",
         "freq": "800",
-        "x": 550,
+        "x": 530,
         "y": 140,
         "wires": []
     },
@@ -189,7 +189,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 570,
+        "x": 550,
         "y": 220,
         "wires": []
     },
@@ -226,7 +226,7 @@
         "retentionPolicyV18Flux": "",
         "org": "SET",
         "bucket": "rpi-sensors",
-        "x": 560,
+        "x": 540,
         "y": 280,
         "wires": []
     },
@@ -294,7 +294,7 @@
         "active": true,
         "console": "false",
         "complete": "false",
-        "x": 570,
+        "x": 550,
         "y": 440,
         "wires": []
     },
@@ -328,7 +328,7 @@
         "precision": "",
         "retentionPolicy": "",
         "org": "SET",
-        "x": 300,
+        "x": 280,
         "y": 560,
         "wires": [
             [
@@ -376,7 +376,7 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 570,
+        "x": 550,
         "y": 560,
         "wires": []
     },
@@ -391,7 +391,7 @@
         "precision": "",
         "retentionPolicy": "",
         "org": "SET",
-        "x": 340,
+        "x": 320,
         "y": 500,
         "wires": [
             [
@@ -440,7 +440,7 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 570,
+        "x": 550,
         "y": 500,
         "wires": []
     },
@@ -452,7 +452,7 @@
         "topic": "",
         "wsdl": "e763d99e6b688f54",
         "method": "Add",
-        "x": 710,
+        "x": 670,
         "y": 340,
         "wires": [
             [
@@ -464,11 +464,16 @@
         "id": "e9d4294f96c86070",
         "type": "debug",
         "z": "f6f2187d.f17ca8",
-        "name": "",
+        "name": "Response",
         "active": true,
-        "console": "false",
-        "complete": "false",
-        "x": 870,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
         "y": 340,
         "wires": []
     },
@@ -483,7 +488,7 @@
         "initialize": "// Code added here will be run once\n// whenever the node is started.\ncontext.set(\"prevTime\", new Date());",
         "finalize": "",
         "libs": [],
-        "x": 560,
+        "x": 540,
         "y": 340,
         "wires": [
             [
