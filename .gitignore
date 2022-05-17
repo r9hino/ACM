@@ -1,7 +1,8 @@
 .DS_Store
 node_modules/
 /dist
-/Docker/influxdb2/
+/Docker/influxdb2/data/engine/
+influxd.bolt
 
 # env files
 .env
