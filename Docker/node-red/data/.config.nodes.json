@@ -476,5 +476,24 @@
                 "file": "/data/node_modules/node-red-contrib-soap/soap-config.js"
             }
         }
+    },
+    "node-red-contrib-simple-soap": {
+        "name": "node-red-contrib-simple-soap",
+        "version": "0.1.3",
+        "local": true,
+        "user": true,
+        "nodes": {
+            "simple-soap": {
+                "name": "simple-soap",
+                "types": [
+                    "simple-soap"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "node-red-contrib-simple-soap",
+                "file": "/data/node_modules/node-red-contrib-simple-soap/simple-soap.js"
+            }
+        }
     }
 }

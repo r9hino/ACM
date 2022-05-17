@@ -48,8 +48,8 @@
 3. Install packages with small changes: ```npm install package-name```
 4. Install packages with big changes: ```npm install package-name@2.0.0```
 
-## Mounting node-red with docker
-### Using docker
+## Mounting docker containers
+### Mounting nodered container with docker
 [Getting node-red docker](https://nodered.org/docs/getting-started/docker):
 1. Create volume to persist data: ```docker volume create --name node_red_data```
 2. Check volume: ```docker volume ls```
@@ -60,9 +60,9 @@
 5. [Enable to store context to localFileSystem](https://nodered.org/docs/api/context/).
 6. Backup file from container to external folder: ```docker cp nodered:/data /your/backup/directory```
 7. Get host ip (physical device) from container: ```docker exec -it nodered ip route show default | awk '/default/ {print $3}'```
-### Using docker-compose
+### Mounting all containers with docker-compose
 1. Go to project docker folder: ```cd /home/pi/Code/ACM/Docker```
-2. ```sudo docker-compose -f docker-node-red-influxdb.yml up -d```
+2. ```docker-compose -f docker-nodered-influxdb-pigpiod.yml --env-file ./../.env up -d```
 3. Change user uid to 1000: ```sudo chown -R 1000:1000 path/to/your/node-red/data```
 4. [Add login to node-red](https://nodered.org/docs/user-guide/runtime/securing-node-red):
     * Enter node-red cointainer: ```docker exec -it nodered /bin/bash```
@@ -108,8 +108,8 @@
     * ```cd Frontend & npm install```
 5. Start docker containers:
     * ```cd ACM/Docker```
-    * Make InfluxDB folders: ```mkdir influxdb2/data influxdb2/config```
+    * Make InfluxDB folders if necessary: ```mkdir influxdb2/data influxdb2/config```
     * Change user id for node-red/data folder to 1000: ```sudo chown -R 1000:1000 ACM/Docker/node-red/data```
     * Start containers: ```docker-compose -f docker-nodered-influxdb-pigpiod.yml start```
-6. If necesary copy new token from influxdb page to .env files and nodered nodes.
+6. If necessary copy new token from influxdb page to .env files and nodered nodes.
 7. In nodered, install npm packages: node-red-node-pi-gpiod, node-red-contrib-influxdb, node-red-contrib-soap.

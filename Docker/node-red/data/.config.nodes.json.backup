@@ -446,5 +446,35 @@
                 "file": "/data/node_modules/node-red-node-pi-gpiod/pi-gpiod.js"
             }
         }
+    },
+    "node-red-contrib-soap": {
+        "name": "node-red-contrib-soap",
+        "version": "0.1.0",
+        "local": true,
+        "user": true,
+        "nodes": {
+            "soap": {
+                "name": "soap",
+                "types": [
+                    "soap request"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "node-red-contrib-soap",
+                "file": "/data/node_modules/node-red-contrib-soap/soap-node.js"
+            },
+            "soap-config": {
+                "name": "soap-config",
+                "types": [
+                    "soap-config"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "node-red-contrib-soap",
+                "file": "/data/node_modules/node-red-contrib-soap/soap-config.js"
+            }
+        }
     }
 }
