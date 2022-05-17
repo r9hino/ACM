@@ -206,7 +206,7 @@ export default {
                 |> filter(fn: (r) => ${querySensorNames})
                 ${aggregateTimeWindow}
                 |> drop(columns:["_start", "_stop", "host"])`;
-console.log(fluxQuery);
+
             const response = await fetch(`http://rpi4id0.mooo.com:8086/api/v2/query?org=SET`, {
                 method: "POST",
                 headers: {

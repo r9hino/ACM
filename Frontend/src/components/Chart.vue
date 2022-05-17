@@ -67,7 +67,7 @@ export default {
                     title: { text: '' }
                 },
                 yAxis: yAxisArr,
-                tooltip: {shared: true},
+                tooltip: {},
                 legend: {
                     layout: 'horizontal',
                     align: 'center',
