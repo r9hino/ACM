@@ -7,7 +7,7 @@
 #   Daemon node-red
 #     docker run -p 51880:1880 -v /home/pi/Code/ACM/Docker/node-red/data:/data --name mynodered nodered/node-red
 #
-# docker-compose -f docker-compose-nodered-influxdb-pigpiod.yml up
+# docker-compose -f docker-nodered-influxdb-pigpiod.yml --env-file ./../.env up -d
 ################################################################################
 version: "3.7"
 
@@ -23,8 +23,8 @@ services:
     volumes:
       - /home/pi/Code/ACM/Docker/node-red/data:/data
     depends_on:
-      - pigpiod
-      - influxdb2
+      influxdb2:
+        condition: service_healthy
 
   influxdb2:
     image: influxdb:latest
@@ -47,6 +47,12 @@ services:
       - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDBPASSWORD}
       - DOCKER_INFLUXDB_INIT_ORG=SET 
       - DOCKER_INFLUXDB_INIT_BUCKET=rpi-os
+    healthcheck:
+      test: "curl --fail http://localhost:8086/ping"
+      interval: 60s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
 
   pigpiod:
     image: zinen2/alpine-pigpiod:arm64v8
