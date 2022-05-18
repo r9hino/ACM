@@ -23,6 +23,7 @@ export default {
         let chartOptions = computed(() => {
             let unitArr = [];       // Store units, only one for each, no duplication.
             let yAxisArr = [];      // Store multi y-axis structure.
+            let isOppositeAxis = false;
 
             // Check that sensorData is not null or empty.
             if(props.sensorData.length > 0){
@@ -41,9 +42,12 @@ export default {
                             title: {
                                 text: sensor.unit,
                                 style: { color: Highcharts.getOptions().colors[unitArr.indexOf(props.sensorData[idx].unit)] }
-                            }
+                            },
+                            opposite: isOppositeAxis
                         };
                     }
+
+                    isOppositeAxis = !isOppositeAxis;
 
                     // Add unit to name and associate each time series with it y-axis.
                     props.sensorData[idx].name = props.sensorData[idx].name + ' [' + props.sensorData[idx].unit + ']';
