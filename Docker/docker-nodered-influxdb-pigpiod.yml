@@ -23,6 +23,8 @@ services:
     volumes:
       - /home/pi/Code/ACM/Docker/node-red/data:/data
     depends_on:
+      pigpiod:
+        condition: service_started
       influxdb2:
         condition: service_healthy
 
