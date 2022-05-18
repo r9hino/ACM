@@ -94,7 +94,7 @@
 3. Run PiSafe: ```pisafe```
 4. On Settings turn off "hide root device"
 5. Go to Backup
-6. Choose Ubuntu partition
+6. Choose Ubuntu OS partition
 7. Set destination path to /mnt/SD
 8. After finishing the image creation, unmount device: ```sudo umount /mnt/SD```
 9. Check unmounting: ```lsblk```

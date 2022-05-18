@@ -209,6 +209,7 @@
             "date_update": "Sat May 07 2022 10:14:55 GMT-0400 (Chile Standard Time)"
         }
     ],
+    "date_update": "Wed May 18 2022 17:12:24 GMT-0400 (Chile Standard Time)",
     "ip_public": "190.217.202.215",
     "guard_users": [
         {
@@ -238,7 +239,7 @@
             "settling_time": "60",
             "state": "off",
             "notified_users": [],
-            "date_update": "Wed May 11 2022 02:38:25 GMT-0400 (Chile Standard Time)",
+            "date_update": "Wed May 18 2022 10:16:16 GMT-0400 (Chile Standard Time)",
             "alert_message": null,
             "date_trigger": null
         }
@@ -280,7 +281,16 @@
             "samples_number": 20,
             "sample_time_s": 10,
             "type": "temperature"
+        },
+        {
+            "id": 3,
+            "sensor_name": "Volumen bombeado",
+            "model": null,
+            "protocol": "mqtt",
+            "unit": "m3",
+            "samples_number": 1,
+            "sample_time_s": 10,
+            "type": "volume"
         }
-    ],
-    "date_update": "Wed May 18 2022 11:34:38 GMT-0400 (Chile Standard Time)"
+    ]
 }

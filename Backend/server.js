@@ -41,22 +41,20 @@ let httpServer, io,
 
 // Sequential initialization functions.
 const initializationFunctionList = [
-    // Initialize system state.
+    // Initialize system state. First it tries to retrieve state from remote MongoDB, if it can't it will use local storage.
     async () => {
-        let deviceMetadata = deviceMetadataDB.JSON();  // Load local storage for system state if any.
+        let deviceMetadata;
 
-        // If there are no entries on the local database, go to remote MongoDB to retrieve it.
-        if(Object.keys(deviceMetadata).length === 0){
-            try{
-                console.log('INFO - server.js: Connecting to remote MongoDB...');
-                await remoteMongoDB.connectDB();
-                console.log('INFO - server.js: Retrieving device metadata from remote MongoDB...');
-                deviceMetadata = await remoteMongoDB.getDeviceMetadata(hostname());
-            }
-            catch(e){
-                console.error('ERROR - server.js: device metadata was not retrieved from remote MongoDB. Exiting Node server...');
-                process.send('STOP');
-            }
+        // If there are no entries on the remote database, go to local database to retrieve it.
+        try{
+            console.log('INFO - server.js: Connecting to remote MongoDB...');
+            await remoteMongoDB.connectDB();
+            console.log('INFO - server.js: Retrieving device metadata from remote MongoDB...');
+            deviceMetadata = await remoteMongoDB.getDeviceMetadata(hostname());
+        }
+        catch(e){
+            console.log('Warning - server.js: device metadata was not retrieved from remote MongoDB.');
+            deviceMetadata = deviceMetadataDB.JSON();  // Load local storage for system state.
         }
 
         // Add OS and system info.

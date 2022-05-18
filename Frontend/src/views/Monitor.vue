@@ -99,6 +99,7 @@ export default {
                 credentials: 'include',
             });
             const responseJSON = await response.json();
+            //console.log(responseJSON);
 
             if(response.status == 200){
                 alerts.value = responseJSON.alerts;
@@ -280,7 +281,7 @@ export default {
         onBeforeMount(() => {
             // Load stored data from browser.
             if(localStorage.getItem("sensorsSelectedToChart") !== null) sensorsSelectedToChart.value = localStorage.getItem("sensorsSelectedToChart").split(',');
-            
+
             setReloadingChartTime(reloadingChartTime.value);
             getAlertsAndSensorsAvailable();
         });

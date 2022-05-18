@@ -206,7 +206,7 @@ router.post('/api/removeguarduser', authValidation, async (req, res) => {
 // Retrieve alerts and sensors available connected to the system.
 router.get('/api/getalertsandsensorsavailable', authValidation, (req, res) => {
     let deviceMetadataDB = new JSONdb(__dirname + '/../deviceMetadataDB.json');
-    let alerts = deviceMetadataDB.get('alerts');                // Retrieve all alerts already defined.s
+    let alerts = deviceMetadataDB.get('alerts');                // Retrieve all alerts already defined.
     alerts = alerts === undefined ? [] : alerts;                // Set array to empty if not alerts are store on the local database.
     
     let sensorsAvailable = deviceMetadataDB.get('sensors');     // Retrieve all sensors connected in the system.
@@ -216,6 +216,7 @@ router.get('/api/getalertsandsensorsavailable', authValidation, (req, res) => {
         res.json({message: 'ERROR: No sensors found on DB.'});
         return;
     }
+
     sensorsAvailable = sensorsAvailable.map(sensorAvailable => {
         return {sensor_name: sensorAvailable.sensor_name, unit: sensorAvailable.unit};
     });
