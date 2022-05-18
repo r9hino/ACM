@@ -15,23 +15,22 @@
         "env": []
     },
     {
-        "id": "664f6501d56f25d2",
-        "type": "influxdb",
-        "hostname": "127.0.0.1",
-        "port": "8086",
-        "protocol": "http",
-        "database": "database",
+        "id": "d50d0c9f.31e858",
+        "type": "tls-config",
         "name": "",
-        "usetls": false,
-        "tls": "",
-        "influxdbVersion": "2.0",
-        "url": "http://172.30.0.1:8086",
-        "rejectUnauthorized": true
+        "cert": "",
+        "key": "",
+        "ca": "",
+        "certname": "",
+        "keyname": "",
+        "caname": "",
+        "servername": "",
+        "verifyservercert": false
     },
     {
         "id": "178bc6ee.e87439",
         "type": "soap-config",
-        "z": "d9a37cb13fb749b8",
+        "z": "f6f2187d.f17ca8",
         "wsdl": "http://www.webservicex.net/globalweather.asmx?WSDL",
         "auth": "0",
         "user": "",
@@ -42,7 +41,7 @@
     {
         "id": "1d0b9627.18e18a",
         "type": "soap-config",
-        "z": "d9a37cb13fb749b8",
+        "z": "f6f2187d.f17ca8",
         "wsdl": "https://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl",
         "auth": "0",
         "user": "",
@@ -63,6 +62,31 @@
         "token": ""
     },
     {
+        "id": "e763d99e6b688f54",
+        "type": "soap-config",
+        "wsdl": "http://www.dneonline.com/calculator.asmx?wsdl",
+        "auth": "0",
+        "user": "",
+        "pass": "",
+        "key": "",
+        "cert": "",
+        "token": ""
+    },
+    {
+        "id": "664f6501d56f25d2",
+        "type": "influxdb",
+        "hostname": "127.0.0.1",
+        "port": "8086",
+        "protocol": "http",
+        "database": "database",
+        "name": "",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "2.0",
+        "url": "http://172.30.0.1:8086",
+        "rejectUnauthorized": true
+    },
+    {
         "id": "2ff2a476.a6d2ec",
         "type": "influxdb",
         "hostname": "127.0.0.1",
@@ -77,30 +101,6 @@
         "rejectUnauthorized": false
     },
     {
-        "id": "d50d0c9f.31e858",
-        "type": "tls-config",
-        "name": "",
-        "cert": "",
-        "key": "",
-        "ca": "",
-        "certname": "",
-        "keyname": "",
-        "caname": "",
-        "servername": "",
-        "verifyservercert": false
-    },
-    {
-        "id": "e763d99e6b688f54",
-        "type": "soap-config",
-        "wsdl": "http://www.dneonline.com/calculator.asmx?wsdl",
-        "auth": "0",
-        "user": "",
-        "pass": "",
-        "key": "",
-        "cert": "",
-        "token": ""
-    },
-    {
         "id": "3cc11d24.ff01a2",
         "type": "comment",
         "z": "f6f2187d.f17ca8",
@@ -108,24 +108,6 @@
         "info": "Functions:\n1. https://stevesnoderedguide.com/node-red-functions#:~:text=The%20function%20node%20is%20used,have%20a%20payload%20property%20(msg.\n2. https://nodered.org/docs/user-guide/writing-functions",
         "x": 110,
         "y": 60,
-        "wires": []
-    },
-    {
-        "id": "92a859694cc1db1a",
-        "type": "pi-gpiod out",
-        "z": "f6f2187d.f17ca8",
-        "name": "LED",
-        "host": "172.30.0.1",
-        "port": "8888",
-        "pin": "21",
-        "set": "",
-        "level": "0",
-        "out": "out",
-        "sermin": "1000",
-        "sermax": "2000",
-        "freq": "800",
-        "x": 530,
-        "y": 140,
         "wires": []
     },
     {
@@ -194,43 +176,6 @@
         "wires": []
     },
     {
-        "id": "b10b49ac048018bd",
-        "type": "pi-gpiod in",
-        "z": "f6f2187d.f17ca8",
-        "name": "Input P38",
-        "host": "172.30.0.1",
-        "port": 8888,
-        "pin": "20",
-        "intype": "PUD_OFF",
-        "debounce": "100",
-        "read": false,
-        "x": 80,
-        "y": 220,
-        "wires": [
-            [
-                "59ef1bf3df7e6da1"
-            ]
-        ]
-    },
-    {
-        "id": "14e42e59bb7fd722",
-        "type": "influxdb out",
-        "z": "f6f2187d.f17ca8",
-        "influxdb": "664f6501d56f25d2",
-        "name": "Influxdb",
-        "measurement": "flow",
-        "precision": "",
-        "retentionPolicy": "",
-        "database": "database",
-        "precisionV18FluxV20": "ms",
-        "retentionPolicyV18Flux": "",
-        "org": "SET",
-        "bucket": "rpi-sensors",
-        "x": 540,
-        "y": 280,
-        "wires": []
-    },
-    {
         "id": "59ef1bf3df7e6da1",
         "type": "function",
         "z": "f6f2187d.f17ca8",
@@ -248,22 +193,6 @@
                 "071f897460c86381",
                 "14e42e59bb7fd722",
                 "99a773907df63ea7"
-            ]
-        ]
-    },
-    {
-        "id": "b956486a93ef56b8",
-        "type": "soap request",
-        "z": "f6f2187d.f17ca8",
-        "name": "",
-        "topic": "",
-        "wsdl": "9b0f6def921530a2",
-        "method": "LatLonListZipCode",
-        "x": 410,
-        "y": 440,
-        "wires": [
-            [
-                "2260a9e3b1ca0715"
             ]
         ]
     },
@@ -318,25 +247,6 @@
         ]
     },
     {
-        "id": "0a29abf187a7e08c",
-        "type": "influxdb in",
-        "z": "f6f2187d.f17ca8",
-        "influxdb": "664f6501d56f25d2",
-        "name": "QueryVolume",
-        "query": "from(bucket: \"rpi-sensors\")\n    |> range(start: -15d)\n    |> filter(fn: (r) => r[\"sensor_name\"] == \"Temperatura estacion\" or\n                         r[\"sensor_name\"] == \"Caudal manifold\" or\n                         r[\"sensor_name\"] == \"Volumen\")\n    |> last()\n    |> drop(columns:[\"_start\", \"_stop\", \"host\"])",
-        "rawOutput": false,
-        "precision": "",
-        "retentionPolicy": "",
-        "org": "SET",
-        "x": 280,
-        "y": 560,
-        "wires": [
-            [
-                "ada92d4d479c4a1c"
-            ]
-        ]
-    },
-    {
         "id": "4b5c0df93cf83947",
         "type": "inject",
         "z": "f6f2187d.f17ca8",
@@ -379,25 +289,6 @@
         "x": 550,
         "y": 560,
         "wires": []
-    },
-    {
-        "id": "79cd5c104efe0581",
-        "type": "influxdb in",
-        "z": "f6f2187d.f17ca8",
-        "influxdb": "664f6501d56f25d2",
-        "name": "",
-        "query": "from(bucket: \"rpi-sensors\")\n    |> range(start: -7d)\n    |> last()",
-        "rawOutput": false,
-        "precision": "",
-        "retentionPolicy": "",
-        "org": "SET",
-        "x": 320,
-        "y": 500,
-        "wires": [
-            [
-                "f09876aeeca69d70"
-            ]
-        ]
     },
     {
         "id": "1256632af093cee6",
@@ -445,27 +336,11 @@
         "wires": []
     },
     {
-        "id": "3fc4bb1ee47fecf3",
-        "type": "soap request",
-        "z": "f6f2187d.f17ca8",
-        "name": "",
-        "topic": "",
-        "wsdl": "e763d99e6b688f54",
-        "method": "Add",
-        "x": 670,
-        "y": 340,
-        "wires": [
-            [
-                "e9d4294f96c86070"
-            ]
-        ]
-    },
-    {
         "id": "e9d4294f96c86070",
         "type": "debug",
         "z": "f6f2187d.f17ca8",
         "name": "Response",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -493,6 +368,131 @@
         "wires": [
             [
                 "3fc4bb1ee47fecf3"
+            ]
+        ]
+    },
+    {
+        "id": "b10b49ac048018bd",
+        "type": "pi-gpiod in",
+        "z": "f6f2187d.f17ca8",
+        "name": "Input P38",
+        "host": "172.30.0.1",
+        "port": 8888,
+        "pin": "20",
+        "intype": "PUD_OFF",
+        "debounce": "100",
+        "read": false,
+        "x": 80,
+        "y": 220,
+        "wires": [
+            [
+                "59ef1bf3df7e6da1"
+            ]
+        ]
+    },
+    {
+        "id": "92a859694cc1db1a",
+        "type": "pi-gpiod out",
+        "z": "f6f2187d.f17ca8",
+        "name": "LED",
+        "host": "172.30.0.1",
+        "port": "8888",
+        "pin": "21",
+        "set": "",
+        "level": "0",
+        "out": "out",
+        "sermin": "1000",
+        "sermax": "2000",
+        "freq": "800",
+        "x": 530,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "b956486a93ef56b8",
+        "type": "soap request",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "topic": "",
+        "wsdl": "9b0f6def921530a2",
+        "method": "LatLonListZipCode",
+        "x": 410,
+        "y": 440,
+        "wires": [
+            [
+                "2260a9e3b1ca0715"
+            ]
+        ]
+    },
+    {
+        "id": "3fc4bb1ee47fecf3",
+        "type": "soap request",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "topic": "",
+        "wsdl": "e763d99e6b688f54",
+        "method": "Add",
+        "x": 670,
+        "y": 340,
+        "wires": [
+            [
+                "e9d4294f96c86070"
+            ]
+        ]
+    },
+    {
+        "id": "14e42e59bb7fd722",
+        "type": "influxdb out",
+        "z": "f6f2187d.f17ca8",
+        "influxdb": "664f6501d56f25d2",
+        "name": "Influxdb",
+        "measurement": "flow",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "SET",
+        "bucket": "rpi-sensors",
+        "x": 540,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "0a29abf187a7e08c",
+        "type": "influxdb in",
+        "z": "f6f2187d.f17ca8",
+        "influxdb": "664f6501d56f25d2",
+        "name": "QueryVolume",
+        "query": "from(bucket: \"rpi-sensors\")\n    |> range(start: -15d)\n    |> filter(fn: (r) => r[\"sensor_name\"] == \"Temperatura estacion\" or\n                         r[\"sensor_name\"] == \"Caudal manifold\" or\n                         r[\"sensor_name\"] == \"Volumen\")\n    |> last()\n    |> drop(columns:[\"_start\", \"_stop\", \"host\"])",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "SET",
+        "x": 280,
+        "y": 560,
+        "wires": [
+            [
+                "ada92d4d479c4a1c"
+            ]
+        ]
+    },
+    {
+        "id": "79cd5c104efe0581",
+        "type": "influxdb in",
+        "z": "f6f2187d.f17ca8",
+        "influxdb": "664f6501d56f25d2",
+        "name": "",
+        "query": "from(bucket: \"rpi-sensors\")\n    |> range(start: -7d)\n    |> last()",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "SET",
+        "x": 320,
+        "y": 500,
+        "wires": [
+            [
+                "f09876aeeca69d70"
             ]
         ]
     }

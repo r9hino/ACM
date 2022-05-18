@@ -28,34 +28,6 @@
         "verifyservercert": false
     },
     {
-        "id": "664f6501d56f25d2",
-        "type": "influxdb",
-        "hostname": "127.0.0.1",
-        "port": "8086",
-        "protocol": "http",
-        "database": "database",
-        "name": "",
-        "usetls": false,
-        "tls": "",
-        "influxdbVersion": "2.0",
-        "url": "http://172.30.0.1:8086",
-        "rejectUnauthorized": true
-    },
-    {
-        "id": "2ff2a476.a6d2ec",
-        "type": "influxdb",
-        "hostname": "127.0.0.1",
-        "port": "8086",
-        "protocol": "http",
-        "database": "database",
-        "name": "test 1.8 flux",
-        "usetls": false,
-        "tls": "d50d0c9f.31e858",
-        "influxdbVersion": "1.8-flux",
-        "url": "https://localhost:8086",
-        "rejectUnauthorized": false
-    },
-    {
         "id": "178bc6ee.e87439",
         "type": "soap-config",
         "z": "f6f2187d.f17ca8",
@@ -99,6 +71,34 @@
         "key": "",
         "cert": "",
         "token": ""
+    },
+    {
+        "id": "664f6501d56f25d2",
+        "type": "influxdb",
+        "hostname": "127.0.0.1",
+        "port": "8086",
+        "protocol": "http",
+        "database": "database",
+        "name": "",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "2.0",
+        "url": "http://172.30.0.1:8086",
+        "rejectUnauthorized": true
+    },
+    {
+        "id": "2ff2a476.a6d2ec",
+        "type": "influxdb",
+        "hostname": "127.0.0.1",
+        "port": "8086",
+        "protocol": "http",
+        "database": "database",
+        "name": "test 1.8 flux",
+        "usetls": false,
+        "tls": "d50d0c9f.31e858",
+        "influxdbVersion": "1.8-flux",
+        "url": "https://localhost:8086",
+        "rejectUnauthorized": false
     },
     {
         "id": "3cc11d24.ff01a2",
@@ -357,7 +357,7 @@
         "type": "function",
         "z": "f6f2187d.f17ca8",
         "name": "ArgSOAP",
-        "func": "// Get data from sensor and send data to SOAP server each x interval of time.\n\nlet A = 0;\nlet B = 0;\n\nlet actualTime = new Date();\nlet prevTime = context.get(\"prevTime\");        // Array to store each pulse date.\n\nif((actualTime - prevTime)/1000 >= 5){\n    if(msg.payload.length >= 2){\n        A = Math.round(msg.payload[0][0][\"m3\"]);\n        B = Math.round(msg.payload[1][0][\"m3/hr\"]);\n    }\n    \n    let newmsg={\n        server:\"http://www.dneonline.com/calculator.asmx?wsdl\",\n        options:{},\n        headers:{},\n        payload:{ intA: A, intB: B}\n    };\n    \n    context.set(\"prevTime\", actualTime);\n\n    return newmsg;    \n}\n",
+        "func": "// Get data from sensor and send data to SOAP server each x interval of time.\n\nlet A = 0;\nlet B = 0;\n\nlet actualTime = new Date();\nlet prevTime = context.get(\"prevTime\");        // Array to store each pulse date.\n\n// Send informatio if x amount of time has passed.\nif((actualTime - prevTime)/1000 >= 5){\n    if(msg.payload.length >= 2){\n        A = Math.round(msg.payload[0][0][\"m3\"]);\n        B = Math.round(msg.payload[1][0][\"m3/hr\"]);\n    }\n    \n    let newmsg={\n        server:\"http://www.dneonline.com/calculator.asmx?wsdl\",\n        options:{},\n        headers:{},\n        payload:{ intA: A, intB: B}\n    };\n    \n    context.set(\"prevTime\", actualTime);\n\n    return newmsg;    \n}\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "// Code added here will be run once\n// whenever the node is started.\ncontext.set(\"prevTime\", new Date());",
@@ -368,62 +368,6 @@
         "wires": [
             [
                 "3fc4bb1ee47fecf3"
-            ]
-        ]
-    },
-    {
-        "id": "14e42e59bb7fd722",
-        "type": "influxdb out",
-        "z": "f6f2187d.f17ca8",
-        "influxdb": "664f6501d56f25d2",
-        "name": "Influxdb",
-        "measurement": "flow",
-        "precision": "",
-        "retentionPolicy": "",
-        "database": "database",
-        "precisionV18FluxV20": "ms",
-        "retentionPolicyV18Flux": "",
-        "org": "SET",
-        "bucket": "rpi-sensors",
-        "x": 540,
-        "y": 280,
-        "wires": []
-    },
-    {
-        "id": "0a29abf187a7e08c",
-        "type": "influxdb in",
-        "z": "f6f2187d.f17ca8",
-        "influxdb": "664f6501d56f25d2",
-        "name": "QueryVolume",
-        "query": "from(bucket: \"rpi-sensors\")\n    |> range(start: -15d)\n    |> filter(fn: (r) => r[\"sensor_name\"] == \"Temperatura estacion\" or\n                         r[\"sensor_name\"] == \"Caudal manifold\" or\n                         r[\"sensor_name\"] == \"Volumen\")\n    |> last()\n    |> drop(columns:[\"_start\", \"_stop\", \"host\"])",
-        "rawOutput": false,
-        "precision": "",
-        "retentionPolicy": "",
-        "org": "SET",
-        "x": 280,
-        "y": 560,
-        "wires": [
-            [
-                "ada92d4d479c4a1c"
-            ]
-        ]
-    },
-    {
-        "id": "79cd5c104efe0581",
-        "type": "influxdb in",
-        "z": "f6f2187d.f17ca8",
-        "influxdb": "664f6501d56f25d2",
-        "name": "",
-        "query": "from(bucket: \"rpi-sensors\")\n    |> range(start: -7d)\n    |> last()",
-        "rawOutput": false,
-        "precision": "",
-        "retentionPolicy": "",
-        "org": "SET",
-        "x": 320,
-        "y": 500,
-        "wires": [
-            [
-                "f09876aeeca69d70"
             ]
         ]
     },
@@ -493,6 +437,62 @@
         "wires": [
             [
                 "e9d4294f96c86070"
+            ]
+        ]
+    },
+    {
+        "id": "14e42e59bb7fd722",
+        "type": "influxdb out",
+        "z": "f6f2187d.f17ca8",
+        "influxdb": "664f6501d56f25d2",
+        "name": "Influxdb",
+        "measurement": "flow",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "SET",
+        "bucket": "rpi-sensors",
+        "x": 540,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "0a29abf187a7e08c",
+        "type": "influxdb in",
+        "z": "f6f2187d.f17ca8",
+        "influxdb": "664f6501d56f25d2",
+        "name": "QueryVolume",
+        "query": "from(bucket: \"rpi-sensors\")\n    |> range(start: -15d)\n    |> filter(fn: (r) => r[\"sensor_name\"] == \"Temperatura estacion\" or\n                         r[\"sensor_name\"] == \"Caudal manifold\" or\n                         r[\"sensor_name\"] == \"Volumen\")\n    |> last()\n    |> drop(columns:[\"_start\", \"_stop\", \"host\"])",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "SET",
+        "x": 280,
+        "y": 560,
+        "wires": [
+            [
+                "ada92d4d479c4a1c"
+            ]
+        ]
+    },
+    {
+        "id": "79cd5c104efe0581",
+        "type": "influxdb in",
+        "z": "f6f2187d.f17ca8",
+        "influxdb": "664f6501d56f25d2",
+        "name": "",
+        "query": "from(bucket: \"rpi-sensors\")\n    |> range(start: -7d)\n    |> last()",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "SET",
+        "x": 320,
+        "y": 500,
+        "wires": [
+            [
+                "f09876aeeca69d70"
             ]
         ]
     }

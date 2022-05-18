@@ -22,11 +22,13 @@
     * ```nvm use v16.15.0 & nvm current```
 2. Optional, remove previous node version: ```nvm uninstall v16.13.2```
 3. Install new pm2: ```npm i -g pm2```
-### Start server on boot
+### Start/stop server on boot
 1. Run services: ```/home/pi/Code/ACM/start.sh```
 2. Generate startup script: ```pm2 startup```
 3. Follow instructions...
 4. Freeze your process list across server restart: ```pm2 save```
+5. Stop server from booting up: ```pm2 unstartup```
+6. Follow instructions...
 
 ## Managing SSH key
 ### Generating keys
@@ -110,6 +112,6 @@
     * ```cd ACM/Docker```
     * Make InfluxDB folders if necessary: ```mkdir influxdb2/data influxdb2/config```
     * Change user id for node-red/data folder to 1000: ```sudo chown -R 1000:1000 ACM/Docker/node-red/data```
-    * Start containers: ```docker-compose -f docker-nodered-influxdb-pigpiod.yml start```
+    * Start containers: ```docker-compose -f docker-nodered-influxdb-pigpiod.yml --env-file ./../.env up -d```
 6. If necessary copy new token from influxdb page to .env files and nodered nodes.
 7. In nodered, install npm packages: node-red-node-pi-gpiod, node-red-contrib-influxdb, node-red-contrib-soap.
