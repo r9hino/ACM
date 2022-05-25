@@ -9,7 +9,7 @@
     {
         "id": "d9a37cb13fb749b8",
         "type": "tab",
-        "label": "Flow 2",
+        "label": "Relays Control",
         "disabled": false,
         "info": "",
         "env": []
@@ -87,18 +87,11 @@
         "rejectUnauthorized": true
     },
     {
-        "id": "2ff2a476.a6d2ec",
-        "type": "influxdb",
-        "hostname": "127.0.0.1",
-        "port": "8086",
-        "protocol": "http",
-        "database": "database",
-        "name": "test 1.8 flux",
-        "usetls": false,
-        "tls": "d50d0c9f.31e858",
-        "influxdbVersion": "1.8-flux",
-        "url": "https://localhost:8086",
-        "rejectUnauthorized": false
+        "id": "3bd665b02c1f95c5",
+        "type": "socketio-config",
+        "host": "http://172.30.0.1",
+        "port": "5000",
+        "reconnection": true
     },
     {
         "id": "3cc11d24.ff01a2",
@@ -493,6 +486,51 @@
         "wires": [
             [
                 "f09876aeeca69d70"
+            ]
+        ]
+    },
+    {
+        "id": "c66f0abde8f9afbf",
+        "type": "debug",
+        "z": "d9a37cb13fb749b8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 570,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "53dcca35b9c5fb82",
+        "type": "socketio-connector",
+        "z": "d9a37cb13fb749b8",
+        "server": "3bd665b02c1f95c5",
+        "namespace": "",
+        "name": "ConnectionSocketIO",
+        "x": 110,
+        "y": 240,
+        "wires": [
+            [
+                "31bd83320157e585"
+            ]
+        ]
+    },
+    {
+        "id": "31bd83320157e585",
+        "type": "socketio-listener",
+        "z": "d9a37cb13fb749b8",
+        "eventname": "updateClients",
+        "name": "",
+        "x": 340,
+        "y": 240,
+        "wires": [
+            [
+                "c66f0abde8f9afbf"
             ]
         ]
     }

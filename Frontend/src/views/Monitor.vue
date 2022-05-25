@@ -82,7 +82,7 @@ export default {
         let alerts = ref([]);
         let sensorsAvailable = ref([]);         // Sensors installed in the system.
         let sensorsSelectedToChart = ref([]);   // Sensors selected on checkbox to be displayed on the chart.
-        let sensorData = ref({});               // Sensor data points retrieved from Influx DB.
+        let sensorData = ref({});               // Sensor data points retrieved from Influx DB, used in Chart.vue.
         let footerRef = ref();
 
         const user = computed(() => store.getters.getUser);
@@ -152,9 +152,18 @@ export default {
                     sensorSeries[sensorCounter].data.push([Date.parse(dataTime) - timeZone, parseFloat(dataValue)]);
                 else{
                     // First it will enter here to defined object, then it will enter to if.
+                    let yAxisIndexObject = JSON.parse(localStorage.getItem("yAxisIndexObject")) || {};    // {'Caudal: 0', 'Presion': 1}
+
+                    if(yAxisIndexObject[sensorName] === undefined || yAxisIndexObject[sensorName] === null){
+                        yAxisIndexObject[sensorName] = Object.keys(yAxisIndexObject).length;
+                        localStorage.setItem("yAxisIndexObject", JSON.stringify(yAxisIndexObject));
+                    }
+                    //console.log(yAxisIndexObject);
+
                     sensorSeries[sensorCounter] = {
                         name: sensorName,
                         unit: dataUnit, 
+                        yAxis: sensorCounter,
                         data: [[Date.parse(dataTime) - timeZone, parseFloat(dataValue)]]
                     };
                 }
@@ -195,7 +204,7 @@ export default {
             }
 
             // Define aggregate window time.
-            // This will average the data for improving laoding time (less data is returned from server when aggregate time window is increased).
+            // This will average the data for improving loading time (less data is returned from server when aggregate time window is increased).
             let aggregateTimeWindow = '';
             if(localTimeWindow === '3d') aggregateTimeWindow = `|> aggregateWindow(every: 30s, fn: mean, createEmpty: false)`;
             else if(localTimeWindow === '7d') aggregateTimeWindow = `|> aggregateWindow(every: 1m, fn: mean, createEmpty: false)`;
@@ -225,7 +234,7 @@ export default {
             const responseText = await response.text();
 
             if(response.status == 200){
-                sensorData.value = csvParser(responseText);
+                sensorData.value = csvParser(responseText); // Set sensorData so Chart.vue can access it as property.
                 //console.log(fluxQuery);
                 //console.log(sensorData.value);
             }
@@ -290,7 +299,7 @@ export default {
             clearInterval(realoadingChartInterval);
             sensorData.value = [];
         });
-        
+
         return{
             user,
             isAuthenticated,

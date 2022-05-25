@@ -477,22 +477,25 @@
             }
         }
     },
-    "node-red-contrib-simple-soap": {
-        "name": "node-red-contrib-simple-soap",
-        "version": "0.1.3",
+    "node-red-contrib-socketio-client-wt": {
+        "name": "node-red-contrib-socketio-client-wt",
+        "version": "0.4.4",
         "local": true,
         "user": true,
         "nodes": {
-            "simple-soap": {
-                "name": "simple-soap",
+            "socketio-client": {
+                "name": "socketio-client",
                 "types": [
-                    "simple-soap"
+                    "socketio-config",
+                    "socketio-connector",
+                    "socketio-listener",
+                    "socketio-emitter"
                 ],
                 "enabled": true,
                 "local": true,
                 "user": false,
-                "module": "node-red-contrib-simple-soap",
-                "file": "/data/node_modules/node-red-contrib-simple-soap/simple-soap.js"
+                "module": "node-red-contrib-socketio-client-wt",
+                "file": "/data/node_modules/node-red-contrib-socketio-client-wt/socketio-client/socketio-client.js"
             }
         }
     }

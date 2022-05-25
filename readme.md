@@ -77,6 +77,13 @@
     * ```git commit -m "Description"```
     * ```git push origin master```
 
+## [Configure I2C](https://franciscomoya.gitbooks.io/taller-de-raspberry-pi/content/es/elems/i2c.html)
+1. Change device permission (not permanent): ```sudo chmod 666 /dev/i2c-1```
+2. Permanent solution: ```sudo touch /etc/udev/rules.d/local-i2c.rules```
+3. Add rule: ```sudo nano /etc/udev/rules.d/local-i2c.rules```
+    * ACTION=="add", KERNEL=="i2c-[0-1]*", MODE="0666"
+
+
 ## Backup Ubuntu OS while running
 ### Mount storage device
 1. Create mounting point: ```mkdir /mnt/SD```

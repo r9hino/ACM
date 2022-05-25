@@ -71,7 +71,7 @@ export default {
         socket.on('updateClients', relay => {
             let id = relay.id;
             relays.value[id] = relay;
-            //console.log('updateClients:', relays.value.[id]);
+            //console.log('updateClients:', relays.value[id]);
         });
 
         // Disconnect from server.

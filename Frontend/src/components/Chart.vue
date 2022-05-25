@@ -21,40 +21,34 @@ export default {
     props: ['sensorData'],
     setup(props){
         let chartOptions = computed(() => {
-            let unitArr = [];       // Store units, only one for each, no duplication.
             let yAxisArr = [];      // Store multi y-axis structure.
             let isOppositeAxis = false;
 
             // Check that sensorData is not null or empty.
             if(props.sensorData.length > 0){
                 // Generate multi y-axis structure.
-                for (let idx = 0; idx < props.sensorData.length; idx++) {
-                    let sensor = props.sensorData[idx];
+                for(let idx = 0; idx < props.sensorData.length; idx++){
+                    //console.log(props.sensorData[idx]);
                     // Generate y-axis structure once for each unit.
-                    if(unitArr.indexOf(sensor.unit) === -1){
-                        unitArr.push(sensor.unit);      // [°C, m3/hr]
-
-                        yAxisArr[unitArr.indexOf(props.sensorData[idx].unit)] = {
-                            labels: {
-                                format: '{value}',
-                                style: { color: Highcharts.getOptions().colors[unitArr.indexOf(props.sensorData[idx].unit)] }
-                            },
-                            title: {
-                                text: sensor.unit,
-                                style: { color: Highcharts.getOptions().colors[unitArr.indexOf(props.sensorData[idx].unit)] }
-                            },
-                            opposite: isOppositeAxis
-                        };
-                    }
+                    yAxisArr[idx] = {
+                        labels: {
+                            format: '{value}',
+                            style: { color: Highcharts.getOptions().colors[props.sensorData[idx].yAxis] }
+                        },
+                        title: {
+                            text: props.sensorData[idx].unit,
+                            style: { color: Highcharts.getOptions().colors[props.sensorData[idx].yAxis] }
+                        },
+                        opposite: isOppositeAxis
+                    };
 
                     isOppositeAxis = !isOppositeAxis;
 
                     // Add unit to name and associate each time series with it y-axis.
                     props.sensorData[idx].name = props.sensorData[idx].name + ' [' + props.sensorData[idx].unit + ']';
-                    props.sensorData[idx].yAxis = unitArr.indexOf(props.sensorData[idx].unit);
                 };
             };
-            //console.log(yAxisArr, props.sensorData);
+            //console.log(yAxisArr);
             return{
                 title: { text: '' },
                 chart: {
