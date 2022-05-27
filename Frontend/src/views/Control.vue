@@ -86,7 +86,7 @@ export default {
             // Do not do anything if relay is not found.
             if(relay === undefined) return;
             //relays.value[id].state = !relays.value[id].state;
-            //console.log(relays.value[id]);
+            //console.log(relay);
             socket.emit('elementChanged', relay);
         }
 

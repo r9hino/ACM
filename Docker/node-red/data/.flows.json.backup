@@ -89,7 +89,7 @@
     {
         "id": "3bd665b02c1f95c5",
         "type": "socketio-config",
-        "host": "http://rpi4id0.mooo.com",
+        "host": "http://172.30.0.1",
         "port": "5000",
         "reconnection": true
     },
@@ -108,7 +108,7 @@
         "type": "function",
         "z": "f6f2187d.f17ca8",
         "name": "Toggler",
-        "func": "\nlet toggle = context.get('toggle') || 0;\n\ncontext.set(\"toggle\", !toggle);\n\nmsg.payload = !toggle;\n\nreturn msg;",
+        "func": "let toggle = context.get('toggle') || 0;\n\ncontext.set(\"toggle\", !toggle);\n\nmsg.payload = !toggle;\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -501,7 +501,7 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 570,
+        "x": 770,
         "y": 240,
         "wires": []
     },
@@ -513,10 +513,11 @@
         "namespace": "",
         "name": "ConnectionSocketIO",
         "x": 110,
-        "y": 240,
+        "y": 160,
         "wires": [
             [
-                "31bd83320157e585"
+                "31bd83320157e585",
+                "a0cf7b5b85806364"
             ]
         ]
     },
@@ -524,9 +525,244 @@
         "id": "31bd83320157e585",
         "type": "socketio-listener",
         "z": "d9a37cb13fb749b8",
-        "eventname": "elementChanged",
+        "eventname": "updateClients",
         "name": "",
-        "x": 350,
+        "x": 360,
+        "y": 240,
+        "wires": [
+            [
+                "3e79ec0569ead0c2"
+            ]
+        ]
+    },
+    {
+        "id": "a0cf7b5b85806364",
+        "type": "socketio-listener",
+        "z": "d9a37cb13fb749b8",
+        "eventname": "resRelayStates",
+        "name": "",
+        "x": 360,
+        "y": 160,
+        "wires": [
+            [
+                "a027cefaa303db17"
+            ]
+        ]
+    },
+    {
+        "id": "316b6333e7f87aed",
+        "type": "inject",
+        "z": "d9a37cb13fb749b8",
+        "name": "RelayRequestSignal",
+        "props": [
+            {
+                "p": "connectionName",
+                "v": "ConnectionSocketIO",
+                "vt": "str"
+            },
+            {
+                "p": "eventName",
+                "v": "reqRelayStates",
+                "vt": "str"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0.5",
+        "topic": "initialization",
+        "x": 140,
+        "y": 440,
+        "wires": [
+            [
+                "f817105cc01db224"
+            ]
+        ]
+    },
+    {
+        "id": "a429d0b16602cee4",
+        "type": "socketio-emitter",
+        "z": "d9a37cb13fb749b8",
+        "name": "reqRelayStates",
+        "x": 680,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "a027cefaa303db17",
+        "type": "change",
+        "z": "d9a37cb13fb749b8",
+        "name": "setRelayState",
+        "rules": [
+            {
+                "t": "set",
+                "p": "relayState",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 580,
+        "y": 160,
+        "wires": [
+            [
+                "105a0042a9fdedd1"
+            ]
+        ]
+    },
+    {
+        "id": "105a0042a9fdedd1",
+        "type": "debug",
+        "z": "d9a37cb13fb749b8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 770,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "f817105cc01db224",
+        "type": "function",
+        "z": "d9a37cb13fb749b8",
+        "name": "RequestingLoop",
+        "func": "let arrRelayState = flow.get(\"relayState\");\n\n// If it is initializing, sned inmediately the request for relay states.\nif(msg.topic === \"initialization\"){\n    return msg;\n}\n// Else enter here if msg comes from ProcessLoop.\nelse{\n    // If no relayState have been retrieved yet,\n    // keep sending request for the relay states.\n    if(arrRelayState === undefined || arrRelayState.length === 0){\n        setTimeout(function(){\n            node.send(msg);\n        }, 3000);\n    }\n    else return null;   \n}\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 440,
+        "wires": [
+            [
+                "a429d0b16602cee4",
+                "f98a4a1aae06f3c6",
+                "0828ad92cecb9193"
+            ]
+        ]
+    },
+    {
+        "id": "f98a4a1aae06f3c6",
+        "type": "function",
+        "z": "d9a37cb13fb749b8",
+        "name": "ProcessLoop",
+        "func": "\nmsg.topic = \"loop\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 340,
+        "wires": [
+            [
+                "f817105cc01db224"
+            ]
+        ]
+    },
+    {
+        "id": "0828ad92cecb9193",
+        "type": "debug",
+        "z": "d9a37cb13fb749b8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 650,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "13ea8a841b9df65f",
+        "type": "function",
+        "z": "d9a37cb13fb749b8",
+        "name": "Toggler",
+        "func": "let arrRelayState = flow.get(\"relayState\");\n\nif(arrRelayState !== undefined){\n    arrRelayState[0].state = !arrRelayState[0].state;\n    flow.set(\"relayState\", arrRelayState);\n    msg.payload = arrRelayState[0];\n    return msg;\n}\n\nreturn null;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 660,
+        "wires": [
+            [
+                "4084b993b0f7f501"
+            ]
+        ]
+    },
+    {
+        "id": "756c19b72e834f40",
+        "type": "inject",
+        "z": "d9a37cb13fb749b8",
+        "name": "RelayRequestSignal",
+        "props": [
+            {
+                "p": "connectionName",
+                "v": "ConnectionSocketIO",
+                "vt": "str"
+            },
+            {
+                "p": "eventName",
+                "v": "elementChanged",
+                "vt": "str"
+            }
+        ],
+        "repeat": "5",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "0.5",
+        "topic": "",
+        "x": 140,
+        "y": 660,
+        "wires": [
+            [
+                "13ea8a841b9df65f"
+            ]
+        ]
+    },
+    {
+        "id": "4084b993b0f7f501",
+        "type": "socketio-emitter",
+        "z": "d9a37cb13fb749b8",
+        "name": "elementChanged",
+        "x": 690,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "3e79ec0569ead0c2",
+        "type": "function",
+        "z": "d9a37cb13fb749b8",
+        "name": "UpdateRelayState",
+        "func": "let arrRelayState = flow.get(\"relayState\");\n\nif(arrRelayState === undefined) return null;\n\nlet updatedRelayState = msg.payload;   // Get relay state who was updated.\n\n// Get index of updated relay \nlet relayIndex = arrRelayState.findIndex(relay => relay.id === updatedRelayState.id);\narrRelayState[relayIndex] = updatedRelayState;\n\nflow.set(\"relayState\", arrRelayState);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
         "y": 240,
         "wires": [
             [

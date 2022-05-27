@@ -14,7 +14,7 @@
             "id": 0,
             "description": "Control bomba 1",
             "protocol": "i2c",
-            "state": true,
+            "state": false,
             "trigger_type": "Horario",
             "schedule": [
                 {
@@ -74,7 +74,7 @@
                     "off": "22:51"
                 }
             ],
-            "date_update": "Wed May 25 2022 19:50:11 GMT-0400 (Chile Standard Time)"
+            "date_update": "Fri May 27 2022 18:36:16 GMT-0400 (Chile Standard Time)"
         },
         {
             "id": 1,
@@ -209,7 +209,7 @@
             "date_update": "Sat May 07 2022 10:14:55 GMT-0400 (Chile Standard Time)"
         }
     ],
-    "date_update": "Wed May 25 2022 19:50:11 GMT-0400 (Chile Standard Time)",
+    "date_update": "Fri May 27 2022 18:36:16 GMT-0400 (Chile Standard Time)",
     "ip_public": "190.217.196.80",
     "guard_users": [
         {
