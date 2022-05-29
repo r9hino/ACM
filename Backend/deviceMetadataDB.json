@@ -14,7 +14,8 @@
             "id": 0,
             "description": "Control bomba 1",
             "protocol": "i2c",
-            "state": false,
+            "port": 0,
+            "state": true,
             "trigger_type": "Horario",
             "schedule": [
                 {
@@ -74,13 +75,14 @@
                     "off": "22:51"
                 }
             ],
-            "date_update": "Fri May 27 2022 18:36:16 GMT-0400 (Chile Standard Time)"
+            "date_update": "Sat May 28 2022 20:43:57 GMT-0400 (Chile Standard Time)"
         },
         {
             "id": 1,
             "description": "Control bomba 2",
             "protocol": "i2c",
-            "state": false,
+            "port": "3",
+            "state": true,
             "trigger_type": "Horario",
             "schedule": [
                 {
@@ -140,13 +142,14 @@
                     "off": "14:15"
                 }
             ],
-            "date_update": "Sat May 07 2022 18:32:35 GMT-0400 (Chile Standard Time)"
+            "date_update": "Sat May 28 2022 20:43:57 GMT-0400 (Chile Standard Time)"
         },
         {
             "id": 2,
             "description": "Electrovalvula principal",
             "protocol": "i2c",
-            "state": false,
+            "port": 7,
+            "state": true,
             "trigger_type": "Horario",
             "schedule": [
                 {
@@ -206,10 +209,10 @@
                     "off": "16:00"
                 }
             ],
-            "date_update": "Sat May 07 2022 10:14:55 GMT-0400 (Chile Standard Time)"
+            "date_update": "Sat May 28 2022 20:54:35 GMT-0400 (Chile Standard Time)"
         }
     ],
-    "date_update": "Fri May 27 2022 18:36:16 GMT-0400 (Chile Standard Time)",
+    "date_update": "Sat May 28 2022 20:54:35 GMT-0400 (Chile Standard Time)",
     "ip_public": "190.217.196.80",
     "guard_users": [
         {

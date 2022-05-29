@@ -494,15 +494,15 @@
         "type": "debug",
         "z": "d9a37cb13fb749b8",
         "name": "",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 770,
-        "y": 240,
+        "x": 750,
+        "y": 500,
         "wires": []
     },
     {
@@ -512,8 +512,8 @@
         "server": "3bd665b02c1f95c5",
         "namespace": "",
         "name": "ConnectionSocketIO",
-        "x": 110,
-        "y": 160,
+        "x": 130,
+        "y": 340,
         "wires": [
             [
                 "31bd83320157e585",
@@ -527,8 +527,8 @@
         "z": "d9a37cb13fb749b8",
         "eventname": "updateClients",
         "name": "",
-        "x": 360,
-        "y": 240,
+        "x": 340,
+        "y": 460,
         "wires": [
             [
                 "3e79ec0569ead0c2"
@@ -541,11 +541,12 @@
         "z": "d9a37cb13fb749b8",
         "eventname": "resRelayStates",
         "name": "",
-        "x": 360,
-        "y": 160,
+        "x": 340,
+        "y": 340,
         "wires": [
             [
-                "a027cefaa303db17"
+                "a027cefaa303db17",
+                "353d0ce2f2c764bf"
             ]
         ]
     },
@@ -576,7 +577,7 @@
         "onceDelay": "0.5",
         "topic": "initialization",
         "x": 140,
-        "y": 440,
+        "y": 220,
         "wires": [
             [
                 "f817105cc01db224"
@@ -589,14 +590,14 @@
         "z": "d9a37cb13fb749b8",
         "name": "reqRelayStates",
         "x": 680,
-        "y": 440,
+        "y": 220,
         "wires": []
     },
     {
         "id": "a027cefaa303db17",
         "type": "change",
         "z": "d9a37cb13fb749b8",
-        "name": "setRelayState",
+        "name": "setRelayStates",
         "rules": [
             {
                 "t": "set",
@@ -611,8 +612,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 580,
-        "y": 160,
+        "x": 520,
+        "y": 340,
         "wires": [
             [
                 "105a0042a9fdedd1"
@@ -632,8 +633,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 770,
-        "y": 160,
+        "x": 750,
+        "y": 340,
         "wires": []
     },
     {
@@ -648,7 +649,7 @@
         "finalize": "",
         "libs": [],
         "x": 400,
-        "y": 440,
+        "y": 220,
         "wires": [
             [
                 "a429d0b16602cee4",
@@ -668,8 +669,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 410,
-        "y": 340,
+        "x": 390,
+        "y": 180,
         "wires": [
             [
                 "f817105cc01db224"
@@ -690,7 +691,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 650,
-        "y": 500,
+        "y": 180,
         "wires": []
     },
     {
@@ -705,11 +706,9 @@
         "finalize": "",
         "libs": [],
         "x": 400,
-        "y": 660,
+        "y": 640,
         "wires": [
-            [
-                "4084b993b0f7f501"
-            ]
+            []
         ]
     },
     {
@@ -735,7 +734,7 @@
         "onceDelay": "0.5",
         "topic": "",
         "x": 140,
-        "y": 660,
+        "y": 640,
         "wires": [
             [
                 "13ea8a841b9df65f"
@@ -748,26 +747,419 @@
         "z": "d9a37cb13fb749b8",
         "name": "elementChanged",
         "x": 690,
-        "y": 660,
+        "y": 640,
         "wires": []
     },
     {
         "id": "3e79ec0569ead0c2",
         "type": "function",
         "z": "d9a37cb13fb749b8",
-        "name": "UpdateRelayState",
+        "name": "StoreUpdatedRelayState",
         "func": "let arrRelayState = flow.get(\"relayState\");\n\nif(arrRelayState === undefined) return null;\n\nlet updatedRelayState = msg.payload;   // Get relay state who was updated.\n\n// Get index of updated relay \nlet relayIndex = arrRelayState.findIndex(relay => relay.id === updatedRelayState.id);\narrRelayState[relayIndex] = updatedRelayState;\n\nflow.set(\"relayState\", arrRelayState);\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 570,
-        "y": 240,
+        "x": 550,
+        "y": 460,
         "wires": [
             [
-                "c66f0abde8f9afbf"
+                "c66f0abde8f9afbf",
+                "1f9d51a8cfec1021"
             ]
         ]
+    },
+    {
+        "id": "6e3c2a66aba52f94",
+        "type": "comment",
+        "z": "d9a37cb13fb749b8",
+        "name": "Request all relay states from server, and keep trying until they are retrieved.",
+        "info": "",
+        "x": 280,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "e4ecc70cb00826bc",
+        "type": "comment",
+        "z": "d9a37cb13fb749b8",
+        "name": "Receive responses from initial states request, or if a relay was changed from another place.",
+        "info": "",
+        "x": 330,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "eb919bac3adf7b79",
+        "type": "comment",
+        "z": "d9a37cb13fb749b8",
+        "name": "Here socket.io work as a client, and can listen or emit data.",
+        "info": "",
+        "x": 230,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "9ac895f2bcad3593",
+        "type": "i2c scan",
+        "z": "d9a37cb13fb749b8",
+        "name": "",
+        "busno": "1",
+        "x": 340,
+        "y": 720,
+        "wires": [
+            [
+                "16fc4ef2b073bc2b"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "65c68c4656ba4c2a",
+        "type": "inject",
+        "z": "d9a37cb13fb749b8",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 100,
+        "y": 720,
+        "wires": [
+            [
+                "9ac895f2bcad3593",
+                "7d3d77cfc89ae431"
+            ]
+        ]
+    },
+    {
+        "id": "16fc4ef2b073bc2b",
+        "type": "debug",
+        "z": "d9a37cb13fb749b8",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 570,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "0d5992623ba620cd",
+        "type": "debug",
+        "z": "d9a37cb13fb749b8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 570,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "7d3d77cfc89ae431",
+        "type": "i2c in",
+        "z": "d9a37cb13fb749b8",
+        "name": "",
+        "busno": "1",
+        "address": "36",
+        "command": "",
+        "count": "1",
+        "x": 330,
+        "y": 780,
+        "wires": [
+            [
+                "0d5992623ba620cd"
+            ]
+        ]
+    },
+    {
+        "id": "a232dd8de29cf1e4",
+        "type": "i2c out",
+        "z": "d9a37cb13fb749b8",
+        "name": "",
+        "busno": "1",
+        "address": "36",
+        "command": "",
+        "payload": "payload",
+        "payloadType": "msg",
+        "count": "1",
+        "x": 570,
+        "y": 840,
+        "wires": [
+            [
+                "b27d490d5b33c6f1"
+            ]
+        ]
+    },
+    {
+        "id": "71077baa8d164c52",
+        "type": "inject",
+        "z": "d9a37cb13fb749b8",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "127",
+        "payloadType": "num",
+        "x": 90,
+        "y": 840,
+        "wires": [
+            [
+                "bc14114c156cb004"
+            ]
+        ]
+    },
+    {
+        "id": "b27d490d5b33c6f1",
+        "type": "debug",
+        "z": "d9a37cb13fb749b8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 730,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "141b44d6cc524bae",
+        "type": "inject",
+        "z": "d9a37cb13fb749b8",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "0",
+        "payloadType": "num",
+        "x": 90,
+        "y": 880,
+        "wires": [
+            [
+                "bc14114c156cb004"
+            ]
+        ]
+    },
+    {
+        "id": "bc14114c156cb004",
+        "type": "function",
+        "z": "d9a37cb13fb749b8",
+        "name": "WorkaroundSigned2Unsigned",
+        "func": "msg.payload = msg.payload > 127 ? msg.payload - 256 : msg.payload\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 840,
+        "wires": [
+            [
+                "a232dd8de29cf1e4"
+            ]
+        ]
+    },
+    {
+        "id": "384bbc96e5ccf427",
+        "type": "inject",
+        "z": "d9a37cb13fb749b8",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "255",
+        "payloadType": "num",
+        "x": 90,
+        "y": 800,
+        "wires": [
+            [
+                "bc14114c156cb004"
+            ]
+        ]
+    },
+    {
+        "id": "00cc2f786fc2c6a1",
+        "type": "i2c out",
+        "z": "d9a37cb13fb749b8",
+        "name": "",
+        "busno": "1",
+        "address": "36",
+        "command": "",
+        "payload": "payload",
+        "payloadType": "msg",
+        "count": "1",
+        "x": 1010,
+        "y": 420,
+        "wires": [
+            [
+                "177f76e73d7c5c41"
+            ]
+        ]
+    },
+    {
+        "id": "177f76e73d7c5c41",
+        "type": "debug",
+        "z": "d9a37cb13fb749b8",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1090,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "32572b972980d6a9",
+        "type": "function",
+        "z": "d9a37cb13fb749b8",
+        "name": "WorkaroundSigned2Unsigned",
+        "func": "msg.payload = msg.payload > 127 ? msg.payload - 256 : msg.payload\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 810,
+        "y": 420,
+        "wires": [
+            [
+                "00cc2f786fc2c6a1"
+            ]
+        ]
+    },
+    {
+        "id": "1f9d51a8cfec1021",
+        "type": "function",
+        "z": "d9a37cb13fb749b8",
+        "name": "GetI2CPortMask",
+        "func": "let i2cPortMask = flow.get(\"I2CPortMask\");\nlet updatedRelayState = msg.payload;\n\n \nif(updatedRelayState.state === true && updatedRelayState.protocol === 'i2c'){\n    let bitwisePort = 0b00000001 << updatedRelayState.port;\n    i2cPortMask = i2cPortMask | bitwisePort;\n}\nelse if(updatedRelayState.state === false && updatedRelayState.protocol === 'i2c'){\n    let bitwisePort = ~(0b00000001 << updatedRelayState.port);\n    i2cPortMask = i2cPortMask & bitwisePort;\n}\n\nflow.set(\"I2CPortMask\", i2cPortMask);\n\nmsg.payload = i2cPortMask;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 760,
+        "y": 460,
+        "wires": [
+            [
+                "32572b972980d6a9",
+                "cdf71e67c7eb3689"
+            ]
+        ]
+    },
+    {
+        "id": "353d0ce2f2c764bf",
+        "type": "function",
+        "z": "d9a37cb13fb749b8",
+        "name": "SetI2CPortMask",
+        "func": "let arrRelayState = msg.payload;\n\nif(arrRelayState === undefined || arrRelayState === null) return;\n\nlet i2cPortMask = 0b00000000;\n\n// Iterate over all relays.\nfor(const relay of arrRelayState){\n    // Convert from port 0 true  -> 0b00000001\n    //                   3 true  -> 0b00001000\n    //                   4 false -> 0b00000000\n    //                   7 true  -> 0b10000000\n    //                     Mask  -> 0b10001001\n    if(relay.state === true && relay.protocol === 'i2c'){\n        let bitwisePort = 0b00000001 << relay.port;\n        i2cPortMask = i2cPortMask | bitwisePort;\n    }\n}\n\nflow.set(\"I2CPortMask\", i2cPortMask);\nmsg.payload = i2cPortMask;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 520,
+        "y": 380,
+        "wires": [
+            [
+                "1f5efb05b7845817",
+                "32572b972980d6a9"
+            ]
+        ]
+    },
+    {
+        "id": "1f5efb05b7845817",
+        "type": "debug",
+        "z": "d9a37cb13fb749b8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 750,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "cdf71e67c7eb3689",
+        "type": "debug",
+        "z": "d9a37cb13fb749b8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 950,
+        "y": 460,
+        "wires": []
     }
 ]

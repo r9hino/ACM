@@ -22,6 +22,8 @@ services:
       - iot-net
     volumes:
       - /home/pi/Code/ACM/Docker/node-red/data:/data
+    devices:
+      - /dev/i2c-1:/dev/i2c-1
     depends_on:
       pigpiod:
         condition: service_started

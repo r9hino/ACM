@@ -476,5 +476,27 @@
                 "file": "/data/node_modules/node-red-node-pi-gpiod/pi-gpiod.js"
             }
         }
+    },
+    "node-red-contrib-socketio-client-wt": {
+        "name": "node-red-contrib-socketio-client-wt",
+        "version": "0.4.4",
+        "local": true,
+        "user": true,
+        "nodes": {
+            "socketio-client": {
+                "name": "socketio-client",
+                "types": [
+                    "socketio-config",
+                    "socketio-connector",
+                    "socketio-listener",
+                    "socketio-emitter"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "node-red-contrib-socketio-client-wt",
+                "file": "/data/node_modules/node-red-contrib-socketio-client-wt/socketio-client/socketio-client.js"
+            }
+        }
     }
 }

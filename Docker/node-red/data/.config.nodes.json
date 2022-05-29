@@ -498,5 +498,26 @@
                 "file": "/data/node_modules/node-red-contrib-socketio-client-wt/socketio-client/socketio-client.js"
             }
         }
+    },
+    "node-red-contrib-i2c": {
+        "name": "node-red-contrib-i2c",
+        "version": "0.9.0",
+        "local": true,
+        "user": true,
+        "nodes": {
+            "i2c": {
+                "name": "i2c",
+                "types": [
+                    "i2c scan",
+                    "i2c in",
+                    "i2c out"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "node-red-contrib-i2c",
+                "file": "/data/node_modules/node-red-contrib-i2c/i2c/26-i2c.js"
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@
     "version": "0.0.1",
     "private": true,
     "dependencies": {
+        "node-red-contrib-i2c": "~0.9.0",
         "node-red-contrib-influxdb": "~0.6.1",
         "node-red-contrib-soap": "~0.1.0",
         "node-red-contrib-socketio-client-wt": "~0.4.4",
