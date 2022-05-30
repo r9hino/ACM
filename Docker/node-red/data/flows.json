@@ -992,7 +992,7 @@
         "type": "function",
         "z": "d9a37cb13fb749b8",
         "name": "WorkaroundSigned2Unsigned",
-        "func": "msg.payload = msg.payload > 127 ? msg.payload - 256 : msg.payload\nreturn msg;",
+        "func": "msg.payload = msg.payload > 127 ? msg.payload - 256 : msg.payload;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -1066,8 +1066,8 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1090,
-        "y": 380,
+        "x": 1030,
+        "y": 460,
         "wires": []
     },
     {
@@ -1075,7 +1075,7 @@
         "type": "function",
         "z": "d9a37cb13fb749b8",
         "name": "WorkaroundSigned2Unsigned",
-        "func": "msg.payload = msg.payload > 127 ? msg.payload - 256 : msg.payload\nreturn msg;",
+        "func": "// I2C board module work with inverse logic.\n// 0b0000 1000 -> 0b1111 0111\nlet commandBitwise = ~msg.payload & 0b11111111; // Invert bits.\n\nmsg.payload = commandBitwise > 127 ? commandBitwise - 256 : commandBitwise;\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -1095,7 +1095,7 @@
         "type": "function",
         "z": "d9a37cb13fb749b8",
         "name": "GetI2CPortMask",
-        "func": "let i2cPortMask = flow.get(\"I2CPortMask\");\nlet updatedRelayState = msg.payload;\n\n \nif(updatedRelayState.state === true && updatedRelayState.protocol === 'i2c'){\n    let bitwisePort = 0b00000001 << updatedRelayState.port;\n    i2cPortMask = i2cPortMask | bitwisePort;\n}\nelse if(updatedRelayState.state === false && updatedRelayState.protocol === 'i2c'){\n    let bitwisePort = ~(0b00000001 << updatedRelayState.port);\n    i2cPortMask = i2cPortMask & bitwisePort;\n}\n\nflow.set(\"I2CPortMask\", i2cPortMask);\n\nmsg.payload = i2cPortMask;\n\nreturn msg;",
+        "func": "let i2cPortMask = flow.get(\"i2cPortMask\"); // Inverse logic for I2C board.\nlet updatedRelayState = msg.payload;\n\n \nif(updatedRelayState.state === true && updatedRelayState.protocol === 'i2c'){\n    let bitwisePort = 0b00000001 << updatedRelayState.port;\n    i2cPortMask = i2cPortMask | bitwisePort;\n}\nelse if(updatedRelayState.state === false && updatedRelayState.protocol === 'i2c'){\n    let bitwisePort = ~(0b00000001 << updatedRelayState.port);\n    i2cPortMask = i2cPortMask & bitwisePort;\n}\n\nflow.set(\"i2cPortMask\", i2cPortMask);\nmsg.payload = i2cPortMask;\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -1115,7 +1115,7 @@
         "type": "function",
         "z": "d9a37cb13fb749b8",
         "name": "SetI2CPortMask",
-        "func": "let arrRelayState = msg.payload;\n\nif(arrRelayState === undefined || arrRelayState === null) return;\n\nlet i2cPortMask = 0b00000000;\n\n// Iterate over all relays.\nfor(const relay of arrRelayState){\n    // Convert from port 0 true  -> 0b00000001\n    //                   3 true  -> 0b00001000\n    //                   4 false -> 0b00000000\n    //                   7 true  -> 0b10000000\n    //                     Mask  -> 0b10001001\n    if(relay.state === true && relay.protocol === 'i2c'){\n        let bitwisePort = 0b00000001 << relay.port;\n        i2cPortMask = i2cPortMask | bitwisePort;\n    }\n}\n\nflow.set(\"I2CPortMask\", i2cPortMask);\nmsg.payload = i2cPortMask;\n\nreturn msg;",
+        "func": "let arrRelayState = msg.payload;    // All relay states stored in an array.\n\nif(arrRelayState === undefined || arrRelayState === null) return;\n\nlet i2cPortMask = 0b00000000;\n\n// Iterate over all relays.\nfor(const relay of arrRelayState){\n    // Convert from port 0 true  -> 0b00000001\n    //                   3 true  -> 0b00001000\n    //                   4 false -> 0b00000000\n    //                   7 true  -> 0b10000000\n    //                     Mask  -> 0b10001001\n    if(relay.state === true && relay.protocol === 'i2c'){\n        let bitwisePort = 0b00000001 << relay.port;\n        i2cPortMask = i2cPortMask | bitwisePort;\n    }\n}\n\n// I2C relay module board work with inverse logic.\ni2cPortMask = i2cPortMask;\n\nflow.set(\"i2cPortMask\", i2cPortMask);\nmsg.payload = i2cPortMask;\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -1159,8 +1159,8 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 950,
-        "y": 460,
+        "x": 930,
+        "y": 500,
         "wires": []
     }
 ]

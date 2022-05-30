@@ -97,7 +97,7 @@
 2. Stop all processes:
     * ```pm2 stop all```
     * ```cd /home/pi/Code/ACM/Docker```
-    * ```doker-compose -f docker-nodered-influxdb-pigpiod.yml stop```
+    * ```docker-compose -f docker-nodered-influxdb-pigpiod.yml --env-file ./../.env stop```
 3. Run PiSafe: ```pisafe```
 4. On Settings turn off "hide root device"
 5. Go to Backup
