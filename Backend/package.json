@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@influxdata/influxdb-client": "^1.22.0",
+    "@influxdata/influxdb-client": "^1.26.0",
     "ads1115": "^1.2.0",
     "bcrypt": "^5.0.1",
     "dotenv": "^16.0.1",
@@ -24,7 +24,7 @@
     "read-last-lines": "^1.8.0",
     "simple-json-db": "^2.0.0",
     "socket.io": "^4.5.1",
-    "systeminformation": "^5.11.15",
-    "twilio": "^3.77.0"
+    "systeminformation": "^5.11.16",
+    "twilio": "^3.77.1"
   }
 }

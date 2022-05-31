@@ -75,7 +75,7 @@
                     "off": "22:51"
                 }
             ],
-            "date_update": "Mon May 30 2022 15:39:19 GMT-0400 (Chile Standard Time)"
+            "date_update": "Mon May 30 2022 19:03:54 GMT-0400 (Chile Standard Time)"
         },
         {
             "id": 1,
@@ -142,7 +142,7 @@
                     "off": "14:15"
                 }
             ],
-            "date_update": "Mon May 30 2022 15:39:20 GMT-0400 (Chile Standard Time)"
+            "date_update": "Mon May 30 2022 19:03:55 GMT-0400 (Chile Standard Time)"
         },
         {
             "id": 2,
@@ -209,10 +209,10 @@
                     "off": "16:00"
                 }
             ],
-            "date_update": "Mon May 30 2022 15:39:21 GMT-0400 (Chile Standard Time)"
+            "date_update": "Mon May 30 2022 19:03:57 GMT-0400 (Chile Standard Time)"
         }
     ],
-    "date_update": "Mon May 30 2022 15:39:21 GMT-0400 (Chile Standard Time)",
+    "date_update": "Mon May 30 2022 19:03:57 GMT-0400 (Chile Standard Time)",
     "ip_public": "190.217.196.80",
     "guard_users": [
         {
